@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,12 +13,21 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/migrate', function () {
+    return Artisan::call('migrate');
 });
 
-Auth::routes();
+Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
+Route::post('login', 'Auth\LoginController@login');
+Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::resource('user', 'UserController')->only(['index', 'store', 'update', 'destroy']);
+Route::resource('pembeli', 'PembeliController')->only(['index', 'store', 'update', 'destroy']);
+Route::resource('kategoriBarang', 'KategoriBarangController')->only(['index', 'store', 'update', 'destroy']);
+Route::resource('pengeluaran', 'PengeluaranController')->only(['index', 'show', 'store', 'update', 'destroy']);
+Route::resource('penerimaan', 'PenerimaanController')->only(['index', 'show', 'store', 'update', 'destroy']);
+Route::get('navigation', 'NavigationController@index');
+
+Route::get('/', 'AppController@index');
 Route::get('/app/{any}', 'AppController@index')->where('any', '.*');
 

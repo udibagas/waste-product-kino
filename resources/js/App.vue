@@ -1,51 +1,108 @@
 <template>
     <el-container>
-        <el-header>
-            <el-row>
-                <el-col :span="12">
-                    <div class="brand"> <i class="el-icon-tickets"></i> Business Contract and Asset Management System </div>
-                </el-col>
-                <el-col :span="12" class="text-right">
-                    <span style="margin-right:15px;">Welcome, {{user.name}}!</span>
-                    <el-dropdown>
-                        <i class="el-icon-more text-white"></i>
-                        <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item>My Profile</el-dropdown-item>
-                            <el-dropdown-item @click="logout">Logout</el-dropdown-item>
-                        </el-dropdown-menu>
-                    </el-dropdown>
-                </el-col>
-            </el-row>
-        </el-header>
+        <el-aside width="auto">
+            <!-- <img src="../assets/images/logo-kino.jpg" v-show="!collapse" alt="" class="logo" style="width:200px;"> -->
+            <el-menu
+            :collapse="collapse"
+            default-active="1"
+            background-color="#324057"
+            text-color="#fff"
+            class="sidebar"
+            active-text-color="#ffd04b">
+                <el-menu-item v-if="!m.children" v-for="(m, i) in menus" :index="(++i).toString()" :key="i" @click="$router.push(m.path)">
+                    <font-awesome-icon :icon="m.icon" style="margin-right:5px;"></font-awesome-icon>
+                    <span slot="title">{{m.label}}</span>
+                </el-menu-item>
+                <el-submenu v-else :index="(++i).toString()">
+                    <template slot="title">
+                        <font-awesome-icon :icon="m.icon" style="margin-right:5px;"></font-awesome-icon>
+                        <span>{{m.label}}</span>
+                    </template>
+                    <el-menu-item v-for="(sm, ii) in m.children" :index="(i).toString() + '-' + ++ii" :key="ii" @click="$router.push(sm.path)">
+                        <!-- <font-awesome-icon :icon="sm.icon" style="margin-right:5px;"></font-awesome-icon>  -->
+                        <span slot="title">{{sm.label}}</span>
+                    </el-menu-item>
+                </el-submenu>
+            </el-menu>
+        </el-aside>
         <el-container>
-            <el-aside width="auto" style="text-align:center;background-color: #324057;">
-                <el-button icon="el-icon-document" circle></el-button><br><br>
-                <el-button icon="el-icon-menu" circle></el-button>
-            </el-aside>
-            <el-aside width="auto">Aside</el-aside>
-            <el-main> <router-view></router-view> </el-main>
+            <el-header>
+                <el-row>
+                    <el-col :span="12">
+                        <a href="#" @click.prevent="collapse = !collapse">
+                            <font-awesome-icon :icon="collapse ? 'chevron-right' : 'chevron-left'" style="margin-right:15px;"></font-awesome-icon>
+                        </a>
+                        <span class="brand">Waste Product Management</span>
+                    </el-col>
+                    <el-col :span="12" class="text-right">
+                        <el-dropdown @command="handleCommand">
+                            <span class="el-dropdown-link">Welcome, {{user.name}}!</span>
+                            <!-- <i class="el-icon-more text-white"></i> -->
+                            <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item command="profile">My Profile</el-dropdown-item>
+                                <el-dropdown-item command="logout">Logout</el-dropdown-item>
+                            </el-dropdown-menu>
+                        </el-dropdown>
+                    </el-col>
+                </el-row>
+            </el-header>
+            <el-main>
+                <el-collapse-transition>
+                    <router-view></router-view>
+                </el-collapse-transition>
+            </el-main>
         </el-container>
     </el-container>
 </template>
 
 <script>
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faHome, faUserLock, faChevronRight, faChevronLeft, faBoxes, faDatabase, faUsers, faTags, } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(
+    faHome,
+    faUserLock,
+    faChevronRight,
+    faChevronLeft,
+    faBoxes,
+    faDatabase,
+    faUsers,
+    faTags
+)
+
 export default {
+    name: 'App',
+    components: { FontAwesomeIcon },
     data() {
         return {
-            user: USER
+            collapse: false,
+            user: USER,
+            menus: []
         }
     },
     methods: {
-        logout() {
-            document.getElementById('logout-form').submit();
+        handleCommand(command) {
+            if (command === 'logout') {
+                document.getElementById('logout-form').submit();
+            }
+        },
+        getMenu() {
+            axios.get(BASE_URL + '/navigation')
+                .then(r => this.menus = r.data)
+                .catch(e => console.log(e))
         }
+
+    },
+    created() {
+        this.getMenu()
     }
 }
 </script>
 
 <style lang="scss" scoped>
 .brand {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: bolder;
 }
 
@@ -55,12 +112,18 @@ export default {
     line-height: 60px;
 }
 
+.sidebar {
+    background-color: #324057;
+    border-color: #324057;
+    height: 100vh;
+}
+
+.sidebar:not(.el-menu--collapse) {
+    width: 200px;
+}
+
 .el-aside {
-    // background-color: #D3DCE6;
-    background-color: #FFF;
-    color: #333;
-    height: calc(100vh - 60px);
-    padding: 20px 10px 10px;
+    height: 100vh;
 }
 
 .el-main {
@@ -79,5 +142,9 @@ body > .el-container {
     -moz-transform: rotate(90deg);
     -ms-transform: rotate(90deg);
     -o-transform: rotate(90deg);
+}
+
+.el-dropdown-link {
+    color: #fff;
 }
 </style>

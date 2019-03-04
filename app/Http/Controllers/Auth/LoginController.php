@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class LoginController extends Controller
 {
@@ -25,7 +27,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/app/home';
 
     /**
      * Create a new controller instance.
@@ -35,5 +37,21 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+    }
+
+    protected function credentials(Request $request)
+    {
+        return [
+            'status' => 1,
+            'password' => $request->password,
+            filter_var($request->email, FILTER_VALIDATE_EMAIL) ? 'email' : 'name' => $request->email
+        ];
+    }
+
+    protected function authenticated(Request $request, $user)
+    {
+        $user->login += 1;
+        $user->last_login = Carbon::now();
+        $user->save();
     }
 }

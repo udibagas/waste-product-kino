@@ -1,11 +1,11 @@
 <template>
     <el-card>
-        <h4>KELOLA USERS</h4>
+        <h4>KELOLA KATEGORI BARANG</h4>
         <hr>
 
         <el-form :inline="true" class="form-right">
             <el-form-item>
-                <el-button @click="addData" type="primary"><i class="el-icon-plus"></i> TAMBAH USER</el-button>
+                <el-button @click="addData" type="primary"><i class="el-icon-plus"></i> TAMBAH KATEGORI BARANG</el-button>
             </el-form-item>
             <el-form-item>
                 <el-select class="pager-options" v-model="pageSize" placeholder="Page Size">
@@ -20,30 +20,18 @@
         </el-form>
 
         <el-table :data="paginatedData.data" stripe
-        :default-sort = "{prop: 'name', order: 'ascending'}"
+        :default-sort = "{prop: 'nama', order: 'ascending'}"
         v-loading="loading"
         style="border-top:1px solid #eee;"
         @filter-change="filterChange"
         @sort-change="sortChange">
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
-            <el-table-column prop="name" label="Name" sortable="custom"></el-table-column>
-            <el-table-column prop="email" label="Email" sortable="custom"></el-table-column>
-            <el-table-column prop="role" label="Role" sortable="custom" 
-            column-key="role"
-            :filters="[{value: 0, text: 'Member'},{value: 1, text: 'User'}, {value: 9, text: 'Admin'}]">
-                <template slot-scope="scope">
-                    {{roles[scope.row.role]}}
-                </template>
-            </el-table-column>
-            <el-table-column prop="status" label="Status" sortable="custom" column-key="status"
-            :filters="[{value: 0, text: 'Inactive'},{value: 1, text: 'Active'}]">
-                <template slot-scope="scope">
-                    <span :class="scope.row.status ? 'text-success' : 'text-danger'">{{scope.row.status ? 'Active' : 'Inactive'}}</span>
-                </template>
-            </el-table-column>
-
-            <el-table-column prop="last_login" label="Last Login" sortable="custom"></el-table-column>
-            <el-table-column prop="login" label="Login" sortable="custom"></el-table-column>
+            <el-table-column prop="jenis" label="Jenis" sortable="custom"></el-table-column>
+            <el-table-column prop="kode" label="Kode" sortable="custom"></el-table-column>
+            <el-table-column prop="nama" label="Nama" sortable="custom"></el-table-column>
+            <el-table-column prop="unit" label="Unit" sortable="custom"></el-table-column>
+            <el-table-column prop="harga" label="Harga" sortable="custom"></el-table-column>
+            <el-table-column prop="status" label="Status" sortable="custom"></el-table-column>
 
             <el-table-column fixed="right" width="40px">
                 <template slot-scope="scope">
@@ -84,42 +72,34 @@
             </el-alert>
 
             <el-form label-width="180px">
-                <el-form-item label="Name">
-                    <el-input placeholder="Username" v-model="formData.name"></el-input>
-                    <div class="error-feedback" v-if="formErrors.name">{{formErrors.name[0]}}</div>
-                </el-form-item>
-
-                <el-form-item label="Email">
-                    <el-input placeholder="Email" v-model="formData.email"></el-input>
-                    <div class="error-feedback" v-if="formErrors.email">{{formErrors.email[0]}}</div>
-                </el-form-item>
-
-                <el-form-item label="Role">
-                    <el-select placeholder="Role" v-model="formData.role" style="width:100%;">
-                        <el-option :value="0" label="Member"></el-option>
-                        <el-option :value="1" label="User"></el-option>
-                        <el-option :value="9" label="Admin"></el-option>
+                <el-form-item label="Jenis">
+                    <el-select placeholder="Status" v-model="formData.jenis" style="width:100%;">
+                        <el-option :value="'BB'" label="BB"></el-option>
+                        <el-option :value="'WP'" label="WP"></el-option>
                     </el-select>
-                    <div class="error-feedback" v-if="formErrors.role">{{formErrors.role[0]}}</div>
+                    <div class="error-feedback" v-if="formErrors.jenis">{{formErrors.jenis[0]}}</div>
                 </el-form-item>
 
-                <el-form-item label="Password">
-                    <el-input type="password" placeholder="Password" v-model="formData.password"></el-input>
-                    <div class="error-feedback" v-if="formErrors.password">{{formErrors.password[0]}}</div>
+                <el-form-item label="Kode">
+                    <el-input placeholder="Kode" v-model="formData.kode"></el-input>
+                    <div class="error-feedback" v-if="formErrors.kode">{{formErrors.kode[0]}}</div>
+                </el-form-item>
+
+                <el-form-item label="Nama">
+                    <el-input placeholder="Nama" v-model="formData.nama"></el-input>
+                    <div class="error-feedback" v-if="formErrors.nama">{{formErrors.nama[0]}}</div>
+                </el-form-item>
+
+                <el-form-item label="Unit">
+                    <el-input placeholder="Unit" v-model="formData.unit"></el-input>
+                    <div class="error-feedback" v-if="formErrors.unit">{{formErrors.unit[0]}}</div>
+                </el-form-item>
+
+                <el-form-item label="Harga">
+                    <el-input type="number" placeholder="Harga" v-model="formData.harga"></el-input>
+                    <div class="error-feedback" v-if="formErrors.harga">{{formErrors.harga[0]}}</div>
                 </el-form-item>
                 
-                <el-form-item label="Konfirmasi Password">
-                    <el-input type="password" placeholder="Konfirmasi Password" v-model="formData.password_confirmation"></el-input>
-                </el-form-item>
-
-                <el-form-item label="Status">
-                    <el-select placeholder="Status" v-model="formData.status" style="width:100%;">
-                        <el-option :value="0" label="Inactive"></el-option>
-                        <el-option :value="1" label="Active"></el-option>
-                    </el-select>
-                    <div class="error-feedback" v-if="formErrors.status">{{formErrors.status[0]}}</div>
-                </el-form-item>
-
                 <el-form-item>
                     <el-button type="primary" @click="store" v-if="formData.id == undefined"><i class="el-icon-check"></i> SIMPAN</el-button>
                     <el-button type="primary" @click="update" v-if="formData.id != undefined"><i class="el-icon-check"></i> SIMPAN</el-button>
@@ -142,7 +122,6 @@ export default {
     },
     data: function() {
         return {
-            roles: { 0: 'Member', 1: 'User', 9: 'Admin' },
             loading: false,
             showForm: false,
             formTitle: '',
@@ -152,7 +131,7 @@ export default {
             keyword: '',
             page: 1,
             pageSize: 10,
-            sort: 'name',
+            sort: 'nama',
             order: 'ascending',
             filters: {},
             paginatedData: {}
@@ -177,7 +156,7 @@ export default {
         },
         store: function() {
             this.loading = true;
-            axios.post(BASE_URL + '/user', this.formData)
+            axios.post(BASE_URL + '/kategoriBarang', this.formData)
                 .then(r => {
                     this.loading = false;
                     this.showForm = false;
@@ -202,7 +181,7 @@ export default {
         },
         update: function() {
             this.loading = true;
-            axios.put(BASE_URL + '/user/' + this.formData.id, this.formData)
+            axios.put(BASE_URL + '/kategoriBarang/' + this.formData.id, this.formData)
                 .then(r => {
                     this.loading = false;
                     this.showForm = false
@@ -226,14 +205,14 @@ export default {
                 })
         },
         addData: function() {
-            this.formTitle = 'Tambah User'
+            this.formTitle = 'Tambah Pembeli'
             this.error = {}
             this.formErrors = {}
             this.formData = {}
             this.showForm = true
         },
         editData: function(data) {
-            this.formTitle = 'Edit User'
+            this.formTitle = 'Edit Pembeli'
             this.formData = JSON.parse(JSON.stringify(data));
             this.error = {}
             this.formErrors = {}
@@ -242,7 +221,7 @@ export default {
         deleteData: function(id) {
             this.$confirm('Anda yakin akan menghapus user ini?')
                 .then(() => {
-                    axios.delete(BASE_URL + '/user/' + id)
+                    axios.delete(BASE_URL + '/kategoriBarang/' + id)
                         .then(r => {
                             this.requestData();
                             this.$message({
@@ -276,7 +255,7 @@ export default {
             }
             this.loading = true;
 
-            axios.get(BASE_URL + '/user', {params: Object.assign(params, this.filters)})
+            axios.get(BASE_URL + '/kategoriBarang', {params: Object.assign(params, this.filters)})
                 .then(r => {
                     this.loading = false;
                     this.paginatedData = r.data
@@ -297,4 +276,5 @@ export default {
 </script>
 
 <style lang="css" scoped>
+
 </style>

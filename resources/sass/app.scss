@@ -83,13 +83,46 @@
   font-style: italic;
 }
 
-body {
-  color: #505050;
+@font-face {
+  font-family: "MyriadMM";
+  src: url("../assets/fonts/MyriadMM.ttf");
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-weight: lighter;
-  margin: 0 0 15px;
+
+.el-form-item__label {
+  font-weight: bold;
+}
+
+// body {
+//   color: #505050;
+// }
+
+// h1, h2, h3, h4, h5, h6 {
+//   font-weight: lighter;
+//   margin: 0 0 15px;
+// }
+
+.pager-options {
+  width: 70px;
+}
+
+.el-icon-more {
+  transform: rotate(90deg);
+}
+
+.error-feedback {
+    color: #e3342f;
+    font-size: 90%;
+    margin-top: 0.25rem;
+}
+
+.form-right {
+    text-align: right;
+}
+
+h4 {
+    color: #275885;
+    margin-top: 10px;
 }
 
 .navbar-laravel {
