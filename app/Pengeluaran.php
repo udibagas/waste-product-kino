@@ -9,12 +9,14 @@ class Pengeluaran extends Model
     protected $dateFormat = 'Y-m-d H:i:s';
 
     protected $fillable = [
-        'no_sj', 'tanggal', 'penerima',
+        'no_sj', 'tanggal', 'penerima', 'status',
         'lokasi_asal', 'lokasi_terima', 'user_id', 'jembatan_timbang'
     ];
 
+    protected $with = ['items'];
+
     public function items()
     {
-        return $this->hasMany(PengaluaranItem::class);
+        return $this->hasMany(PengeluaranItem::class);
     }
 }

@@ -23,9 +23,14 @@ Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 
 Route::resource('user', 'UserController')->only(['index', 'store', 'update', 'destroy']);
 Route::resource('pembeli', 'PembeliController')->only(['index', 'store', 'update', 'destroy']);
+Route::get('kategoriBarang/getList', 'KategoriBarangController@getList');
 Route::resource('kategoriBarang', 'KategoriBarangController')->only(['index', 'store', 'update', 'destroy']);
-Route::resource('pengeluaran', 'PengeluaranController')->only(['index', 'show', 'store', 'update', 'destroy']);
-Route::resource('penerimaan', 'PenerimaanController')->only(['index', 'show', 'store', 'update', 'destroy']);
+
+Route::get('pengeluaran/getList', 'PengeluaranController@getList');
+Route::resource('pengeluaran', 'PengeluaranController')->only(['index', 'store', 'update', 'destroy']);
+
+Route::resource('pengeluaranItem', 'PengeluaranItemController')->only(['destroy']);
+Route::resource('penerimaan', 'PenerimaanController')->only(['index', 'store', 'update', 'destroy']);
 Route::get('navigation', 'NavigationController@index');
 
 Route::get('/', 'AppController@index');

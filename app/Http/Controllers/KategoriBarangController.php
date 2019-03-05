@@ -38,4 +38,9 @@ class KategoriBarangController extends Controller
         $kategoriBarang->delete();
         return ['message' => 'ok'];
     }
+
+    public function getList()
+    {
+        return KategoriBarang::all();
+    }
 }

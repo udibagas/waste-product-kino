@@ -32,4 +32,16 @@ class PengeluaranRequest extends FormRequest
             'jembatan_timbang' => 'required'
         ];
     }
+
+    public function attributes()
+    {
+        return [
+            'no_sj' => 'Nomor Surat Jalan',
+            'tanggal' => 'Tanggal',
+            'penerima' => 'Nama Penerima',
+            'lokasi_asal' => 'Lokasi Asal',
+            'lokasi_terima' => 'Lokasi Terima',
+            'jembatan_timbang' => 'Jembatan Timbang'
+        ];
+    }
 }

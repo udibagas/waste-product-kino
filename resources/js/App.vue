@@ -1,51 +1,52 @@
 <template>
     <el-container>
-        <el-aside width="auto">
-            <!-- <img src="../assets/images/logo-kino.jpg" v-show="!collapse" alt="" class="logo" style="width:200px;"> -->
-            <el-menu
-            :collapse="collapse"
-            default-active="1"
-            background-color="#324057"
-            text-color="#fff"
-            class="sidebar"
-            active-text-color="#ffd04b">
-                <el-menu-item v-if="!m.children" v-for="(m, i) in menus" :index="(++i).toString()" :key="i" @click="$router.push(m.path)">
-                    <font-awesome-icon :icon="m.icon" style="margin-right:5px;"></font-awesome-icon>
-                    <span slot="title">{{m.label}}</span>
-                </el-menu-item>
-                <el-submenu v-else :index="(++i).toString()">
-                    <template slot="title">
-                        <font-awesome-icon :icon="m.icon" style="margin-right:5px;"></font-awesome-icon>
-                        <span>{{m.label}}</span>
-                    </template>
-                    <el-menu-item v-for="(sm, ii) in m.children" :index="(i).toString() + '-' + ++ii" :key="ii" @click="$router.push(sm.path)">
-                        <!-- <font-awesome-icon :icon="sm.icon" style="margin-right:5px;"></font-awesome-icon>  -->
-                        <span slot="title">{{sm.label}}</span>
-                    </el-menu-item>
-                </el-submenu>
-            </el-menu>
-        </el-aside>
+        <el-header>
+            <el-row>
+                <el-col :span="12">
+                    <a href="#" @click.prevent="collapse = !collapse" style="margin:0 15px 0 0">
+                        <font-awesome-icon :icon="collapse ? 'chevron-right' : 'chevron-left'"></font-awesome-icon>
+                    </a>
+                    <span class="brand">Waste Product Management</span>
+                </el-col>
+                <el-col :span="12" class="text-right">
+                    <el-dropdown @command="handleCommand">
+                        <span class="el-dropdown-link">Welcome, {{user.name}}!</span>
+                        <!-- <i class="el-icon-more text-white"></i> -->
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item command="profile">My Profile</el-dropdown-item>
+                            <el-dropdown-item command="logout">Logout</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                </el-col>
+            </el-row>
+        </el-header>
+        
         <el-container>
-            <el-header>
-                <el-row>
-                    <el-col :span="12">
-                        <a href="#" @click.prevent="collapse = !collapse">
-                            <font-awesome-icon :icon="collapse ? 'chevron-right' : 'chevron-left'" style="margin-right:15px;"></font-awesome-icon>
-                        </a>
-                        <span class="brand">Waste Product Management</span>
-                    </el-col>
-                    <el-col :span="12" class="text-right">
-                        <el-dropdown @command="handleCommand">
-                            <span class="el-dropdown-link">Welcome, {{user.name}}!</span>
-                            <!-- <i class="el-icon-more text-white"></i> -->
-                            <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item command="profile">My Profile</el-dropdown-item>
-                                <el-dropdown-item command="logout">Logout</el-dropdown-item>
-                            </el-dropdown-menu>
-                        </el-dropdown>
-                    </el-col>
-                </el-row>
-            </el-header>
+            <el-aside width="auto">
+                <!-- <img src="../assets/images/logo-kino.jpg" v-show="!collapse" alt="" class="logo" style="width:200px;"> -->
+                <el-menu
+                :collapse="collapse"
+                default-active="1"
+                background-color="#324057"
+                text-color="#fff"
+                class="sidebar"
+                active-text-color="#ffd04b">
+                    <el-menu-item v-if="!m.children" v-for="(m, i) in menus" :index="(++i).toString()" :key="i" @click="$router.push(m.path)">
+                        <font-awesome-icon :icon="m.icon" style="margin-right:5px;"></font-awesome-icon>
+                        <span slot="title">{{m.label}}</span>
+                    </el-menu-item>
+                    <el-submenu v-else :index="(++i).toString()">
+                        <template slot="title">
+                            <font-awesome-icon :icon="m.icon" style="margin-right:5px;"></font-awesome-icon>
+                            <span>{{m.label}}</span>
+                        </template>
+                        <el-menu-item v-for="(sm, ii) in m.children" :index="(i).toString() + '-' + ++ii" :key="ii" @click="$router.push(sm.path)">
+                            <!-- <font-awesome-icon :icon="sm.icon" style="margin-right:5px;"></font-awesome-icon>  -->
+                            <span slot="title">{{sm.label}}</span>
+                        </el-menu-item>
+                    </el-submenu>
+                </el-menu>
+            </el-aside>
             <el-main>
                 <el-collapse-transition>
                     <router-view></router-view>
@@ -76,7 +77,7 @@ export default {
     components: { FontAwesomeIcon },
     data() {
         return {
-            collapse: false,
+            collapse: true,
             user: USER,
             menus: []
         }

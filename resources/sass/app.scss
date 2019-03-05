@@ -90,16 +90,17 @@
 
 
 .el-form-item__label {
-  font-weight: bold;
+  // font-weight: bold;
+  background-color: #324057;
+  color: #fff;
 }
 
-// body {
-//   color: #505050;
-// }
+.el-input__inner {
+  border-radius: 0;
+}
 
-// h1, h2, h3, h4, h5, h6 {
-//   font-weight: lighter;
-//   margin: 0 0 15px;
+// .el-form-item {
+//   margin-bottom: 20px;
 // }
 
 .pager-options {
@@ -108,12 +109,6 @@
 
 .el-icon-more {
   transform: rotate(90deg);
-}
-
-.error-feedback {
-    color: #e3342f;
-    font-size: 90%;
-    margin-top: 0.25rem;
 }
 
 .form-right {
@@ -125,6 +120,16 @@ h4 {
     margin-top: 10px;
 }
 
+.table > thead > tr > th {
+  vertical-align: middle;
+  background-color: #324057;
+  color: #fff;
+}
+
+.table > tbody > tr > td {
+  vertical-align: middle;
+}
+
 .navbar-laravel {
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
@@ -132,4 +137,8 @@ h4 {
 
 .table-striped>tbody>tr:nth-of-type(odd) {
   background-color: #f9f9f9;
+}
+
+.el-form-item__error {
+  padding-top: 0;
 }
