@@ -12,4 +12,6 @@ class KategoriBarang extends Model
         'jenis', 'kode', 'nama', 'unit', 'harga', 
         'status', 'created_by', 'updated_by', 'approved_by'
     ];
+
+    protected $hidden = ['created_at', 'updated_at'];
 }

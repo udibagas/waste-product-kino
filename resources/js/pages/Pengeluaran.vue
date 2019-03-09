@@ -26,12 +26,17 @@
         @filter-change="filterChange"
         @sort-change="sortChange">
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
-            <el-table-column prop="tanggal" label="Tanggal" sortable="custom">
+            <el-table-column type="expand" width="20px">
+                <template slot-scope="scope">
+                    <PengeluaranDetail :data="scope.row" />
+                </template>
+            </el-table-column>
+            <el-table-column prop="tanggal" width="100" label="Tanggal" sortable="custom">
                 <template slot-scope="scope">
                     {{ scope.row.tanggal | readableDate }}
                 </template>
             </el-table-column>
-            <el-table-column prop="no_sj" label="Nomor Surat Jalan" sortable="custom"></el-table-column>
+            <el-table-column prop="no_sj" label="No. Surat Jalan" sortable="custom"></el-table-column>
             <el-table-column prop="lokasi_asal" label="Lokasi Asal" sortable="custom"></el-table-column>
             <el-table-column prop="lokasi_terima" label="Lokasi Terima" sortable="custom"></el-table-column>
             <el-table-column prop="penerima" label="Penerima" sortable="custom"></el-table-column>
@@ -40,9 +45,9 @@
                     {{ scope.row.jembatan_timbang | formatNumber }} kg
                 </template>
             </el-table-column>
-            <el-table-column prop="status" label="Status" sortable="custom">
+            <el-table-column prop="status" width="100" align="center" header-align="center" label="Status" sortable="custom">
                 <template slot-scope="scope">
-                    <el-tag :type="statuses[scope.row.status].type">{{statuses[scope.row.status].label}}</el-tag>
+                    <el-tag size="small" :type="statuses[scope.row.status].type">{{statuses[scope.row.status].label}}</el-tag>
                 </template>
             </el-table-column>
 
@@ -105,12 +110,26 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="Lokasi Asal">
-                            <el-input placeholder="Lokasi Asal" v-model="formModel.lokasi_asal"></el-input>
+                            <el-select v-model="formModel.lokasi_asal_id" style="width:100%" placeholder="Lokasi Asal">
+                                <el-option
+                                v-for="item in $store.state.locationList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                                </el-option>
+                            </el-select>
                             <div class="el-form-item__error" v-if="formErrors.lokasi_asal">{{formErrors.lokasi_asal[0]}}</div>
                         </el-form-item>
 
                         <el-form-item label="Lokasi Terima">
-                            <el-input placeholder="Lokasi Terima" v-model="formModel.lokasi_terima"></el-input>
+                            <el-select v-model="formModel.lokasi_terima_id" style="width:100%" placeholder="Lokasi Terima">
+                                <el-option
+                                v-for="item in $store.state.locationList"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                                </el-option>
+                            </el-select>
                             <div class="el-form-item__error" v-if="formErrors.lokasi_terima">{{formErrors.lokasi_terima[0]}}</div>
                         </el-form-item>
 
@@ -127,9 +146,9 @@
                             <th>#</th>
                             <th>Kategori</th>
                             <th>Qty</th>
-                            <th>Eun</th>
+                            <th class="text-center">Eun</th>
                             <th>Timbangan Manual (kg)</th>
-                            <th>
+                            <th class="text-center">
                                 <a href="#" @click="addItem" class="icon-bg"><i class="el-icon-circle-plus-outline"></i></a>
                             </th>
                         </tr>
@@ -140,15 +159,15 @@
                             <td>
                                 <select name="kat" placeholder="Kategori" v-model="formModel.items[index].kategori_barang_id" class="my-input" @change="updateEun($event, index)">
                                     <option value="">-- Pilih Kategori --</option>
-                                    <option v-for="(k, i) in $store.state.kategoriBarangList" :key="i" :value="k.id">
+                                    <option v-for="(k, i) in $store.state.kategoriBarangList.filter(k => k.status == 1)" :key="i" :value="k.id">
                                         {{k.jenis}} : {{k.kode}} - {{k.nama}}
                                     </option>
                                 </select>
                             </td>
                             <td> <input type="number" v-model="formModel.items[index].qty" class="my-input" placeholder="Qty"> </td>
-                            <td> {{formModel.items[index].eun}} </td>
+                            <td class="text-center"> {{formModel.items[index].eun}} </td>
                             <td> <input type="number" v-model="formModel.items[index].timbangan_manual" class="my-input" placeholder="Timbangan Manual"> </td>
-                            <td>
+                            <td class="text-center">
                                 <a v-if="index > 0" href="#" @click="deleteItem(index)" class="icon-bg"><i class="el-icon-delete"></i></a>
                             </td>
                         </tr>
@@ -167,14 +186,26 @@
 
 <script>
 import moment from 'moment'
+import PengeluaranDetail from '../components/PengeluaranDetail'
 
 export default {
+    components: { PengeluaranDetail },
     watch: {
         keyword: function(v, o) {
             this.requestData()
         },
         pageSize: function(v, o) {
             this.requestData()
+        },
+        'formModel.lokasi_asal_id'(v, o) {
+            if (v) {
+                this.formModel.lokasi_asal = this.$store.state.locationList.find(l => l.id == v).name;
+            }
+        },
+        'formModel.lokasi_terima_id'(v, o) {
+            if (v) {
+                this.formModel.lokasi_terima = this.$store.state.locationList.find(l => l.id == v).name;
+            }
         }
     },
     data: function() {
@@ -201,7 +232,7 @@ export default {
             paginatedData: {},
             statuses: [
                 {type: 'info', label: 'Draft'},
-                {type: 'primary', label: 'Submitted'},
+                {type: 'warning', label: 'Submitted'},
                 {type: 'success', label: 'Received'},
             ]
         }
@@ -337,6 +368,7 @@ export default {
             
             this.formModel = {
                 tanggal: moment().format('YYYY-MM-DD'),
+                status: 0,
                 items: [{
                     kategori_barang_id: '',
                     qty: '',
@@ -406,6 +438,7 @@ export default {
     created: function() {
         this.requestData();
         this.$store.commit('getKategoriBarangList');
+        this.$store.commit('getLocationList');
     }
 }
 </script>
@@ -415,6 +448,7 @@ export default {
     border: none;
     width: 100%;
     padding: 5px;
+    /* background-color: #eee; */
     background-color: transparent;
 }
 

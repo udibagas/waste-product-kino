@@ -30,8 +30,16 @@
             <el-table-column prop="kode" label="Kode" sortable="custom"></el-table-column>
             <el-table-column prop="nama" label="Nama" sortable="custom"></el-table-column>
             <el-table-column prop="unit" label="Unit" sortable="custom"></el-table-column>
-            <el-table-column prop="harga" label="Harga" sortable="custom"></el-table-column>
-            <el-table-column prop="status" label="Status" sortable="custom"></el-table-column>
+            <el-table-column prop="harga" label="Harga" sortable="custom" align="right" header-align="right">
+                <template slot-scope="scope">
+                    Rp {{scope.row.harga | formatNumber }}
+                </template>
+            </el-table-column>
+            <el-table-column prop="status" label="Status" sortable="custom" width="100" align="center" header-align="center">
+                <template slot-scope="scope">
+                    <el-tag :type="statuses[scope.row.status].type">{{statuses[scope.row.status].label}}</el-tag>
+                </template>
+            </el-table-column>
 
             <el-table-column fixed="right" width="40px">
                 <template slot-scope="scope">
@@ -42,6 +50,8 @@
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
                             <el-dropdown-item @click.native.prevent="deleteData(scope.row.id)"><i class="el-icon-delete"></i> Hapus</el-dropdown-item>
+                            <el-dropdown-item v-if="scope.row.status != 2" @click.native.prevent="approve(scope.row, 2)"><i class="el-icon-check"></i> Approve</el-dropdown-item>
+                            <el-dropdown-item v-if="scope.row.status != 3" @click.native.prevent="approve(scope.row, 3)"><i class="el-icon-close"></i> Reject</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </template>
@@ -64,7 +74,7 @@
             </el-col>
         </el-row>
 
-        <el-dialog :visible.sync="showForm" :title="formTitle" width="600px" v-loading="loading" :close-on-click-modal="false">
+        <el-dialog center :visible.sync="showForm" :title="formTitle" width="600px" v-loading="loading" :close-on-click-modal="false">
             <el-alert type="error" title="ERROR"
                 :description="error.message + '\n' + error.file + ':' + error.line"
                 v-show="error.message"
@@ -73,39 +83,38 @@
 
             <el-form label-width="180px">
                 <el-form-item label="Jenis">
-                    <el-select placeholder="Status" v-model="formData.jenis" style="width:100%;">
-                        <el-option :value="'BB'" label="BB"></el-option>
-                        <el-option :value="'WP'" label="WP"></el-option>
+                    <el-select placeholder="Jenis" v-model="formModel.jenis" style="width:100%;">
+                        <el-option value="BB" label="BB"></el-option>
+                        <el-option value="WP" label="WP"></el-option>
                     </el-select>
-                    <div class="error-feedback" v-if="formErrors.jenis">{{formErrors.jenis[0]}}</div>
+                    <div class="el-form-item__error" v-if="formErrors.jenis">{{formErrors.jenis[0]}}</div>
                 </el-form-item>
 
                 <el-form-item label="Kode">
-                    <el-input placeholder="Kode" v-model="formData.kode"></el-input>
-                    <div class="error-feedback" v-if="formErrors.kode">{{formErrors.kode[0]}}</div>
+                    <el-input placeholder="Kode" v-model="formModel.kode"></el-input>
+                    <div class="el-form-item__error" v-if="formErrors.kode">{{formErrors.kode[0]}}</div>
                 </el-form-item>
 
                 <el-form-item label="Nama">
-                    <el-input placeholder="Nama" v-model="formData.nama"></el-input>
-                    <div class="error-feedback" v-if="formErrors.nama">{{formErrors.nama[0]}}</div>
+                    <el-input placeholder="Nama" v-model="formModel.nama"></el-input>
+                    <div class="el-form-item__error" v-if="formErrors.nama">{{formErrors.nama[0]}}</div>
                 </el-form-item>
 
                 <el-form-item label="Unit">
-                    <el-input placeholder="Unit" v-model="formData.unit"></el-input>
-                    <div class="error-feedback" v-if="formErrors.unit">{{formErrors.unit[0]}}</div>
+                    <el-input placeholder="Unit" v-model="formModel.unit"></el-input>
+                    <div class="el-form-item__error" v-if="formErrors.unit">{{formErrors.unit[0]}}</div>
                 </el-form-item>
 
                 <el-form-item label="Harga">
-                    <el-input type="number" placeholder="Harga" v-model="formData.harga"></el-input>
-                    <div class="error-feedback" v-if="formErrors.harga">{{formErrors.harga[0]}}</div>
-                </el-form-item>
-                
-                <el-form-item>
-                    <el-button type="primary" @click="store" v-if="formData.id == undefined"><i class="el-icon-check"></i> SIMPAN</el-button>
-                    <el-button type="primary" @click="update" v-if="formData.id != undefined"><i class="el-icon-check"></i> SIMPAN</el-button>
-                    <el-button type="info" @click="showForm = false"><i class="el-icon-close"></i> BATAL</el-button>
+                    <el-input type="number" placeholder="Harga" v-model="formModel.harga"></el-input>
+                    <div class="el-form-item__error" v-if="formErrors.harga">{{formErrors.harga[0]}}</div>
                 </el-form-item>
             </el-form>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="save" icon="el-icon-success">SAVE</el-button>
+                <el-button type="info" @click="showForm = false" icon="el-icon-error">CANCEL</el-button>
+            </span>
         </el-dialog>
     </el-card>
 </template>
@@ -122,12 +131,18 @@ export default {
     },
     data: function() {
         return {
+            statuses: [
+                {type: 'info', label: 'Draft'},
+                {type: 'warning', label: 'Updated'},
+                {type: 'success', label: 'Approved'},
+                {type: 'danger', label: 'Rejected'},
+            ],
             loading: false,
             showForm: false,
             formTitle: '',
             formErrors: {},
             error: {},
-            formData: {},
+            formModel: {},
             keyword: '',
             page: 1,
             pageSize: 10,
@@ -154,9 +169,27 @@ export default {
             this.page = p;
             this.requestData();
         },
+        save() {
+            if (!!this.formModel.id) {
+                this.update()
+            } else {
+                this.store()
+            }
+        },
+        approve(data, status) {
+            this.$confirm('Anda yakin?', 'Warning', {
+                type: 'warning',
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Tidak'
+            }).then(() => {
+                this.formModel = data
+                this.formModel.status = status
+                this.update()
+            }).catch(() => {})
+        },
         store: function() {
             this.loading = true;
-            axios.post(BASE_URL + '/kategoriBarang', this.formData)
+            axios.post(BASE_URL + '/kategoriBarang', this.formModel)
                 .then(r => {
                     this.loading = false;
                     this.showForm = false;
@@ -181,7 +214,7 @@ export default {
         },
         update: function() {
             this.loading = true;
-            axios.put(BASE_URL + '/kategoriBarang/' + this.formData.id, this.formData)
+            axios.put(BASE_URL + '/kategoriBarang/' + this.formModel.id, this.formModel)
                 .then(r => {
                     this.loading = false;
                     this.showForm = false
@@ -205,40 +238,38 @@ export default {
                 })
         },
         addData: function() {
-            this.formTitle = 'Tambah Pembeli'
+            this.formTitle = 'TAMBAH KATEGORI BARANG'
             this.error = {}
             this.formErrors = {}
-            this.formData = {}
+            this.formModel = {}
             this.showForm = true
         },
         editData: function(data) {
-            this.formTitle = 'Edit Pembeli'
-            this.formData = JSON.parse(JSON.stringify(data));
+            this.formTitle = 'EDIT KATEGORI BARANG'
+            this.formModel = JSON.parse(JSON.stringify(data));
             this.error = {}
             this.formErrors = {}
             this.showForm = true
         },
         deleteData: function(id) {
-            this.$confirm('Anda yakin akan menghapus user ini?')
-                .then(() => {
-                    axios.delete(BASE_URL + '/kategoriBarang/' + id)
-                        .then(r => {
-                            this.requestData();
-                            this.$message({
-                                message: 'User BERHASIL dihapus.',
-                                type: 'success'
-                            });
-                        })
-                        .catch(e => {
-                            this.$message({
-                                message: 'User GAGAL dihapus. ' + e.response.data.message,
-                                type: 'error'
-                            });
-                        })
+            this.$confirm('Anda yakin akan menghapus user ini?', 'Warning', {
+                type: 'warning',
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Tidak'
+            }).then(() => {
+                axios.delete(BASE_URL + '/kategoriBarang/' + id).then(r => {
+                    this.requestData();
+                    this.$message({
+                        message: 'User BERHASIL dihapus.',
+                        type: 'success'
+                    });
+                }).catch(e => {
+                    this.$message({
+                        message: 'User GAGAL dihapus. ' + e.response.data.message,
+                        type: 'error'
+                    });
                 })
-                .catch(() => {
-
-                });
+            }).catch(() => { });
         },
         refreshData: function() {
             this.keyword = '';

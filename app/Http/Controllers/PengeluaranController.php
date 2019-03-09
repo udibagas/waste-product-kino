@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\PengeluaranRequest;
 use App\Pengeluaran;
 use App\PengeluaranItem;
+use App\Events\PengeluaranSubmitted;
 
 class PengeluaranController extends Controller
 {
@@ -35,8 +36,7 @@ class PengeluaranController extends Controller
         $pengeluaran->items()->createMany($request->items);
 
         if ($request->status == 1) {
-            // TODO: kalau status = 1 (submit) langsung kurangi stok
-
+            event(new PengeluaranSubmitted($pengeluaran, 'pengeluaran'));
         }
 
         return $pengeluaran->with(['items'])->get();
@@ -56,8 +56,7 @@ class PengeluaranController extends Controller
         }
 
         if ($request->status == 1) {
-            // TODO: kalau status = 1 (submit) langsung kurangi stok
-
+            event(new PengeluaranSubmitted($pengeluaran, 'pengeluaran'));
         }
 
         return $pengeluaran;
@@ -65,7 +64,10 @@ class PengeluaranController extends Controller
 
     public function destroy(Pengeluaran $pengeluaran)
     {
-        // TODO: check dulu
+        if ($pengeluaran->status > 0) {
+            return response(['message' => 'Pengeluaran sudah di submit.'], 500);
+        }
+
         $pengeluaran->items()->delete();
         $pengeluaran->delete();
         return ['message' => 'ok'];

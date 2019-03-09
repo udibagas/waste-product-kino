@@ -22,42 +22,47 @@ class NavigationController extends Controller
             [
                 'path' => '/barangBekas',
                 'label' => 'Barang Bekas',
-                'icon' => 'boxes',
+                'icon' => 'recycle',
                 'children' => [
                     [
-                        'path' => '/user',
+                        'path' => '/stockBb',
                         'label' => 'Stock',
-                        'icon' => 'user-lock'
+                        'icon' => 'warehouse'
                     ],
                     [
                         'path' => '/pengeluaran',
                         'label' => 'Pengeluaran',
-                        'icon' => 'user-lock'
+                        'icon' => 'share'
                     ],
                     [
                         'path' => '/penerimaan',
                         'label' => 'Penerimaan',
-                        'icon' => 'user-lock'
+                        'icon' => 'reply'
                     ],
                     [
                         'path' => '/pengajuanPenjualan',
                         'label' => 'Pengajuan Penjualan',
-                        'icon' => 'user-lock'
+                        'icon' => 'file-contract'
                     ],
                     [
                         'path' => '/penjualan',
                         'label' => 'Penjualan',
-                        'icon' => 'user-lock'
+                        'icon' => 'money-bill'
                     ],
                     [
                         'path' => '/pembayaran',
                         'label' => 'Pembayaran',
-                        'icon' => 'user-lock'
+                        'icon' => 'file-invoice-dollar'
                     ],
                     [
-                        'path' => '/user',
+                        'path' => '/inOutStockBb',
+                        'label' => 'In Out Stock',
+                        'icon' => 'exchange-alt'
+                    ],
+                    [
+                        'path' => '/reportBb',
                         'label' => 'Laporan',
-                        'icon' => 'user-lock'
+                        'icon' => 'chart-bar'
                     ],
                 ]
             ],
@@ -67,29 +72,29 @@ class NavigationController extends Controller
                 'icon' => 'boxes',
                 'children' => [
                     [
-                        'path' => '/user',
+                        'path' => '/stockWp',
                         'label' => 'Stock',
-                        'icon' => 'user-lock'
+                        'icon' => 'warehouse'
                     ],
                     [
-                        'path' => '/user',
+                        'path' => '/pengajuanPenjualan',
                         'label' => 'Pengajuan Penjualan',
-                        'icon' => 'user-lock'
+                        'icon' => 'file-contract'
                     ],
                     [
-                        'path' => '/user',
+                        'path' => '/penjualan',
                         'label' => 'Penjualan',
-                        'icon' => 'user-lock'
+                        'icon' => 'money-bill'
                     ],
                     [
-                        'path' => '/user',
+                        'path' => '/pembayaran',
                         'label' => 'Pembayaran',
-                        'icon' => 'user-lock'
+                        'icon' => 'file-invoice-dollar'
                     ],
                     [
-                        'path' => '/user',
+                        'path' => '/reportWp',
                         'label' => 'Laporan',
-                        'icon' => 'user-lock'
+                        'icon' => 'chart-bar'
                     ],
                 ]
             ],
@@ -104,9 +109,24 @@ class NavigationController extends Controller
                         'icon' => 'tags'
                     ],
                     [
+                        'path' => '/location',
+                        'label' => 'Location',
+                        'icon' => 'city'
+                    ],
+                    [
                         'path' => '/pembeli',
                         'label' => 'Pembeli',
                         'icon' => 'users'
+                    ],
+                    [
+                        'path' => '/skemaApprovalPenjualan',
+                        'label' => 'Skema Approval Penjualan',
+                        'icon' => 'project-diagram'
+                    ],
+                    [
+                        'path' => '/konversiBerat',
+                        'label' => 'Konversi Berat',
+                        'icon' => 'balance-scale'
                     ],
                     [
                         'path' => '/user',
@@ -115,6 +135,14 @@ class NavigationController extends Controller
                     ],
                 ]
             ],
+            // [
+            //     'path' => '/setting',
+            //     'label' => 'Setting',
+            //     'icon' => 'sliders-h',
+            //     'children' => [
+                    
+            //     ]
+            // ],
         ];
     }
 }

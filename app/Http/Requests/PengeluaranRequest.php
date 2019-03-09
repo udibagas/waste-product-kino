@@ -27,8 +27,8 @@ class PengeluaranRequest extends FormRequest
             'no_sj' => 'required',
             'tanggal' => 'required|date',
             'penerima' => 'required',
-            'lokasi_asal' => 'required',
-            'lokasi_terima' => 'required',
+            'lokasi_asal' => 'required|different:lokasi_terima',
+            'lokasi_terima' => 'required|different:lokasi_asal',
             'jembatan_timbang' => 'required'
         ];
     }

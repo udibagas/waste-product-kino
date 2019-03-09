@@ -10,7 +10,8 @@ class Pengeluaran extends Model
 
     protected $fillable = [
         'no_sj', 'tanggal', 'penerima', 'status',
-        'lokasi_asal', 'lokasi_terima', 'user_id', 'jembatan_timbang'
+        'lokasi_asal', 'lokasi_terima', 'user_id', 'jembatan_timbang',
+        'lokasi_asal_id', 'lokasi_terima_id'
     ];
 
     protected $with = ['items'];

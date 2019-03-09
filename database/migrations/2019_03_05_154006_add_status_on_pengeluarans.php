@@ -14,7 +14,7 @@ class AddStatusOnPengeluarans extends Migration
     public function up()
     {
         Schema::table('pengeluarans', function (Blueprint $table) {
-            $table->boolean('status')->default(0);
+            $table->tinyInteger('status')->default(0);
         });
     }
 

@@ -12,7 +12,9 @@ export default new Vuex.Store({
             { value: 100, label: 100 },
         ],
         kategoriBarangList: [],
-        pengeluaranList: []
+        pengeluaranList: [],
+        locationList: [],
+        userList: []
     },
     mutations: {
         getKategoriBarangList(state) {
@@ -23,6 +25,16 @@ export default new Vuex.Store({
         getPengeluaranList(state) {
             axios.get(BASE_URL + '/pengeluaran/getList')
                 .then(r => state.pengeluaranList = r.data)
+                .catch(e => console.log(e))
+        },
+        getLocationList(state) {
+            axios.get(BASE_URL + '/location/getList')
+                .then(r => state.locationList = r.data)
+                .catch(e => console.log(e))
+        },
+        getUserList(state) {
+            axios.get(BASE_URL + '/user/getList')
+                .then(r => state.userList = r.data)
                 .catch(e => console.log(e))
         }
     }

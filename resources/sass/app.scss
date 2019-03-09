@@ -8,100 +8,106 @@
 
 @font-face {
   font-family: 'SourceSansPro';
-  src: url('../assets/fonts/SourceSansPro-Regular.ttf');
+  src: url('fonts/SourceSansPro-Regular.ttf');
   font-weight: normal;
 }
 
 @font-face {
   font-family: 'SourceSansPro';
-  src: url('../assets/fonts/SourceSansPro-Italic.ttf');
+  src: url('fonts/SourceSansPro-Italic.ttf');
   font-weight: italic;
 }
 
 @font-face {
   font-family: 'SourceSansPro';
-  src: url('../assets/fonts/SourceSansPro-Semibold.ttf');
+  src: url('fonts/SourceSansPro-Semibold.ttf');
   font-weight: bolder;
 }
 
 @font-face {
   font-family: 'SourceSansPro';
-  src: url('../assets/fonts/SourceSansPro-SemiboldItalic.ttf');
+  src: url('fonts/SourceSansPro-SemiboldItalic.ttf');
   font-weight: bolder;
   font-weight: italic;
 }
 
 @font-face {
   font-family: 'SourceSansPro';
-  src: url('../assets/fonts/SourceSansPro-Bold.ttf');
+  src: url('fonts/SourceSansPro-Bold.ttf');
   font-weight: bold;
 }
 
 @font-face {
   font-family: 'SourceSansPro';
-  src: url('../assets/fonts/SourceSansPro-BoldItalic.ttf');
+  src: url('fonts/SourceSansPro-BoldItalic.ttf');
   font-weight: bold;
   font-style: italic;
 }
 
 @font-face {
   font-family: 'SourceSansPro';
-  src: url('../assets/fonts/SourceSansPro-Black.ttf');
+  src: url('fonts/SourceSansPro-Black.ttf');
   font-weight: 900;
 }
 
 @font-face {
   font-family: 'SourceSansPro';
-  src: url('../assets/fonts/SourceSansPro-BlackItalic.ttf');
+  src: url('fonts/SourceSansPro-BlackItalic.ttf');
   font-weight: 900;
   font-style: italic;
 }
 
 @font-face {
   font-family: 'SourceSansPro';
-  src: url('../assets/fonts/SourceSansPro-Light.ttf');
+  src: url('fonts/SourceSansPro-Light.ttf');
   font-weight: lighter;
 }
 
 @font-face {
   font-family: 'SourceSansPro';
-  src: url('../assets/fonts/SourceSansPro-LightItalic.ttf');
+  src: url('fonts/SourceSansPro-LightItalic.ttf');
   font-weight: lighter;
   font-style: italic;
 }
 
 @font-face {
   font-family: 'SourceSansPro';
-  src: url('../assets/fonts/SourceSansPro-ExtraLight.ttf');
+  src: url('fonts/SourceSansPro-ExtraLight.ttf');
   font-weight: 100;
 }
 
 @font-face {
   font-family: 'SourceSansPro';
-  src: url('../assets/fonts/SourceSansPro-ExtraLightItalic.ttf');
+  src: url('fonts/SourceSansPro-ExtraLightItalic.ttf');
   font-weight: 100;
   font-style: italic;
 }
 
 @font-face {
   font-family: "MyriadMM";
-  src: url("../assets/fonts/MyriadMM.ttf");
+  src: url("fonts/MyriadMM.ttf");
 }
 
 
 .el-form-item__label {
-  // font-weight: bold;
+  // background-color: #324057;
+  // background-color: #DCDFE6;
+  // color: #fff;
+  font-weight: bold;
+}
+
+.el-dialog__header, .el-dialog__footer {
   background-color: #324057;
+  padding: 15px;
+}
+
+.el-dialog__title {
   color: #fff;
 }
 
-.el-input__inner {
+.el-input__inner, .el-textarea__inner {
   border-radius: 0;
 }
-
-// .el-form-item {
-//   margin-bottom: 20px;
-// }
 
 .pager-options {
   width: 70px;
@@ -122,17 +128,12 @@ h4 {
 
 .table > thead > tr > th {
   vertical-align: middle;
-  background-color: #324057;
-  color: #fff;
+  // background-color: #66b1ff;
+  // color: #fff;
 }
 
 .table > tbody > tr > td {
   vertical-align: middle;
-}
-
-.navbar-laravel {
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
 .table-striped>tbody>tr:nth-of-type(odd) {

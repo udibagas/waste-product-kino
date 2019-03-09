@@ -3,10 +3,14 @@
         <el-header>
             <el-row>
                 <el-col :span="12">
-                    <a href="#" @click.prevent="collapse = !collapse" style="margin:0 15px 0 0">
-                        <font-awesome-icon :icon="collapse ? 'chevron-right' : 'chevron-left'"></font-awesome-icon>
+                    <a href="#" @click.prevent="collapse = !collapse" style="margin:0 30px 0 3px">
+                        <!-- <font-awesome-icon :icon="collapse ? 'chevron-right' : 'chevron-left'"></font-awesome-icon> -->
+                        <font-awesome-icon icon="bars" style="color:#fff"></font-awesome-icon>
                     </a>
-                    <span class="brand">Waste Product Management</span>
+                    <span class="brand">
+                        <img :src="baseURL + '/images/logo.png'" style="height:30px;margin-right:15px;" />
+                        Waste Product Management
+                    </span>
                 </el-col>
                 <el-col :span="12" class="text-right">
                     <el-dropdown @command="handleCommand">
@@ -23,7 +27,6 @@
         
         <el-container>
             <el-aside width="auto">
-                <!-- <img src="../assets/images/logo-kino.jpg" v-show="!collapse" alt="" class="logo" style="width:200px;"> -->
                 <el-menu
                 :collapse="collapse"
                 default-active="1"
@@ -41,7 +44,7 @@
                             <span>{{m.label}}</span>
                         </template>
                         <el-menu-item v-for="(sm, ii) in m.children" :index="(i).toString() + '-' + ++ii" :key="ii" @click="$router.push(sm.path)">
-                            <!-- <font-awesome-icon :icon="sm.icon" style="margin-right:5px;"></font-awesome-icon>  -->
+                            <font-awesome-icon :icon="sm.icon" style="margin-right:5px;"></font-awesome-icon> 
                             <span slot="title">{{sm.label}}</span>
                         </el-menu-item>
                     </el-submenu>
@@ -58,7 +61,32 @@
 
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faHome, faUserLock, faChevronRight, faChevronLeft, faBoxes, faDatabase, faUsers, faTags, } from '@fortawesome/free-solid-svg-icons'
+import { 
+    faHome, 
+    faUserLock, 
+    faChevronRight, 
+    faChevronLeft, 
+    faBoxes, 
+    faDatabase, 
+    faUsers, 
+    faTags, 
+    faMarker, 
+    faCogs, 
+    faRecycle, 
+    faBars, 
+    faProjectDiagram, 
+    faBuilding,
+faCity,
+faSlidersH,
+faFileInvoiceDollar,
+faChartBar,
+faShare,
+faExchangeAlt,
+faWarehouse,
+faReply,
+faMoneyBill,
+faFileContract,
+faBalanceScale, } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 library.add(
@@ -69,7 +97,24 @@ library.add(
     faBoxes,
     faDatabase,
     faUsers,
-    faTags
+    faTags,
+    faMarker,
+    faCogs,
+    faRecycle,
+    faBars,
+    faProjectDiagram,
+    faBuilding,
+    faCity,
+    faSlidersH,
+    faFileInvoiceDollar,
+    faChartBar,
+    faShare,
+    faExchangeAlt,
+    faWarehouse,
+    faReply,
+    faMoneyBill,
+    faFileContract,
+    faBalanceScale
 )
 
 export default {
@@ -79,6 +124,7 @@ export default {
         return {
             collapse: true,
             user: USER,
+            baseURL: BASE_URL,
             menus: []
         }
     },
@@ -104,7 +150,7 @@ export default {
 <style lang="scss" scoped>
 .brand {
     font-size: 22px;
-    font-weight: bolder;
+    // font-weight: bolder;
 }
 
 .el-header {
@@ -120,7 +166,7 @@ export default {
 }
 
 .sidebar:not(.el-menu--collapse) {
-    width: 200px;
+    width: 250px;
 }
 
 .el-aside {

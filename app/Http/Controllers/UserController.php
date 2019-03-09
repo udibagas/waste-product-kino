@@ -108,4 +108,8 @@ class UserController extends Controller
         $user->delete();
         return ['message' => 'OK'];
     }
+
+    public function getList() {
+        return User::orderBy('name', 'ASC')->get();
+    }
 }

@@ -28,7 +28,13 @@ class KategoriBarangController extends Controller
 
     public function update(KategoriBarang $kategoriBarang, KategoriBarangRequest $request)
     {
-        $kategoriBarang->update($request->all());
+        $input = $request->all();
+
+        if ($request->harga != $kategoriBarang->harga) {
+            $input['status'] = 1;
+        }
+
+        $kategoriBarang->update($input);
         return $kategoriBarang;
     }
 
@@ -39,8 +45,10 @@ class KategoriBarangController extends Controller
         return ['message' => 'ok'];
     }
 
-    public function getList()
+    public function getList(Request $request)
     {
-        return KategoriBarang::all();
+        return KategoriBarang::when($request->status, function($q) use ($request) {
+            return $q->where('status', $request->status);
+        })->orderBy('jenis','ASC')->orderBy('nama', 'ASC')->get();
     }
 }

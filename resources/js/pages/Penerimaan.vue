@@ -26,25 +26,30 @@
         @filter-change="filterChange"
         @sort-change="sortChange">
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
-            <el-table-column prop="tanggal" label="Tanggal" sortable="custom">
+            <el-table-column type="expand" width="20px">
+                <template slot-scope="scope">
+                    <PenerimaanDetail :data="scope.row" />
+                </template>
+            </el-table-column>
+            <el-table-column prop="tanggal" width="100" label="Tanggal" sortable="custom">
                 <template slot-scope="scope">
                     {{ scope.row.tanggal | readableDate }}
                 </template>
             </el-table-column>
-            <el-table-column prop="no_sj" label="Nomor Surat Jalan" sortable="custom"></el-table-column>
-            <el-table-column prop="no_sj_keluar" label="Nomor Surat Jalan Keluar" sortable="custom"></el-table-column>
+            <el-table-column prop="no_sj" label="No. Surat Jalan" sortable="custom"></el-table-column>
+            <el-table-column prop="no_sj_keluar" label="No. SJ Keluar" sortable="custom"></el-table-column>
             <el-table-column prop="lokasi_asal" label="Lokasi Asal" sortable="custom"></el-table-column>
             <el-table-column prop="lokasi_terima" label="Lokasi Terima" sortable="custom"></el-table-column>
             <el-table-column prop="penerima" label="Penerima" sortable="custom"></el-table-column>
-            <!-- <el-table-column prop="status" label="Status" sortable="custom">
+            <el-table-column prop="status" width="100" align="center" header-align="center" label="Status" sortable="custom">
                 <template slot-scope="scope">
-                    <el-tag :type="statuses[scope.row.status].type">{{statuses[scope.row.status].label}}</el-tag>
+                    <el-tag size="small" :type="statuses[scope.row.status].type">{{statuses[scope.row.status].label}}</el-tag>
                 </template>
-            </el-table-column> -->
+            </el-table-column>
 
             <el-table-column fixed="right" width="40px">
                 <template slot-scope="scope">
-                    <el-dropdown v-if="scope.row.status === 0">
+                    <el-dropdown v-if="scope.row.status == 0">
                         <span class="el-dropdown-link">
                             <i class="el-icon-more"></i>
                         </span>
@@ -73,7 +78,7 @@
             </el-col>
         </el-row>
 
-        <el-dialog center :visible.sync="showForm" :title="formTitle" width="900px" v-loading="loading" :close-on-click-modal="false">
+        <el-dialog center :visible.sync="showForm" :title="formTitle" width="1000px" v-loading="loading" :close-on-click-modal="false">
             <el-alert type="error" title="ERROR"
                 :description="error.message + '\n' + error.file + ':' + error.line"
                 v-show="error.message"
@@ -95,7 +100,7 @@
                         </el-form-item>
 
                         <el-form-item label="Nomor Surat Jalan Keluar">
-                            <el-select v-model="formModel.no_sj_keluar" style="width:100%" filterable default-first-option placeholder="Nomor Surat Jalan Keluar">
+                            <el-select :disabled="!!formModel.id" v-model="formModel.no_sj_keluar" style="width:100%" filterable default-first-option placeholder="Nomor Surat Jalan Keluar">
                                 <el-option
                                 v-for="item in $store.state.pengeluaranList"
                                 :key="item.id"
@@ -124,7 +129,7 @@
                     </el-col>
                 </el-row>
                 
-                <table class="table table-sm table-bordered">
+                <table class="table table-sm table-bordered" v-if="formModel.items.length > 0">
                     <thead>
                         <tr>
                             <th rowspan="2">#</th>
@@ -135,32 +140,25 @@
                             <th rowspan="2">Keterangan</th>
                         </tr>
                         <tr>
-                            <th class="text-center">Kirim</th>
-                            <th class="text-center">Terima</th>
-                            <th class="text-center">Selisih</th>
-                            <th class="text-center">Kirim</th>
-                            <th class="text-center">Terima</th>
-                            <th class="text-center">Selisih</th>
+                            <th class="text-center" style="width:90px;">Kirim</th>
+                            <th class="text-center" style="width:90px;">Terima</th>
+                            <th class="text-center" style="width:90px;">Selisih</th>
+                            <th class="text-center" style="width:90px;">Kirim</th>
+                            <th class="text-center" style="width:90px;">Terima</th>
+                            <th class="text-center" style="width:90px;">Selisih</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="(item, index) in formModel.items" :key="index">
                             <td>{{index+1}}.</td>
-                            <td>
-                                <select disabled placeholder="Kategori" v-model="formModel.items[index].kategori_barang_id" class="my-input">
-                                    <option value="">-- Pilih Kategori --</option>
-                                    <option v-for="(k, i) in $store.state.kategoriBarangList" :key="i" :value="k.id">
-                                        {{k.jenis}} : {{k.kode}} - {{k.nama}}
-                                    </option>
-                                </select>
-                            </td>
-                            <td>{{formModel.items[index].qty_kirim}}</td>
+                            <td>{{formModel.items[index].barang.jenis}} : {{formModel.items[index].barang.kode}} - {{formModel.items[index].barang.nama}}</td>
+                            <td class="text-center">{{formModel.items[index].qty_kirim | formatNumber}}</td>
                             <td><input type="number" v-model="formModel.items[index].qty_terima" class="my-input" placeholder="Terima"></td>
-                            <td>{{formModel.items[index].qty_kirim - formModel.items[index].qty_terima}}</td>
+                            <td class="text-center">{{formModel.items[index].qty_kirim - formModel.items[index].qty_terima | formatNumber}}</td>
                             <td class="text-center">{{formModel.items[index].eun}}</td>
-                            <td>{{formModel.items[index].timbangan_manual_kirim}}</td>
+                            <td class="text-center">{{formModel.items[index].timbangan_manual_kirim | formatNumber}}</td>
                             <td><input type="number" v-model="formModel.items[index].timbangan_manual_terima" class="my-input" placeholder="Terima"> </td>
-                            <td>{{formModel.items[index].timbangan_manual_kirim - formModel.items[index].timbangan_manual_terima}}</td>
+                            <td class="text-center">{{formModel.items[index].timbangan_manual_kirim - formModel.items[index].timbangan_manual_terima | formatNumber}}</td>
                             <td><input v-model="formModel.items[index].keterangan" class="my-input" placeholder="Keterangan"></td>
                         </tr>
                     </tbody>
@@ -178,8 +176,10 @@
 
 <script>
 import moment from 'moment'
+import PenerimaanDetail from '../components/PenerimaanDetail'
 
 export default {
+    components: { PenerimaanDetail },
     watch: {
         keyword: function(v, o) {
             this.requestData()
@@ -188,10 +188,16 @@ export default {
             this.requestData()
         },
         'formModel.no_sj_keluar'(v, o) {
+            if (!!this.formModel.id) {
+                return
+            }
+
             let pengeluaran = this.$store.state.pengeluaranList.find(p => p.no_sj == v)
             if (pengeluaran) {
                 this.formModel.lokasi_asal = pengeluaran.lokasi_asal
                 this.formModel.lokasi_terima = pengeluaran.lokasi_terima
+                this.formModel.lokasi_asal_id = pengeluaran.lokasi_asal_id
+                this.formModel.lokasi_terima_id = pengeluaran.lokasi_terima_id
                 this.formModel.penerima = pengeluaran.penerima
                 this.formModel.items = pengeluaran.items.map(i => {
                     return {
@@ -200,7 +206,8 @@ export default {
                         qty_terima: i.qty,
                         eun: i.eun,
                         timbangan_manual_kirim: i.timbangan_manual,
-                        timbangan_manual_terima: i.timbangan_manual
+                        timbangan_manual_terima: i.timbangan_manual,
+                        barang: i.barang
                     }
                 })
             }
@@ -223,7 +230,7 @@ export default {
             paginatedData: {},
             statuses: [
                 {type: 'info', label: 'Draft'},
-                {type: 'primary', label: 'Submitted'}
+                {type: 'success', label: 'Submitted'}
             ]
         }
     },
@@ -246,7 +253,7 @@ export default {
         },
         save() {
             // validasi item
-            let invalid = this.formModel.items.filter(i => !i.kategori_barang_id || !i.qty || !i.timbangan_manual).length
+            let invalid = this.formModel.items.filter(i => !i.qty_terima || !i.timbangan_manual_terima).length
             
             if (invalid) {
                 this.$message({ message: 'Mohon lengkapi data barang.', showClose: true, type: 'error' });
@@ -271,28 +278,26 @@ export default {
         },
         store: function() {
             this.loading = true;
-            axios.post(BASE_URL + '/penerimaan', this.formModel)
-                .then(r => {
-                    this.loading = false;
-                    this.showForm = false;
-                    this.$message({
-                        message: 'Data BERHASIL disimpan.',
-                        type: 'success'
-                    });
-                    this.requestData();
-                })
-                .catch(e => {
-                    this.loading = false;
-                    if (e.response.status == 422) {
-                        this.error = {}
-                        this.formErrors = e.response.data.errors;
-                    }
+            axios.post(BASE_URL + '/penerimaan', this.formModel).then(r => {
+                this.loading = false;
+                this.showForm = false;
+                this.$message({
+                    message: 'Data BERHASIL disimpan.',
+                    type: 'success'
+                });
+                this.requestData();
+            }).catch(e => {
+                this.loading = false;
+                if (e.response.status == 422) {
+                    this.error = {}
+                    this.formErrors = e.response.data.errors;
+                }
 
-                    if (e.response.status == 500) {
-                        this.formErrors = {}
-                        this.error = e.response.data;
-                    }
-                })
+                if (e.response.status == 500) {
+                    this.formErrors = {}
+                    this.error = e.response.data;
+                }
+            })
         },
         update: function() {
             this.loading = true;
@@ -324,6 +329,7 @@ export default {
             
             this.formModel = {
                 tanggal: moment().format('YYYY-MM-DD'),
+                status: 0,
                 items: []
             }
 

@@ -1,5 +1,5 @@
 <template>
-    <el-card class="box-card">
+    <el-card>
         <div slot="header">
             <h4>Ini home</h4>
         </div>

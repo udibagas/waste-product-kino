@@ -20,7 +20,7 @@ class CreateKategoriBarangsTable extends Migration
             $table->string('nama', 30);
             $table->string('unit', 10);
             $table->integer('harga', false, true)->default(0);
-            $table->boolean('status')->default(0);
+            $table->tinyInteger('status')->default(0);
             $table->string('created_by', 30)->nullable();
             $table->string('updated_by', 30)->nullable();
             $table->string('approved_by', 30)->nullable();

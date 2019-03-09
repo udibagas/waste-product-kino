@@ -28,7 +28,11 @@
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
             <el-table-column prop="nama" label="Nama" sortable="custom"></el-table-column>
             <el-table-column prop="kontak" label="Kontak" sortable="custom"></el-table-column>
-            <el-table-column prop="alamat" label="Alamat" sortable="custom"></el-table-column>
+            <el-table-column prop="alamat" label="Alamat" sortable="custom">
+                <template slot-scope="scope">
+                   <span v-html="scope.row.alamat.replace(/(?:\r\n|\r|\n)/g, '<br>')"></span>
+                </template>
+            </el-table-column>
             <el-table-column prop="bank" label="Bank" sortable="custom"></el-table-column>
             <el-table-column prop="nomor_rekening" label="Nomor Rekeing" sortable="custom"></el-table-column>
             <el-table-column prop="pemegang_rekening" label="Pemegang Rekeing" sortable="custom"></el-table-column>
@@ -64,7 +68,7 @@
             </el-col>
         </el-row>
 
-        <el-dialog :visible.sync="showForm" :title="formTitle" width="600px" v-loading="loading" :close-on-click-modal="false">
+        <el-dialog center :visible.sync="showForm" :title="formTitle" width="600px" v-loading="loading" :close-on-click-modal="false">
             <el-alert type="error" title="ERROR"
                 :description="error.message + '\n' + error.file + ':' + error.line"
                 v-show="error.message"
@@ -73,41 +77,40 @@
 
             <el-form label-width="180px">
                 <el-form-item label="Nama">
-                    <el-input placeholder="Nama" v-model="formData.nama"></el-input>
-                    <div class="error-feedback" v-if="formErrors.nama">{{formErrors.nama[0]}}</div>
+                    <el-input placeholder="Nama" v-model="formModel.nama"></el-input>
+                    <div class="el-form-item__error" v-if="formErrors.nama">{{formErrors.nama[0]}}</div>
                 </el-form-item>
                 
                 <el-form-item label="Kontak">
-                    <el-input placeholder="Kontak" v-model="formData.kontak"></el-input>
-                    <div class="error-feedback" v-if="formErrors.kontak">{{formErrors.kontak[0]}}</div>
+                    <el-input placeholder="Kontak" v-model="formModel.kontak"></el-input>
+                    <div class="el-form-item__error" v-if="formErrors.kontak">{{formErrors.kontak[0]}}</div>
                 </el-form-item>
 
                 <el-form-item label="Alamat">
-                    <el-input type="textarea" rows="5" placeholder="Alamat" v-model="formData.alamat"></el-input>
-                    <div class="error-feedback" v-if="formErrors.alamat">{{formErrors.alamat[0]}}</div>
+                    <el-input type="textarea" rows="5" placeholder="Alamat" v-model="formModel.alamat"></el-input>
+                    <div class="el-form-item__error" v-if="formErrors.alamat">{{formErrors.alamat[0]}}</div>
                 </el-form-item>
 
                 <el-form-item label="Bank">
-                    <el-input placeholder="Bank" v-model="formData.bank"></el-input>
-                    <div class="error-feedback" v-if="formErrors.bank">{{formErrors.bank[0]}}</div>
+                    <el-input placeholder="Bank" v-model="formModel.bank"></el-input>
+                    <div class="el-form-item__error" v-if="formErrors.bank">{{formErrors.bank[0]}}</div>
                 </el-form-item>
 
                 <el-form-item label="Nomor Rekening">
-                    <el-input placeholder="Nomor Rekening" v-model="formData.nomor_rekening"></el-input>
-                    <div class="error-feedback" v-if="formErrors.nomor_rekening">{{formErrors.nomor_rekening[0]}}</div>
+                    <el-input placeholder="Nomor Rekening" v-model="formModel.nomor_rekening"></el-input>
+                    <div class="el-form-item__error" v-if="formErrors.nomor_rekening">{{formErrors.nomor_rekening[0]}}</div>
                 </el-form-item>
 
                 <el-form-item label="Pemegang Rekening">
-                    <el-input placeholder="Pemegang Rekening" v-model="formData.pemegang_rekening"></el-input>
-                    <div class="error-feedback" v-if="formErrors.pemegang_rekening">{{formErrors.pemegang_rekening[0]}}</div>
-                </el-form-item>
-
-                <el-form-item>
-                    <el-button type="primary" @click="store" v-if="formData.id == undefined"><i class="el-icon-check"></i> SIMPAN</el-button>
-                    <el-button type="primary" @click="update" v-if="formData.id != undefined"><i class="el-icon-check"></i> SIMPAN</el-button>
-                    <el-button type="info" @click="showForm = false"><i class="el-icon-close"></i> BATAL</el-button>
+                    <el-input placeholder="Pemegang Rekening" v-model="formModel.pemegang_rekening"></el-input>
+                    <div class="el-form-item__error" v-if="formErrors.pemegang_rekening">{{formErrors.pemegang_rekening[0]}}</div>
                 </el-form-item>
             </el-form>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="save" icon="el-icon-success">SAVE</el-button>
+                <el-button type="info" @click="showForm = false" icon="el-icon-error">CANCEL</el-button>
+            </span>
         </el-dialog>
     </el-card>
 </template>
@@ -129,7 +132,7 @@ export default {
             formTitle: '',
             formErrors: {},
             error: {},
-            formData: {},
+            formModel: {},
             keyword: '',
             page: 1,
             pageSize: 10,
@@ -156,9 +159,16 @@ export default {
             this.page = p;
             this.requestData();
         },
+        save() {
+            if (!!this.formModel.id) {
+                this.update()
+            } else {
+                this.store()
+            }
+        },
         store: function() {
             this.loading = true;
-            axios.post(BASE_URL + '/pembeli', this.formData)
+            axios.post(BASE_URL + '/pembeli', this.formModel)
                 .then(r => {
                     this.loading = false;
                     this.showForm = false;
@@ -183,7 +193,7 @@ export default {
         },
         update: function() {
             this.loading = true;
-            axios.put(BASE_URL + '/pembeli/' + this.formData.id, this.formData)
+            axios.put(BASE_URL + '/pembeli/' + this.formModel.id, this.formModel)
                 .then(r => {
                     this.loading = false;
                     this.showForm = false
@@ -207,15 +217,15 @@ export default {
                 })
         },
         addData: function() {
-            this.formTitle = 'Tambah Pembeli'
+            this.formTitle = 'TAMBAH DATA PEMBELI'
             this.error = {}
             this.formErrors = {}
-            this.formData = {}
+            this.formModel = {}
             this.showForm = true
         },
         editData: function(data) {
-            this.formTitle = 'Edit Pembeli'
-            this.formData = JSON.parse(JSON.stringify(data));
+            this.formTitle = 'EDIT DATA PEMBELI'
+            this.formModel = JSON.parse(JSON.stringify(data));
             this.error = {}
             this.formErrors = {}
             this.showForm = true

@@ -38,7 +38,7 @@
             <el-table-column prop="status" label="Status" sortable="custom" column-key="status"
             :filters="[{value: 0, text: 'Inactive'},{value: 1, text: 'Active'}]">
                 <template slot-scope="scope">
-                    <span :class="scope.row.status ? 'text-success' : 'text-danger'">{{scope.row.status ? 'Active' : 'Inactive'}}</span>
+                    <el-tag :type="scope.row.status ? 'success' : 'danger'">{{scope.row.status ? 'Active' : 'Inactive'}}</el-tag>
                 </template>
             </el-table-column>
 
@@ -85,17 +85,17 @@
 
             <el-form label-width="180px">
                 <el-form-item label="Name">
-                    <el-input placeholder="Username" v-model="formData.name"></el-input>
+                    <el-input placeholder="Username" v-model="formModel.name"></el-input>
                     <div class="error-feedback" v-if="formErrors.name">{{formErrors.name[0]}}</div>
                 </el-form-item>
 
                 <el-form-item label="Email">
-                    <el-input placeholder="Email" v-model="formData.email"></el-input>
+                    <el-input placeholder="Email" v-model="formModel.email"></el-input>
                     <div class="error-feedback" v-if="formErrors.email">{{formErrors.email[0]}}</div>
                 </el-form-item>
 
                 <el-form-item label="Role">
-                    <el-select placeholder="Role" v-model="formData.role" style="width:100%;">
+                    <el-select placeholder="Role" v-model="formModel.role" style="width:100%;">
                         <el-option :value="0" label="Member"></el-option>
                         <el-option :value="1" label="User"></el-option>
                         <el-option :value="9" label="Admin"></el-option>
@@ -104,28 +104,26 @@
                 </el-form-item>
 
                 <el-form-item label="Password">
-                    <el-input type="password" placeholder="Password" v-model="formData.password"></el-input>
+                    <el-input type="password" placeholder="Password" v-model="formModel.password"></el-input>
                     <div class="error-feedback" v-if="formErrors.password">{{formErrors.password[0]}}</div>
                 </el-form-item>
                 
                 <el-form-item label="Konfirmasi Password">
-                    <el-input type="password" placeholder="Konfirmasi Password" v-model="formData.password_confirmation"></el-input>
+                    <el-input type="password" placeholder="Konfirmasi Password" v-model="formModel.password_confirmation"></el-input>
                 </el-form-item>
 
                 <el-form-item label="Status">
-                    <el-select placeholder="Status" v-model="formData.status" style="width:100%;">
+                    <el-select placeholder="Status" v-model="formModel.status" style="width:100%;">
                         <el-option :value="0" label="Inactive"></el-option>
                         <el-option :value="1" label="Active"></el-option>
                     </el-select>
                     <div class="error-feedback" v-if="formErrors.status">{{formErrors.status[0]}}</div>
                 </el-form-item>
-
-                <el-form-item>
-                    <el-button type="primary" @click="store" v-if="formData.id == undefined"><i class="el-icon-check"></i> SIMPAN</el-button>
-                    <el-button type="primary" @click="update" v-if="formData.id != undefined"><i class="el-icon-check"></i> SIMPAN</el-button>
-                    <el-button type="info" @click="showForm = false"><i class="el-icon-close"></i> BATAL</el-button>
-                </el-form-item>
             </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="save" icon="el-icon-success">SAVE</el-button>
+                <el-button type="info" @click="showForm = false" icon="el-icon-error">CANCEL</el-button>
+            </span>
         </el-dialog>
     </el-card>
 </template>
@@ -148,7 +146,7 @@ export default {
             formTitle: '',
             formErrors: {},
             error: {},
-            formData: {},
+            formModel: {},
             keyword: '',
             page: 1,
             pageSize: 10,
@@ -175,9 +173,16 @@ export default {
             this.page = p;
             this.requestData();
         },
+        save() {
+            if (!!this.formModel.id) {
+                this.update()
+            } else {
+                this.store()
+            }
+        },
         store: function() {
             this.loading = true;
-            axios.post(BASE_URL + '/user', this.formData)
+            axios.post(BASE_URL + '/user', this.formModel)
                 .then(r => {
                     this.loading = false;
                     this.showForm = false;
@@ -202,7 +207,7 @@ export default {
         },
         update: function() {
             this.loading = true;
-            axios.put(BASE_URL + '/user/' + this.formData.id, this.formData)
+            axios.put(BASE_URL + '/user/' + this.formModel.id, this.formModel)
                 .then(r => {
                     this.loading = false;
                     this.showForm = false
@@ -229,12 +234,12 @@ export default {
             this.formTitle = 'Tambah User'
             this.error = {}
             this.formErrors = {}
-            this.formData = {}
+            this.formModel = {}
             this.showForm = true
         },
         editData: function(data) {
             this.formTitle = 'Edit User'
-            this.formData = JSON.parse(JSON.stringify(data));
+            this.formModel = JSON.parse(JSON.stringify(data));
             this.error = {}
             this.formErrors = {}
             this.showForm = true

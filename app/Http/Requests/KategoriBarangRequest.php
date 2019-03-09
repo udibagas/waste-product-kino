@@ -31,4 +31,15 @@ class KategoriBarangRequest extends FormRequest
             'harga' => 'required'
         ];
     }
+
+    public function attributes()
+    {
+        return [
+            'jenis' => 'Jenis',
+            'kode' => 'Kode',
+            'nama' => 'Nama',
+            'unit' => 'Unit',
+            'harga' => 'Harga'
+        ];
+    }
 }

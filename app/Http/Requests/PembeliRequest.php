@@ -27,4 +27,11 @@ class PembeliRequest extends FormRequest
             'nama' => 'required'
         ];
     }
+
+    public function attributes()
+    {
+        return [
+            'nama' => 'Nama'
+        ];
+    }
 }

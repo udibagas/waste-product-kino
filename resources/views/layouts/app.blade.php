@@ -13,6 +13,7 @@
     <!-- Scripts -->
     <script>
         const BASE_URL = '{{url("/")}}';
+        const APP_BASE = '{{env('APP_BASE', '/')}}';
         @auth
         const USER = {!! auth()->user() !!}
         @endauth
