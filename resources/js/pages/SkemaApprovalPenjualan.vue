@@ -20,21 +20,28 @@
         </el-form>
 
         <el-table :data="paginatedData.data" stripe
-        :default-sort = "{prop: 'plant', order: 'ascending'}"
+        :default-sort = "{prop: 'location_id', order: 'ascending'}"
         v-loading="loading"
         style="border-top:1px solid #eee;"
         @filter-change="filterChange"
         @sort-change="sortChange">
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
-            <el-table-column prop="plant" label="Plant" sortable="custom"></el-table-column>
-            <el-table-column prop="lokasi" label="Lokasi" sortable="custom"></el-table-column>
+            <el-table-column 
+            prop="location.plant" 
+            label="Plant - Location" 
+            column-key="location_id" 
+            :filters="$store.state.locationList.map(l => {return {text: l.plant + ' - ' + l.name, value: l.id}})">
+                <template slot-scope="scope">
+                    {{scope.row.location.plant}} - {{scope.row.location.name}}
+                </template>
+            </el-table-column>
             <el-table-column prop="level" label="Level" sortable="custom">
                 <template slot-scope="scope">
                     Level {{scope.row.level}}
                 </template>
             </el-table-column>
-            <el-table-column prop="user.name" label="User" sortable="custom"></el-table-column>
-            <el-table-column prop="user.email" label="Email" sortable="custom"></el-table-column>
+            <el-table-column prop="user.name" label="User"></el-table-column>
+            <el-table-column prop="user.email" label="Email"></el-table-column>
 
             <el-table-column fixed="right" width="40px">
                 <template slot-scope="scope">
@@ -76,19 +83,15 @@
 
             <el-form label-width="180px">
                 <el-form-item label="Plant">
-                    <el-select v-model="formModel.plant" style="width:100%" placeholder="Plant">
+                    <el-select v-model="formModel.location_id" style="width:100%" placeholder="Location">
                         <el-option
                         v-for="item in $store.state.locationList"
                         :key="item.id"
-                        :label="item.plant"
-                        :value="item.plant">
+                        :label="item.plant + ' - ' + item.name"
+                        :value="item.id">
                         </el-option>
                     </el-select>
-                    <div class="error-feedback" v-if="formErrors.plant">{{formErrors.plant[0]}}</div>
-                </el-form-item>
-
-                <el-form-item label="Lokasi">
-                    <el-input disabled v-model="formModel.lokasi"></el-input>
+                    <div class="error-feedback" v-if="formErrors.location_id">{{formErrors.location_id[0]}}</div>
                 </el-form-item>
 
                 <el-form-item label="Level">
@@ -138,11 +141,6 @@ export default {
             if (v) {
                 this.formModel.email = this.$store.state.userList.find(u => u.id == v).email
             }
-        },
-        'formModel.plant'(v, o) {
-            if (v && !this.formModel.id) {
-                this.formModel.lokasi = this.$store.state.locationList.find(l => l.plant == v).name
-            }
         }
     },
     data: function() {
@@ -156,7 +154,7 @@ export default {
             keyword: '',
             page: 1,
             pageSize: 10,
-            sort: 'plant',
+            sort: 'location_id',
             order: 'ascending',
             filters: {},
             paginatedData: {}
@@ -251,26 +249,23 @@ export default {
             this.showForm = true
         },
         deleteData: function(id) {
-            this.$confirm('Anda yakin akan menghapus data ini?')
-                .then(() => {
-                    axios.delete(BASE_URL + '/skemaApprovalPenjualan/' + id)
-                        .then(r => {
-                            this.requestData();
-                            this.$message({
-                                message: 'Data BERHASIL dihapus.',
-                                type: 'success'
-                            });
-                        })
-                        .catch(e => {
-                            this.$message({
-                                message: 'Data GAGAL dihapus. ' + e.response.data.message,
-                                type: 'error'
-                            });
-                        })
+            this.$confirm('Anda yakin akan menghapus data ini?', 'Warning', {
+                type: 'warning',
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Tidak'
+            }).then(() => {
+                axios.delete(BASE_URL + '/skemaApprovalPenjualan/' + id).then(r => { this.requestData();
+                    this.$message({
+                        message: 'Data BERHASIL dihapus.',
+                        type: 'success'
+                    });
+                }).catch(e => {
+                    this.$message({
+                        message: 'Data GAGAL dihapus. ' + e.response.data.message,
+                        type: 'error'
+                    });
                 })
-                .catch(() => {
-
-                });
+            }).catch(() => { });
         },
         refreshData: function() {
             this.keyword = '';

@@ -26,8 +26,8 @@
         @filter-change="filterChange"
         @sort-change="sortChange">
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
-            <el-table-column prop="name" label="Name" sortable="custom"></el-table-column>
             <el-table-column prop="plant" label="Plant" sortable="custom"></el-table-column>
+            <el-table-column prop="name" label="Name" sortable="custom"></el-table-column>
 
             <el-table-column fixed="right" width="40px">
                 <template slot-scope="scope">

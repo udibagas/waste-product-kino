@@ -9,12 +9,12 @@ class StockBb extends Model
     protected $dateFormat = 'Y-m-d H:i:s';
 
     protected $fillable = [
-        'kategori_barang_id', 'lokasi', 'stock', 'unit', 'plant', 'location_id'
+        'kategori_barang_id', 'lokasi', 'qty', 'stock', 'unit', 'location_id'
     ];
 
-    protected $with = ['barang', 'location'];
+    protected $with = ['kategori', 'location'];
 
-    public function barang() {
+    public function kategori() {
         return $this->belongsTo(KategoriBarang::class, 'kategori_barang_id', 'id');
     }
 

@@ -15,11 +15,12 @@ class SkemaApprovalPenjualanController extends Controller
 
     public function index(Request $request)
     {
-        $sort = $request->sort ? $request->sort : 'plant';
+        $sort = $request->sort ? $request->sort : 'location_id';
         $order = $request->order == 'ascending' ? 'asc' : 'desc';
 
         return SkemaApprovalPenjualan::when($request->keyword, function ($q) use ($request) {
-            return $q->where('plant', 'LIKE', '%' . $request->keyword . '%');
+            return $q->where('location.name', 'LIKE', '%' . $request->keyword . '%')
+                ->where('location.plant', 'LIKE', '%' . $request->keyword . '%');
         })->orderBy($sort, $order)->paginate($request->pageSize);
     }
 

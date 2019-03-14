@@ -2,9 +2,12 @@
 
 namespace App\Listeners;
 
-use App\Events\PengajuanPenjualanApproved2;
+use App\Events\PengajuanPenjualanApproved1;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use App\SkemaApprovalPenjualan;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ApprovalRequest;
 
 class SendApprovalRequest2Notification implements ShouldQueue
 {
@@ -21,11 +24,19 @@ class SendApprovalRequest2Notification implements ShouldQueue
     /**
      * Handle the event.
      *
-     * @param  PengajuanPenjualanApproved2  $event
+     * @param  PengajuanPenjualanApproved1  $event
      * @return void
      */
-    public function handle(PengajuanPenjualanApproved2 $event)
+    public function handle(PengajuanPenjualanApproved1 $event)
     {
-        //
+        $skema = SkemaApprovalPenjualan::where('level', 2)
+            ->where('location_id', $event->pengajuanPenjualan->location_id)
+            ->first();
+
+        if ($skema) {
+            Mail::to($skema->user)
+                ->cc('bagas@lamsolusi.com')
+                ->queue(new ApprovalRequest($event->pengajuanPenjualan, 2, $skema->user));
+        }
     }
 }

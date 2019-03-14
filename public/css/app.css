@@ -9834,6 +9834,10 @@ h4 {
   margin-top: 10px;
 }
 
+.table {
+  color: #606266;
+}
+
 .table > thead > tr > th {
   vertical-align: middle;
 }

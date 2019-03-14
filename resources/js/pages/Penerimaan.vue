@@ -1,11 +1,11 @@
 <template>
     <el-card>
-        <h4>PENERIMAAN BARANG</h4>
+        <h4>PENERIMAAN BARANG BEKAS</h4>
         <hr>
 
         <el-form :inline="true" class="form-right">
             <el-form-item>
-                <el-button @click="addData" type="primary"><i class="el-icon-plus"></i> INPUT PENERIMAAN BARANG</el-button>
+                <el-button @click="addData" type="primary"><i class="el-icon-plus"></i> INPUT PENERIMAAN BARANG BEKAS</el-button>
             </el-form-item>
             <el-form-item>
                 <el-select class="pager-options" v-model="pageSize" placeholder="Page Size">
@@ -323,7 +323,7 @@ export default {
             })
         },
         addData: function() {
-            this.formTitle = 'INPUT PENERIMAAN BARANG'
+            this.formTitle = 'INPUT PENERIMAAN BARANG BEKAS'
             this.error = {}
             this.formErrors = {}
             
@@ -336,7 +336,7 @@ export default {
             this.showForm = true
         },
         editData: function(data) {
-            this.formTitle = 'EDIT PENERIMAAN BARANG'
+            this.formTitle = 'EDIT PENERIMAAN BARANG BEKAS'
             this.formModel = JSON.parse(JSON.stringify(data));
             this.error = {}
             this.formErrors = {}

@@ -31,12 +31,12 @@ class EventServiceProvider extends ServiceProvider
             'App\Listeners\SendApprovalRequest1Notification'
         ],
         'App\Events\PengajuanPenjualanApproved1' => [
-            'App\Listeners\SendApprovalNotification1',
+            // 'App\Listeners\SendApprovalNotification1',
             'App\Listeners\SendApprovalRequest2Notification',
         ],
         'App\Events\PengajuanPenjualanApproved2' => [
-            'App\Listeners\SendApprovalNotification1',
-            'App\Listeners\SendApprovalRequest2Notification',
+            // 'App\Listeners\SendApprovalNotification2',
+            'App\Listeners\SendApprovalConfirmationNotification',
         ],
     ];
 

@@ -14,7 +14,8 @@ export default new Vuex.Store({
         kategoriBarangList: [],
         pengeluaranList: [],
         locationList: [],
-        userList: []
+        userList: [],
+        menuList: []
     },
     mutations: {
         getKategoriBarangList(state) {
@@ -35,6 +36,11 @@ export default new Vuex.Store({
         getUserList(state) {
             axios.get(BASE_URL + '/user/getList')
                 .then(r => state.userList = r.data)
+                .catch(e => console.log(e))
+        },
+        getMenuList(state) {
+            axios.get(BASE_URL + '/navigation')
+                .then(r => state.menuList = r.data)
                 .catch(e => console.log(e))
         }
     }

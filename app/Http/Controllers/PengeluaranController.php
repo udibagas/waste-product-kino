@@ -36,10 +36,10 @@ class PengeluaranController extends Controller
         $pengeluaran->items()->createMany($request->items);
 
         if ($request->status == 1) {
-            event(new PengeluaranSubmitted($pengeluaran, 'pengeluaran'));
+            event(new PengeluaranSubmitted($pengeluaran));
         }
 
-        return $pengeluaran->with(['items'])->get();
+        return $pengeluaran;
     }
 
     public function update(PengeluaranRequest $request, Pengeluaran $pengeluaran)
@@ -56,7 +56,7 @@ class PengeluaranController extends Controller
         }
 
         if ($request->status == 1) {
-            event(new PengeluaranSubmitted($pengeluaran, 'pengeluaran'));
+            event(new PengeluaranSubmitted($pengeluaran));
         }
 
         return $pengeluaran;

@@ -8,11 +8,14 @@ import Pembeli from './pages/Pembeli'
 import Penerimaan from './pages/Penerimaan'
 import Pengeluaran from './pages/Pengeluaran'
 import Penjualan from './pages/Penjualan'
-import PengajuanPenjualan from './pages/PengajuanPenjualan'
+import PengajuanPenjualanBb from './pages/PengajuanPenjualanBb'
+// import PengajuanPenjualanWp from './pages/PengajuanPenjualanWp'
 import InOutStockBb from './pages/InOutStockBb'
 import StockBb from './pages/StockBb'
 import ReportBb from './pages/ReportBb'
 import KategoriBarang from './pages/KategoriBarang'
+import KonversiBerat from './pages/KonversiBerat'
+import ApprovalPengajuanPenjualan from './pages/ApprovalPengajuanPenjualan'
 
 Vue.use(VueRouter);
 
@@ -48,10 +51,15 @@ const routes = [
         component: Penjualan
     },
     {
-        name: 'pengajuanPenjualan',
-        path: '/pengajuanPenjualan',
-        component: PengajuanPenjualan
+        name: 'pengajuanPenjualanBb',
+        path: '/pengajuanPenjualanBb',
+        component: PengajuanPenjualanBb,
     },
+    // {
+    //     name: 'pengajuanPenjualanWp',
+    //     path: '/pengajuanPenjualanWp',
+    //     component: PengajuanPenjualanWp,
+    // },
     {
         name: 'location',
         path: '/location',
@@ -82,6 +90,21 @@ const routes = [
         path: '/kategoriBarang',
         component: KategoriBarang
     },
+    {
+        name: 'konversiBerat',
+        path: '/konversiBerat',
+        component: KonversiBerat
+    },
+    {
+        name: 'approvalPengajuanPenjualan',
+        path: '/approvalPengajuanPenjualan/:id',
+        component: ApprovalPengajuanPenjualan,
+        props: true
+    },
+    {
+        path: '*',
+        component: Home
+    }
 ]
 
 export default new VueRouter({

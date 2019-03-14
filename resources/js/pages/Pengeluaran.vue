@@ -1,11 +1,11 @@
 <template>
     <el-card>
-        <h4>PENGELUARAN BARANG</h4>
+        <h4>PENGELUARAN BARANG BEKAS</h4>
         <hr>
 
         <el-form :inline="true" class="form-right">
             <el-form-item>
-                <el-button @click="addData" type="primary"><i class="el-icon-plus"></i> INPUT PENGELUARAN BARANG</el-button>
+                <el-button @click="addData" type="primary"><i class="el-icon-plus"></i> INPUT PENGELUARAN BARANG BEKAS</el-button>
             </el-form-item>
             <el-form-item>
                 <el-select class="pager-options" v-model="pageSize" placeholder="Page Size">
@@ -146,8 +146,8 @@
                             <th>#</th>
                             <th>Kategori</th>
                             <th>Qty</th>
-                            <th class="text-center">Eun</th>
                             <th>Timbangan Manual (kg)</th>
+                            <th class="text-center">Eun</th>
                             <th class="text-center">
                                 <a href="#" @click="addItem" class="icon-bg"><i class="el-icon-circle-plus-outline"></i></a>
                             </th>
@@ -159,14 +159,14 @@
                             <td>
                                 <select name="kat" placeholder="Kategori" v-model="formModel.items[index].kategori_barang_id" class="my-input" @change="updateEun($event, index)">
                                     <option value="">-- Pilih Kategori --</option>
-                                    <option v-for="(k, i) in $store.state.kategoriBarangList.filter(k => k.status == 1)" :key="i" :value="k.id">
-                                        {{k.jenis}} : {{k.kode}} - {{k.nama}}
+                                    <option v-for="(k, i) in $store.state.kategoriBarangList.filter(k => k.status == 2 && k.jenis == 'BB')" :key="i" :value="k.id">
+                                        {{k.kode}} - {{k.nama}}
                                     </option>
                                 </select>
                             </td>
                             <td> <input type="number" v-model="formModel.items[index].qty" class="my-input" placeholder="Qty"> </td>
-                            <td class="text-center"> {{formModel.items[index].eun}} </td>
                             <td> <input type="number" v-model="formModel.items[index].timbangan_manual" class="my-input" placeholder="Timbangan Manual"> </td>
+                            <td class="text-center"> {{formModel.items[index].eun}} </td>
                             <td class="text-center">
                                 <a v-if="index > 0" href="#" @click="deleteItem(index)" class="icon-bg"><i class="el-icon-delete"></i></a>
                             </td>
@@ -362,7 +362,7 @@ export default {
             })
         },
         addData: function() {
-            this.formTitle = 'INPUT PENGELUARAN BARANG'
+            this.formTitle = 'INPUT PENGELUARAN BARANG BEKAS'
             this.error = {}
             this.formErrors = {}
             
@@ -380,7 +380,7 @@ export default {
             this.showForm = true
         },
         editData: function(data) {
-            this.formTitle = 'EDIT PENGELUARAN BARANG'
+            this.formTitle = 'EDIT PENGELUARAN BARANG BEKAS'
             this.formModel = JSON.parse(JSON.stringify(data));
             this.error = {}
             this.formErrors = {}

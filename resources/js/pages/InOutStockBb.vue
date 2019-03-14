@@ -19,7 +19,7 @@
                 end-placeholder="Sampai">
                 </el-date-picker>
             </el-form-item>
-            <el-form-item style="margin-right:0;">
+            <el-form-item style="margin-center:0;">
                 <el-input placeholder="Search" prefix-icon="el-icon-search" v-model="keyword">
                     <el-button @click="refreshData" slot="append" icon="el-icon-refresh"></el-button>
                 </el-input>
@@ -38,19 +38,29 @@
                     {{ scope.row.tanggal | readableDate }}
                 </template>
             </el-table-column>
+            <el-table-column prop="location.name" width="130" label="Lokasi" sortable="custom"></el-table-column>
             <el-table-column prop="lokasi_asal" width="130" label="Lokasi Asal" sortable="custom"></el-table-column>
-            <el-table-column prop="lokasi_terima" width="130" label="Lokasi Terima" sortable="custom"></el-table-column>
             <el-table-column prop="barang.nama" label="Kategori Barang" sortable="custom">
                 <template slot-scope="scope">
                     {{ scope.row.barang.jenis }} : {{ scope.row.barang.kode }} - {{ scope.row.barang.nama }}
                 </template>
             </el-table-column>
-            <el-table-column prop="stock_in" width="110" label="Stock In" sortable="custom" align="right" header-align="right">
+            <el-table-column prop="qty_in" width="110" label="Qty In" sortable="custom" align="center" header-align="center">
+                <template slot-scope="scope">
+                    {{ scope.row.qty_in | formatNumber }}
+                </template>
+            </el-table-column>
+            <el-table-column prop="qty_out" width="110" label="Qty Out" sortable="custom" align="center" header-align="center">
+                <template slot-scope="scope">
+                    {{ scope.row.qty_out | formatNumber }}
+                </template>
+            </el-table-column>
+            <el-table-column prop="stock_in" width="110" label="Stock In" sortable="custom" align="center" header-align="center">
                 <template slot-scope="scope">
                     {{ scope.row.stock_in | formatNumber }}
                 </template>
             </el-table-column>
-            <el-table-column prop="stock_out" width="110" label="Stock Out" sortable="custom" align="right" header-align="right">
+            <el-table-column prop="stock_out" width="110" label="Stock Out" sortable="custom" align="center" header-align="center">
                 <template slot-scope="scope">
                     {{ scope.row.stock_out | formatNumber }}
                 </template>
@@ -70,7 +80,7 @@
                     :total="paginatedData.total">
                 </el-pagination>
             </el-col>
-            <el-col :span="12" style="text-align:right">
+            <el-col :span="12" style="text-align:center">
                 {{ paginatedData.from }} - {{ paginatedData.to }} of {{ paginatedData.total }} items
             </el-col>
         </el-row>

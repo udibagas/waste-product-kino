@@ -3,24 +3,20 @@
         <table class="table table-sm table-bordered">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th class="text-center">Jenis</th>
-                    <th class="text-center">Kode Kategori</th>
+                    <th style="width:30px">#</th>
                     <th>Kategori</th>
-                    <th class="text-center">Qty</th>
-                    <th class="text-center">Eun</th>
-                    <th class="text-center">Timbangan Manual (kg)</th>
+                    <th class="text-center" style="width:70px">Qty</th>
+                    <th class="text-center" style="width:150px">Timbangan Manual (kg)</th>
+                    <th class="text-center" style="width:70px">Eun</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="(item, index) in data.items" :key="index">
                     <td>{{index+1}}.</td>
-                    <td class="text-center">{{item.barang.jenis}}</td>
-                    <td class="text-center">{{item.barang.kode}}</td>
-                    <td>{{item.barang.nama}}</td>
+                    <td>{{item.barang.kode}} - {{item.barang.nama}}</td>
                     <td class="text-center">{{item.qty | formatNumber}}</td>
-                    <td class="text-center">{{item.eun}}</td>
                     <td class="text-center">{{item.timbangan_manual | formatNumber}}</td>
+                    <td class="text-center">{{item.eun}}</td>
                 </tr>
             </tbody>
         </table>

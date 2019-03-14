@@ -9,13 +9,18 @@ class InOutStockBb extends Model
     protected $dateFormat = 'Y-m-d H:i:s';
 
     protected $fillable = [
-        'tanggal', 'lokasi_asal', 'lokasi_terima', 'kategori_barang_id',
-        'eun', 'stock_in', 'stock_out', 'no_sj', 'lokasi_asal_id', 'lokasi_terima_id'
+        'tanggal', 'lokasi_asal', 'kategori_barang_id', 'location_id',
+        'eun', 'stock_in', 'stock_out', 'no_sj', 'lokasi_asal_id',
+        'qty_in', 'qty_out'
     ];
 
-    protected $with = ['barang'];
+    protected $with = ['barang', 'location'];
 
     public function barang() {
         return $this->belongsTo(KategoriBarang::class, 'kategori_barang_id', 'id');
+    }
+
+    public function location() {
+        return $this->belongsTo(Location::class);
     }
 }

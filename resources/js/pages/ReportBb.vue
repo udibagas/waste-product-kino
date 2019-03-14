@@ -5,7 +5,7 @@
 
         <el-form :inline="true" class="form-right">
             <el-form-item>
-                <el-select v-model="lokasi" style="width:100%" placeholder="Lokasi">
+                <el-select v-model="location_id" style="width:100%" placeholder="Lokasi">
                     <el-option
                     v-for="item in $store.state.locationList"
                     :key="item.id"
@@ -28,7 +28,11 @@
 
         <el-table :data="report" stripe v-loading="loading" style="border-top:1px solid #eee;">
             <el-table-column type="index" width="50"> </el-table-column>
-            <el-table-column prop="kategori" label="Kategori Barang"></el-table-column>
+            <el-table-column label="Kategori Barang">
+                <template slot-scope="scope">
+                    {{ getKategori(scope.row.kategori_id) }}
+                </template>
+            </el-table-column>
             <el-table-column prop="stock_in" width="110" label="Stock In" align="center" header-align="center">
                 <template slot-scope="scope">
                     {{ scope.row.stock_in | formatNumber }}
@@ -37,6 +41,11 @@
             <el-table-column prop="stock_out" width="110" label="Stock Out" align="center" header-align="center">
                 <template slot-scope="scope">
                     {{ scope.row.stock_out | formatNumber }}
+                </template>
+            </el-table-column>
+            <el-table-column width="100" label="Unit" align="center" header-align="center">
+                <template slot-scope="scope">
+                    {{ getUnit(scope.row.kategori_id) }}
                 </template>
             </el-table-column>
             <el-table-column width="110" label="Selisih" align="center" header-align="center">
@@ -56,15 +65,15 @@ export default {
         dateRange(v, o) {
             this.requestData()
         },
-        lokasi(v, o) {
+        location_id(v, o) {
             this.requestData()
         }
     },
     data: function() {
         return {
             loading: false,
-            report: {},
-            lokasi: '',
+            report: [],
+            location_id: null,
             dateRange: [
                 moment().format('YYYY-MM-01'),
                 moment().format('YYYY-MM-DD'),
@@ -72,11 +81,27 @@ export default {
         }
     },
     methods: {
+        getKategori(id) {
+            let kategori = this.$store.state.kategoriBarangList.find(k => k.id == id)
+            if (!kategori) {
+                return 'Unregistered Kategori : ' + id
+            }    
+
+            return kategori.jenis + ' : ' + kategori.kode + ' - ' + kategori.nama
+        },
+        getUnit(id) {
+            let kategori = this.$store.state.kategoriBarangList.find(k => k.id == id)
+            if (!kategori) {
+                return '-'
+            }    
+
+            return kategori.unit
+        },
         requestData: function() {
             let params = {
                 start: this.dateRange[0],
                 end: this.dateRange[1],
-                lokasi: this.lokasi
+                location_id: this.location_id
             }
 
             this.loading = true;
@@ -98,6 +123,7 @@ export default {
     created: function() {
         this.requestData();
         this.$store.commit('getLocationList')
+        this.$store.commit('getKategoriBarangList')
     }
 }
 </script>

@@ -36,13 +36,14 @@ class UpdateStockBbPenerimaan
             InOutStockBb::create([
                 'tanggal' => $event->penerimaan->tanggal,
                 'lokasi_asal' => $event->penerimaan->lokasi_asal,
-                'lokasi_terima' => $event->penerimaan->lokasi_terima,
                 'lokasi_asal_id' => $event->penerimaan->lokasi_asal_id,
-                'lokasi_terima_id' => $event->penerimaan->lokasi_terima_id,
+                'location_id' => $event->penerimaan->lokasi_terima_id,
                 'kategori_barang_id' => $item->kategori_barang_id,
                 'eun' => $item->eun,
                 'stock_out' => 0,
-                'stock_in' => $item->timbangan_manual_terima, // tanya lagi, atau pakai qty?
+                'stock_in' => $item->timbangan_manual_terima, 
+                'qty_out' => 0,
+                'qty_in' => $item->qty_terima, 
                 'no_sj' => $event->penerimaan->no_sj
             ]);
 
@@ -52,14 +53,15 @@ class UpdateStockBbPenerimaan
 
             if ($stock) {
                 $stock->stock = $stock->stock + $item->timbangan_manual_terima;
+                $stock->qty = $stock->qty + $item->qty_terima;
                 $stock->save();
             } else {
                 StockBb::create([
                     'kategori_barang_id' => $item->kategori_barang_id,
                     'location_id' => $event->penerimaan->lokasi_terima_id,
                     'lokasi' => $event->penerimaan->lokasi_terima,
-                    'plant' => '-',
                     'stock' => $item->timbangan_manual_terima,
+                    'qty' => $item->qty_terima,
                     'unit' => $item->eun
                 ]);
             }

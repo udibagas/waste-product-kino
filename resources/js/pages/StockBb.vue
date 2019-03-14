@@ -23,14 +23,28 @@
         @filter-change="filterChange"
         @sort-change="sortChange">
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
-            <el-table-column prop="location.name" width="130" label="Lokasi" sortable="custom"></el-table-column>
-            <el-table-column prop="location.plant" width="130" label="Plant" sortable="custom"></el-table-column>
-            <el-table-column prop="barang.nama" label="Kategori Barang" sortable="custom">
+            <el-table-column 
+            prop="location.plant" 
+            label="Plant - Location" 
+            column-key="location_id" 
+            sortable="custom"
+            :filters="$store.state.locationList.map(l => {return {text: l.plant + ' - ' + l.name, value: l.id}})">
                 <template slot-scope="scope">
-                    {{ scope.row.barang.jenis }} : {{ scope.row.barang.kode }} - {{ scope.row.barang.nama }}
+                    {{scope.row.location.plant}} - {{scope.row.location.name}}
                 </template>
             </el-table-column>
-            <el-table-column prop="stock" width="110" label="Stock" sortable="custom" align="right" header-align="right">
+            <el-table-column 
+            prop="kategori.nama" 
+            label="Kategori Barang" 
+            sortable="custom"
+            column-key="kategori_barang_id" 
+            :filters="$store.state.kategoriBarangList.map(l => {return {text: l.kode + ' - ' + l.nama, value: l.id}})">
+                <template slot-scope="scope">
+                    {{ scope.row.kategori.kode }} - {{ scope.row.kategori.nama }}
+                </template>
+            </el-table-column>
+            <el-table-column prop="qty" width="110" label="Jumlah" sortable="custom" align="center" header-align="center"></el-table-column>
+            <el-table-column prop="stock" width="110" label="Stock (kg)" sortable="custom" align="center" header-align="center">
                 <template slot-scope="scope">
                     {{ scope.row.stock | formatNumber }}
                 </template>
@@ -116,22 +130,22 @@ export default {
             }
             this.loading = true;
 
-            axios.get(BASE_URL + '/stockBb', {params: Object.assign(params, this.filters)})
-                .then(r => {
-                    this.loading = false;
-                    this.paginatedData = r.data
-                })
-                .catch(e => {
-                    this.loading = false;
-                    this.$message({
-                        message: e.response.data.message || e.response.message,
-                        type: 'error'
-                    });
-                })
+            axios.get(BASE_URL + '/stockBb', {params: Object.assign(params, this.filters)}).then(r => {
+                this.loading = false;
+                this.paginatedData = r.data
+            }).catch(e => {
+                this.loading = false;
+                this.$message({
+                    message: e.response.data.message || e.response.message,
+                    type: 'error'
+                });
+            })
         }
     },
     created: function() {
         this.requestData();
+        this.$store.commit('getLocationList');
+        this.$store.commit('getKategoriBarangList');
     }
 }
 </script>

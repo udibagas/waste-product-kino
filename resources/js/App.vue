@@ -34,7 +34,7 @@
                 text-color="#fff"
                 class="sidebar"
                 active-text-color="#ffd04b">
-                    <el-menu-item v-if="!m.children" v-for="(m, i) in menus" :index="(++i).toString()" :key="i" @click="$router.push(m.path)">
+                    <el-menu-item v-if="m.children.length == 0" v-for="(m, i) in menus" :index="(++i).toString()" :key="i" @click="$router.push(m.url)">
                         <font-awesome-icon :icon="m.icon" style="margin-right:5px;"></font-awesome-icon>
                         <span slot="title">{{m.label}}</span>
                     </el-menu-item>
@@ -43,7 +43,7 @@
                             <font-awesome-icon :icon="m.icon" style="margin-right:5px;"></font-awesome-icon>
                             <span>{{m.label}}</span>
                         </template>
-                        <el-menu-item v-for="(sm, ii) in m.children" :index="(i).toString() + '-' + ++ii" :key="ii" @click="$router.push(sm.path)">
+                        <el-menu-item v-for="(sm, ii) in m.children" :index="(i).toString() + '-' + ++ii" :key="ii" @click="$router.push(sm.url)">
                             <font-awesome-icon :icon="sm.icon" style="margin-right:5px;"></font-awesome-icon> 
                             <span slot="title">{{sm.label}}</span>
                         </el-menu-item>
@@ -162,7 +162,7 @@ export default {
 .sidebar {
     background-color: #324057;
     border-color: #324057;
-    height: 100vh;
+    height: calc(100vh - 60px);
 }
 
 .sidebar:not(.el-menu--collapse) {
@@ -170,7 +170,7 @@ export default {
 }
 
 .el-aside {
-    height: 100vh;
+    height: calc(100vh - 60px);
 }
 
 .el-main {

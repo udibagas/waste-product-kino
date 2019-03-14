@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Events\PengajuanPenjualanApproved2;
+use App\Events\PengajuanPenjualanApproved1;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -24,7 +24,7 @@ class SendApprovalNotification1 implements ShouldQueue
      * @param  PengajuanPenjualanApproved2  $event
      * @return void
      */
-    public function handle(PengajuanPenjualanApproved2 $event)
+    public function handle(PengajuanPenjualanApproved1 $event)
     {
         //
     }

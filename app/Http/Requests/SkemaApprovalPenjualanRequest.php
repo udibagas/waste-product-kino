@@ -24,9 +24,18 @@ class SkemaApprovalPenjualanRequest extends FormRequest
     public function rules()
     {
         return [
-            'plant' => 'required',
-            'level' => 'required',
+            'location_id' => 'required',
             'user_id' => 'required',
+            'level' => 'required|in:1,2'
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
+            'location_id' => 'Lokasi',
+            'user' => 'User',
+            'level' => 'Level'
         ];
     }
 }

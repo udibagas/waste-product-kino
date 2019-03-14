@@ -1,18 +1,27 @@
 <template>
     <el-card>
-        <div slot="header">
-            <h4>Ini home</h4>
-        </div>
-        this is home
+        <h3>Welcome {{user.name}}!</h3>
+        
+        <h1>Waste Product Management System</h1>
     </el-card>
 </template>
 
 <script>
-    export default {
-        
-    }
+export default {
+   data() {
+       return {
+           user: USER
+       }
+   } 
+}
 </script>
 
 <style scoped>
+.el-card {
+    padding: 200px 0;
+}
 
+h1, h3 {
+    text-align: center;
+}
 </style>

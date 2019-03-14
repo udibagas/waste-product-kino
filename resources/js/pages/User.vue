@@ -26,24 +26,31 @@
         @filter-change="filterChange"
         @sort-change="sortChange">
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
-            <el-table-column prop="name" label="Name" sortable="custom"></el-table-column>
-            <el-table-column prop="email" label="Email" sortable="custom"></el-table-column>
-            <el-table-column prop="role" label="Role" sortable="custom" 
+            <el-table-column prop="name" label="Name" sortable="custom" width="180"></el-table-column>
+            <el-table-column prop="no_karyawan" label="No. Karyawan" sortable="custom" width="130"></el-table-column>
+            <el-table-column prop="email" label="Email" sortable="custom" width="220"></el-table-column>
+            <el-table-column label="Lokasi" width="200">
+                <template slot-scope="scope" v-if="scope.row.location">
+                    {{scope.row.location.plant}} - {{scope.row.location.name}}
+                </template>
+            </el-table-column>
+            <el-table-column prop="department" label="Departemen" sortable="custom" width="180"></el-table-column>
+            <el-table-column prop="role" label="Role" sortable="custom" width="120"
             column-key="role"
             :filters="[{value: 0, text: 'Member'},{value: 1, text: 'User'}, {value: 9, text: 'Admin'}]">
                 <template slot-scope="scope">
                     {{roles[scope.row.role]}}
                 </template>
             </el-table-column>
-            <el-table-column prop="status" label="Status" sortable="custom" column-key="status"
+            <el-table-column prop="last_login" label="Last Login" sortable="custom" width="180"></el-table-column>
+            <el-table-column prop="login" label="Login" sortable="custom" width="80" header-align="center" align="center"></el-table-column>
+
+            <el-table-column prop="status" label="Status" sortable="custom" column-key="status" width="100" align="center" header-align="center"
             :filters="[{value: 0, text: 'Inactive'},{value: 1, text: 'Active'}]">
                 <template slot-scope="scope">
-                    <el-tag :type="scope.row.status ? 'success' : 'danger'">{{scope.row.status ? 'Active' : 'Inactive'}}</el-tag>
+                    <el-tag size="small" :type="scope.row.status ? 'success' : 'danger'">{{scope.row.status ? 'Active' : 'Inactive'}}</el-tag>
                 </template>
             </el-table-column>
-
-            <el-table-column prop="last_login" label="Last Login" sortable="custom"></el-table-column>
-            <el-table-column prop="login" label="Login" sortable="custom"></el-table-column>
 
             <el-table-column fixed="right" width="40px">
                 <template slot-scope="scope">
@@ -76,50 +83,86 @@
             </el-col>
         </el-row>
 
-        <el-dialog :visible.sync="showForm" :title="formTitle" width="600px" v-loading="loading" :close-on-click-modal="false">
+        <el-dialog center :visible.sync="showForm" :title="formTitle" width="900px" v-loading="loading" :close-on-click-modal="false">
             <el-alert type="error" title="ERROR"
                 :description="error.message + '\n' + error.file + ':' + error.line"
                 v-show="error.message"
                 style="margin-bottom:15px;">
             </el-alert>
 
-            <el-form label-width="180px">
-                <el-form-item label="Name">
-                    <el-input placeholder="Username" v-model="formModel.name"></el-input>
-                    <div class="error-feedback" v-if="formErrors.name">{{formErrors.name[0]}}</div>
-                </el-form-item>
+            <el-form label-width="170px">
+                <el-row :gutter="15">
+                    <el-col :span="12">
+                        <el-form-item label="Name">
+                            <el-input placeholder="Username" v-model="formModel.name"></el-input>
+                            <div class="el-form-item__error" v-if="formErrors.name">{{formErrors.name[0]}}</div>
+                        </el-form-item>
 
-                <el-form-item label="Email">
-                    <el-input placeholder="Email" v-model="formModel.email"></el-input>
-                    <div class="error-feedback" v-if="formErrors.email">{{formErrors.email[0]}}</div>
-                </el-form-item>
+                        <el-form-item label="Email">
+                            <el-input placeholder="Email" v-model="formModel.email"></el-input>
+                            <div class="el-form-item__error" v-if="formErrors.email">{{formErrors.email[0]}}</div>
+                        </el-form-item>
 
-                <el-form-item label="Role">
-                    <el-select placeholder="Role" v-model="formModel.role" style="width:100%;">
-                        <el-option :value="0" label="Member"></el-option>
-                        <el-option :value="1" label="User"></el-option>
-                        <el-option :value="9" label="Admin"></el-option>
-                    </el-select>
-                    <div class="error-feedback" v-if="formErrors.role">{{formErrors.role[0]}}</div>
-                </el-form-item>
+                        <el-form-item label="Password">
+                            <el-input type="password" placeholder="Password" v-model="formModel.password"></el-input>
+                            <div class="el-form-item__error" v-if="formErrors.password">{{formErrors.password[0]}}</div>
+                        </el-form-item>
+                        
+                        <el-form-item label="Konfirmasi Password">
+                            <el-input type="password" placeholder="Konfirmasi Password" v-model="formModel.password_confirmation"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="No. Karyawan">
+                            <el-input placeholder="No. Karyawan" v-model="formModel.no_karyawan"></el-input>
+                            <div class="el-form-item__error" v-if="formErrors.no_karyawan">{{formErrors.no_karyawan[0]}}</div>
+                        </el-form-item>
 
-                <el-form-item label="Password">
-                    <el-input type="password" placeholder="Password" v-model="formModel.password"></el-input>
-                    <div class="error-feedback" v-if="formErrors.password">{{formErrors.password[0]}}</div>
-                </el-form-item>
-                
-                <el-form-item label="Konfirmasi Password">
-                    <el-input type="password" placeholder="Konfirmasi Password" v-model="formModel.password_confirmation"></el-input>
-                </el-form-item>
+                        <el-form-item label="Lokasi">
+                            <el-select v-model="formModel.location_id" style="width:100%" placeholder="Lokasi">
+                                <el-option
+                                v-for="item in $store.state.locationList"
+                                :key="item.id"
+                                :label="item.plant + ' - ' + item.name"
+                                :value="item.id">
+                                </el-option>
+                            </el-select>
+                            <div class="el-form-item__error" v-if="formErrors.location_id">{{formErrors.location_id[0]}}</div>
+                        </el-form-item>
 
-                <el-form-item label="Status">
-                    <el-select placeholder="Status" v-model="formModel.status" style="width:100%;">
-                        <el-option :value="0" label="Inactive"></el-option>
-                        <el-option :value="1" label="Active"></el-option>
-                    </el-select>
-                    <div class="error-feedback" v-if="formErrors.status">{{formErrors.status[0]}}</div>
-                </el-form-item>
+                        <el-form-item label="Departemen">
+                            <el-input placeholder="Departemen" v-model="formModel.department"></el-input>
+                            <div class="el-form-item__error" v-if="formErrors.department">{{formErrors.department[0]}}</div>
+                        </el-form-item>
+
+                        <el-form-item label="Role">
+                            <el-select placeholder="Role" v-model="formModel.role" style="width:100%;">
+                                <el-option :value="0" label="Member"></el-option>
+                                <el-option :value="1" label="User"></el-option>
+                                <el-option :value="9" label="Admin"></el-option>
+                            </el-select>
+                            <div class="el-form-item__error" v-if="formErrors.role">{{formErrors.role[0]}}</div>
+                        </el-form-item>
+
+                        <el-form-item label="Status">
+                            <el-select placeholder="Status" v-model="formModel.status" style="width:100%;">
+                                <el-option :value="0" label="Inactive"></el-option>
+                                <el-option :value="1" label="Active"></el-option>
+                            </el-select>
+                            <div class="el-form-item__error" v-if="formErrors.status">{{formErrors.status[0]}}</div>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
             </el-form>
+
+            <h3>Hak Akses</h3>
+            <hr>
+            <el-tree 
+            :data="$store.state.menuList" 
+            :props="{ children: 'children', label: 'label' }" 
+            show-checkbox
+            @check-change="handleCheckChange"></el-tree>
+
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="save" icon="el-icon-success">SAVE</el-button>
                 <el-button type="info" @click="showForm = false" icon="el-icon-error">CANCEL</el-button>
@@ -153,10 +196,25 @@ export default {
             sort: 'name',
             order: 'ascending',
             filters: {},
-            paginatedData: {}
+            paginatedData: {},
         }
     },
     methods: {
+        handleCheckChange(data, checked, indeterminate) {
+            // console.log(data, checked, indeterminate);
+            let index = this.formModel.rights.indexOf(data)
+
+            if (checked) {
+                if (index == -1) {
+                    this.formModel.rights.push(data);
+                } 
+            } else {
+                if (index >= 0) {
+                    this.formModel.rights.splice(index, 1);
+                }
+            }
+            console.log(this.formModel.rights);
+        },
         sortChange: function(column) {
             if (this.sort !== column.prop || this.order !== column.order) {
                 this.sort = column.prop;
@@ -231,40 +289,40 @@ export default {
                 })
         },
         addData: function() {
-            this.formTitle = 'Tambah User'
+            this.formTitle = 'TAMBAH USER'
             this.error = {}
             this.formErrors = {}
-            this.formModel = {}
+            this.formModel = {
+                rights: []
+            }
             this.showForm = true
         },
         editData: function(data) {
-            this.formTitle = 'Edit User'
+            this.formTitle = 'EDIT USER'
             this.formModel = JSON.parse(JSON.stringify(data));
             this.error = {}
             this.formErrors = {}
             this.showForm = true
         },
         deleteData: function(id) {
-            this.$confirm('Anda yakin akan menghapus user ini?')
-                .then(() => {
-                    axios.delete(BASE_URL + '/user/' + id)
-                        .then(r => {
-                            this.requestData();
-                            this.$message({
-                                message: 'User BERHASIL dihapus.',
-                                type: 'success'
-                            });
-                        })
-                        .catch(e => {
-                            this.$message({
-                                message: 'User GAGAL dihapus. ' + e.response.data.message,
-                                type: 'error'
-                            });
-                        })
+            this.$confirm('Anda yakin akan menghapus user ini?', 'Warning', {
+                type: 'warning',
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Tidak'
+            }).then(() => {
+                axios.delete(BASE_URL + '/user/' + id).then(r => {
+                    this.requestData();
+                    this.$message({
+                        message: 'User BERHASIL dihapus.',
+                        type: 'success'
+                    });
+                }).catch(e => {
+                    this.$message({
+                        message: 'User GAGAL dihapus. ' + e.response.data.message,
+                        type: 'error'
+                    });
                 })
-                .catch(() => {
-
-                });
+            }).catch(() => { });
         },
         refreshData: function() {
             this.keyword = '';
@@ -281,22 +339,22 @@ export default {
             }
             this.loading = true;
 
-            axios.get(BASE_URL + '/user', {params: Object.assign(params, this.filters)})
-                .then(r => {
-                    this.loading = false;
-                    this.paginatedData = r.data
-                })
-                .catch(e => {
-                    this.loading = false;
-                    this.$message({
-                        message: e.response.data.message || e.response.message,
-                        type: 'error'
-                    });
-                })
+            axios.get(BASE_URL + '/user', {params: Object.assign(params, this.filters)}).then(r => {
+                this.loading = false;
+                this.paginatedData = r.data
+            }).catch(e => {
+                this.loading = false;
+                this.$message({
+                    message: e.response.data.message || e.response.message,
+                    type: 'error'
+                });
+            })
         }
     },
     created: function() {
         this.requestData();
+        this.$store.commit('getLocationList');
+        this.$store.commit('getMenuList');
     }
 }
 </script>

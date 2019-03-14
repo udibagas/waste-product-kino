@@ -47,6 +47,11 @@ class UserController extends Controller
             'password' => 'required|string|min:6|confirmed',
             'role' => 'required|in:0,1,9',
             'status' => 'required|boolean'
+        ], [], [
+            'name' => 'Name',
+            'email' => 'Email',
+            'role' => 'Role',
+            'status' => 'Status'
         ]);
 
         $input = $request->all();
@@ -88,7 +93,13 @@ class UserController extends Controller
             $input['password'] = bcrypt($request->password);
         }
 
-        $request->validate($rules);
+        $request->validate($rules, [], [
+            'name' => 'Name',
+            'email' => 'Email',
+            'role' => 'Role',
+            'status' => 'Status'
+        ]);
+
         $user->update($input);
         return $user;
     }
