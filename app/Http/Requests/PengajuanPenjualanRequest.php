@@ -27,9 +27,8 @@ class PengajuanPenjualanRequest extends FormRequest
             'tanggal' => 'required',
             'no_aju' => 'required',
             'location_id' => 'required',
-            'plant' => 'required',
-            'period_from' => 'required|date',
-            'period_to' => 'required|date',
+            'period_from' => 'required_if:jenis,WP',
+            'period_to' => 'required_if:jenis,WP',
             'jenis' =>'required'
         ];
     }

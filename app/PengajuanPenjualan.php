@@ -29,7 +29,7 @@ class PengajuanPenjualan extends Model
         'approval2_status', 'approval2_time', 'approval2_by'
     ];
 
-    protected $with = ['itemsBb', 'itemsWp', 'location'];
+    protected $with = ['itemsBb', 'itemsWp', 'location', 'user'];
 
     public function itemsBb()
     {

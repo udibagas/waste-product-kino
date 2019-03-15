@@ -10,7 +10,7 @@ class PengajuanPenjualanItemBb extends Model
 
     protected $fillable = [
         'pengajuan_penjualan_id', 'kategori_barang_id', 'jumlah', 
-        'jumlah_terima', 'eun', 'timbangan_manual'
+        'eun', 'timbangan_manual', 'stock_berat', 'stock_qty'
     ];
 
     protected $with = ['kategori'];

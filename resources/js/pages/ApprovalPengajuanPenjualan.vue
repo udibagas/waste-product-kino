@@ -68,14 +68,15 @@ export default {
                 cancelButtonText: 'Tidak'
             }).then(() => {
                 this.submitting = true
-                let params = {
+                let data = {
                     status: status,
                     level: this.params.level
                 }
 
-                axios.post(BASE_URL + '/pengajuanPenjualan/' + this.id + '/approve', params).then(r => {
+                axios.put(BASE_URL + '/pengajuanPenjualan/' + this.id + '/approve', data).then(r => {
                     this.submitting = false
                     this.submitted = true
+                    this.requestData()
                     this.$message({
                         message: 'Approval berhasil',
                         type: 'success',

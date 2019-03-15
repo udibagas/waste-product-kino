@@ -26,7 +26,7 @@ Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 
 // TRANSACTION
 Route::resource('penerimaan', 'PenerimaanController')->only(['index', 'store', 'update', 'destroy']);
-Route::post( 'pengajuanPenjualan/{pengajuanPenjualan}/approve', 'PengajuanPenjualanController@approve');
+Route::put( 'pengajuanPenjualan/{pengajuanPenjualan}/approve', 'PengajuanPenjualanController@approve');
 Route::resource('pengajuanPenjualan', 'PengajuanPenjualanController')->only(['index', 'edit', 'show', 'store', 'update', 'destroy']);
 Route::resource('pengeluaran', 'PengeluaranController')->only(['index', 'store', 'update', 'destroy']);
 Route::resource('pengeluaranItem', 'PengeluaranItemController')->only(['destroy']);
@@ -34,12 +34,13 @@ Route::resource('pengeluaranItem', 'PengeluaranItemController')->only(['destroy'
 // REPORT
 Route::get('inOutStockBb', 'InOutStockBbController@index');
 Route::get('report/bb', 'ReportController@bb');
+Route::get('stockBb/getStock', 'StockBbController@getStock');
 Route::get('stockBb', 'StockBbController@index');
 
 // UNTUK DROPDOWN
 Route::get('kategoriBarang/getList', 'KategoriBarangController@getList');
 Route::get('location/getList', 'LocationController@getList');
-Route::get('navigation/refresh', 'NavigationController@store');
+Route::get('navigation/refresh', 'NavigationController@store'); // untuk generate link
 Route::get('navigation', 'NavigationController@index');
 Route::get('pengeluaran/getList', 'PengeluaranController@getList');
 Route::get('user/getList', 'UserController@getList');

@@ -24,7 +24,7 @@
         @sort-change="sortChange">
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
             <el-table-column 
-            prop="location.plant" 
+            prop="location_id" 
             label="Plant - Location" 
             column-key="location_id" 
             sortable="custom"
@@ -34,7 +34,7 @@
                 </template>
             </el-table-column>
             <el-table-column 
-            prop="kategori.nama" 
+            prop="kategori_barang_id" 
             label="Kategori Barang" 
             sortable="custom"
             column-key="kategori_barang_id" 
@@ -49,8 +49,8 @@
                     {{ scope.row.stock | formatNumber }}
                 </template>
             </el-table-column>
-            <el-table-column prop="unit" width="70" label="Unit" sortable="custom"></el-table-column>
-            <el-table-column prop="updated_at" width="150" label="Waktu Update" sortable="custom" align="center" header-align="center">
+            <el-table-column prop="unit" width="70" label="Unit"></el-table-column>
+            <el-table-column prop="stock_bbs.updated_at" width="150" label="Waktu Update" sortable="custom" align="center" header-align="center">
                 <template slot-scope="scope">
                     {{ scope.row.updated_at | readableDateTime }}
                 </template>

@@ -112,9 +112,9 @@ class PengajuanPenjualanController extends Controller
 
         if ($request->level == 1) 
         {
-            // if ($pengajuanPenjualan->approval1_status > 0) {
-            //     return response(['message' => 'Pengajuan sudah diapprove sebelumnya'], 500);
-            // }
+            if ($pengajuanPenjualan->approval1_status > 0) {
+                return response(['message' => 'Pengajuan sudah diapprove sebelumnya'], 500);
+            }
 
             $data = [
                 'approval1_status' => $request->status,
@@ -129,9 +129,9 @@ class PengajuanPenjualanController extends Controller
                 return response(['message' => 'Pengajuan level 1 belum/tidak disetujui'], 500);
             }
 
-            // if ($pengajuanPenjualan->approval2_status > 0) {
-            //     return response(['message' => 'Pengajuan sudah diapprove sebelumnya'], 500);
-            // }
+            if ($pengajuanPenjualan->approval2_status > 0) {
+                return response(['message' => 'Pengajuan sudah diapprove sebelumnya'], 500);
+            }
 
             $data = [
                 'approval2_status' => $request->status,

@@ -37,9 +37,24 @@
                 </template>
             </el-table-column>
             <el-table-column prop="no_aju" label="No. Pengajuan" sortable="custom"></el-table-column>
-            <el-table-column prop="plant" label="Plant" sortable="custom">
+            <el-table-column prop="location_id" label="Plant" sortable="custom">
                 <template slot-scope="scope">
-                    {{scope.row.plant}} - {{scope.row.location.name}}
+                    {{scope.row.location.plant}} - {{scope.row.location.name}}
+                </template>
+            </el-table-column>
+            <el-table-column prop="user.name" label="Yang Mengajukan"></el-table-column>
+            <el-table-column prop="approval1_status" width="110" align="center" header-align="center" label="Approval 1" sortable="custom">
+                <template slot-scope="scope">
+                    <el-tag size="small" :type="approval_statuses[scope.row.approval1_status].type">
+                        {{approval_statuses[scope.row.approval1_status].label}}
+                    </el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column prop="approval2_status" width="110" align="center" header-align="center" label="Approval 2" sortable="custom">
+                <template slot-scope="scope">
+                    <el-tag size="small" :type="approval_statuses[scope.row.approval2_status].type">
+                        {{approval_statuses[scope.row.approval2_status].label}}
+                    </el-tag>
                 </template>
             </el-table-column>
             <el-table-column prop="status" width="100" align="center" header-align="center" label="Status" sortable="custom">
@@ -50,13 +65,22 @@
 
             <el-table-column fixed="right" width="40px">
                 <template slot-scope="scope">
-                    <el-dropdown v-if="scope.row.status === 0">
+                    <el-dropdown v-if="scope.row.status == 0">
                         <span class="el-dropdown-link">
                             <i class="el-icon-more"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
                             <el-dropdown-item @click.native.prevent="deleteData(scope.row.id)"><i class="el-icon-delete"></i> Hapus</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                    <el-dropdown v-if="scope.row.status == 1 && scope.row.approval2_status == 0">
+                        <span class="el-dropdown-link">
+                            <i class="el-icon-more"></i>
+                        </span>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item @click.native.prevent="approve(scope.row, 1)"><i class="el-icon-check"></i> Approve</el-dropdown-item>
+                            <el-dropdown-item @click.native.prevent="approve(scope.row, 2)"><i class="el-icon-close"></i> Reject</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </template>
@@ -87,63 +111,64 @@
             </el-alert>
 
             <el-form label-width="170px">
-                <el-row :gutter="15">
-                    <el-col :span="12">
-                        <el-form-item label="Tanggal">
-                            <el-date-picker v-model="formModel.tanggal" type="date" value-format="yyyy-MM-dd" placeholder="Tanggal" style="width:100%;"> </el-date-picker>
-                            <div class="el-form-item__error" v-if="formErrors.tanggal">{{formErrors.tanggal[0]}}</div>
-                        </el-form-item>
+                <el-form-item label="Tanggal">
+                    <el-date-picker v-model="formModel.tanggal" type="date" value-format="yyyy-MM-dd" placeholder="Tanggal" style="width:100%;"> </el-date-picker>
+                    <div class="el-form-item__error" v-if="formErrors.tanggal">{{formErrors.tanggal[0]}}</div>
+                </el-form-item>
 
-                        <el-form-item label="Nomor Pengajuan">
-                            <el-input placeholder="Nomor Pengajuan" v-model="formModel.no_aju"></el-input>
-                            <div class="el-form-item__error" v-if="formErrors.no_aju">{{formErrors.no_aju[0]}}</div>
-                        </el-form-item>
+                <el-form-item label="Nomor Pengajuan">
+                    <el-input placeholder="Nomor Pengajuan" v-model="formModel.no_aju"></el-input>
+                    <div class="el-form-item__error" v-if="formErrors.no_aju">{{formErrors.no_aju[0]}}</div>
+                </el-form-item>
 
-                        <el-form-item label="Plant">
-                            <el-select v-model="formModel.location_id" style="width:100%" placeholder="Plant">
-                                <el-option
-                                v-for="item in $store.state.locationList"
-                                :key="item.id"
-                                :label="item.plant + ' - ' + item.name"
-                                :value="item.id">
-                                </el-option>
-                            </el-select>
-                            <div class="el-form-item__error" v-if="formErrors.location_id">{{formErrors.location_id[0]}}</div>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
+                <el-form-item label="Plant">
+                    <el-select v-model="formModel.location_id" style="width:100%" placeholder="Plant">
+                        <el-option
+                        v-for="item in $store.state.locationList"
+                        :key="item.id"
+                        :label="item.plant + ' - ' + item.name"
+                        :value="item.id">
+                        </el-option>
+                    </el-select>
+                    <div class="el-form-item__error" v-if="formErrors.location_id">{{formErrors.location_id[0]}}</div>
+                </el-form-item>
                 
-                <table class="table table-sm">
+                <table class="table table-sm table-bordered">
                     <thead>
                         <tr>
-                            <th>#</th>
-                            <th>Kategori</th>
-                            <th>Jumlah</th>
-                            <th>Jumlah Diterima</th>
-                            <th class="text-center">Eun</th>
-                            <th>Timbangan Manual (kg)</th>
-                            <th class="text-center">Selisih</th>
-                            <th class="text-center">
+                            <th rowspan="2">#</th>
+                            <th rowspan="2">Kategori</th>
+                            <th colspan="2" class="text-center">Stock</th>
+                            <th rowspan="2" class="text-center">Jumlah Diajukan</th>
+                            <th rowspan="2" class="text-center">Selisih</th>
+                            <th rowspan="2" class="text-center">Eun</th>
+                            <th rowspan="2">Timbangan Manual (kg)</th>
+                            <th rowspan="2" class="text-center">
                                 <a href="#" @click="addItem" class="icon-bg"><i class="el-icon-circle-plus-outline"></i></a>
                             </th>
+                        </tr>
+                        <tr>
+                            <th style="width:80px" class="text-center">Qty</th>
+                            <th style="width:80px" class="text-center">Berat (kg)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="(item, index) in formModel.items_bb" :key="index">
                             <td>{{index+1}}.</td>
                             <td>
-                                <select name="kat" placeholder="Kategori" v-model="formModel.items_bb[index].kategori_barang_id" class="my-input" @change="updateEun($event, index)">
+                                <select name="kat" placeholder="Kategori" v-model="formModel.items_bb[index].kategori_barang_id" class="my-input" @change="updateStockInfo($event, index)">
                                     <option value="">-- Pilih Kategori --</option>
-                                    <option v-for="(k, i) in $store.state.kategoriBarangList.filter(k => k.status == 1)" :key="i" :value="k.id">
-                                        {{k.jenis}} : {{k.kode}} - {{k.nama}}
+                                    <option v-for="(k, i) in $store.state.kategoriBarangList.filter(k => k.status == 2 && k.jenis == 'BB')" :key="i" :value="k.id">
+                                        {{k.kode}} - {{k.nama}}
                                     </option>
                                 </select>
                             </td>
-                            <td><input type="number" v-model="formModel.items_bb[index].jumlah" class="my-input" placeholder="Jumlah"> </td>
-                            <td><input type="number" v-model="formModel.items_bb[index].jumlah_terima" class="my-input" placeholder="Jumlah Diterima"></td>
+                            <td class="text-center">{{formModel.items_bb[index].stock_qty | formatNumber}}</td>
+                            <td class="text-center">{{formModel.items_bb[index].stock_berat | formatNumber}}</td>
+                            <td><input type="number" v-model="formModel.items_bb[index].jumlah" class="my-input" placeholder="Jumlah Diajukan"></td>
+                            <td class="text-center">{{item.stock_qty - item.jumlah | formatNumber}}</td>
                             <td class="text-center"> {{formModel.items_bb[index].eun}} </td>
                             <td><input type="number" v-model="formModel.items_bb[index].timbangan_manual" class="my-input" placeholder="Timbangan Manual"></td>
-                            <td>{{item.jumlah - item.jumlah_terima | formatNumber}}</td>
                             <td class="text-center">
                                 <a v-if="index > 0" href="#" @click="deleteItem(index)" class="icon-bg"><i class="el-icon-delete"></i></a>
                             </td>
@@ -187,7 +212,8 @@ export default {
                 items_bb: [{
                     kategori_barang_id: '',
                     jumlah: '',
-                    jumlah_terima: '',
+                    stock_qty: 0,
+                    stock_berat: 0,
                     eun: '',
                     timbangan_manual: ''
                 }]
@@ -203,15 +229,91 @@ export default {
                 {type: 'info', label: 'Draft'},
                 {type: 'warning', label: 'Submitted'},
                 {type: 'success', label: 'Approved'},
+            ],
+            approval_statuses: [
+                {type: 'info', label: 'Pending'},
+                {type: 'success', label: 'Approved'},
+                {type: 'danger', label: 'Rejected'},
             ]
         }
     },
     methods: {
-        updateEun(event, index) {
-            if (this.formModel.jenis == 'BB') {
-                let selectedKategori = this.$store.state.kategoriBarangList.find(k => k.id == event.target.value)
-                this.formModel.items_bb[index].eun = selectedKategori.unit;
+        approve(data, status) {
+            this.$confirm('Anda yakin?', 'Warning', {
+                type: 'warning',
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Tidak'
+            }).then(() => {
+                if (data.approval1_status == 0) {
+                    var approval_data = { level: 1, status: status }
+                }
+
+                else if (data.approval2_status == 0) {
+                    var approval_data = { level: 2, status: status }
+                }
+
+                else {
+                    return;
+                }
+
+                axios.put(BASE_URL + '/pengajuanPenjualan/' + data.id + '/approve', approval_data).then(r => {
+                    this.requestData();
+                    this.$message({
+                        message: 'Approval berhasil.',
+                        type: 'success',
+                        showClose: true
+                    });
+                }).catch(e => {
+                    this.$message({
+                        message: 'Approval gagal. ' + e.response.data.message,
+                        type: 'error',
+                        showClose: true
+                    });
+                })
+            }).catch(e => console.log(e));
+        },
+        updateStockInfo(event, index) {
+            if (!this.formModel.location_id) {
+                this.$message({
+                    message: 'Mohon pilih plant terlebih dahulu',
+                    type: 'warning',
+                    showClose: true
+                })
+
+                this.formModel.items_bb[index].kategori_barang_id = ''
+                return
             }
+
+            let selectedKategori = this.$store.state.kategoriBarangList.find(k => k.id == event.target.value)
+            this.formModel.items_bb[index].eun = selectedKategori.unit;
+            
+            let params = {
+                location_id: this.formModel.location_id,
+                kategori_barang_id: event.target.value
+            }
+
+            this.formModel.items_bb[index].stock_qty = 0
+            this.formModel.items_bb[index].stock_berat = 0
+
+            axios.get(BASE_URL + '/stockBb/getStock', { params: params }).then(r => {
+                if (!!r.data && r.data.stock > 0) {
+                    this.formModel.items_bb[index].stock_qty = r.data.qty
+                    this.formModel.items_bb[index].stock_berat = r.data.stock
+                    this.$forceUpdate()
+                }
+                
+                else {
+                    this.$message({
+                        message: 'Tidak ada stock untuk kategori barang terkait',
+                        type: 'warning',
+                        showClose: true
+                    })
+
+                    this.formModel.items_bb[index].kategori_barang_id = ''
+                }
+            }).catch(e => {
+                console.log(e);
+            });
         },
         sortChange: function(column) {
             if (this.sort !== column.prop || this.order !== column.order) {
@@ -234,7 +336,8 @@ export default {
                 this.formModel.items_bb.push({
                     kategori_barang_id: '',
                     jumlah: '',
-                    jumlah_terima: '',
+                    stock_qty: 0,
+                    stock_berat: 0,
                     eun: '',
                     timbangan_manual: ''
                 })
@@ -263,9 +366,22 @@ export default {
             }).catch(() => {})
         },
         save() {
-            let invalid = this.formModel.items_bb.filter(i => !i.kategori_barang_id || !i.jumlah || !i.jumlah_terima || !i.timbangan_manual).length
+            let invalid = this.formModel.items_bb.filter(i => !i.kategori_barang_id || !i.jumlah || !i.timbangan_manual).length
             if (invalid) {
                 this.$message({ message: 'Mohon lengkapi data barang.', showClose: true, type: 'error' });
+                return
+            }
+
+            // pengajuan melebihi stock
+            let invalid_qty = this.formModel.items_bb.filter(i => i.jumlah > i.stock_qty).length
+            if (invalid_qty) {
+                this.$message({ message: 'Jumlah pengajuan melebihi stock', showClose: true, type: 'error' });
+                return
+            }
+
+            let invalid_berat = this.formModel.items_bb.filter(i => i.timbangan_manual > i.stock_berat).length
+            if (invalid_berat) {
+                this.$message({ message: 'Timbangan pengajuan melebihi stock', showClose: true, type: 'error' });
                 return
             }
 
@@ -285,7 +401,7 @@ export default {
                 this.save()
             }).catch(() => {})
         },
-        store: function() {
+        store() {
             this.loading = true;
             axios.post(BASE_URL + '/pengajuanPenjualan', this.formModel).then(r => {
                 this.loading = false;
@@ -308,7 +424,7 @@ export default {
                 }
             })
         },
-        update: function() {
+        update() {
             this.loading = true;
             axios.put(BASE_URL + '/pengajuanPenjualan/' + this.formModel.id, this.formModel).then(r => {
                 this.loading = false;
@@ -331,17 +447,19 @@ export default {
                 }
             })
         },
-        addData: function() {
+        addData() {
             this.formTitle = 'INPUT PENGAJUAN PENJUALAN BARANG BEKAS'
             this.error = {}
             this.formErrors = {}
             this.formModel = {
                 tanggal: moment().format('YYYY-MM-DD'),
                 status: 0,
+                jenis: 'BB',
                 items_bb: [{
                     kategori_barang_id: '',
                     jumlah: '',
-                    jumlah_terima: '',
+                    stock_qty: 0,
+                    stock_berat: 0,
                     eun: '',
                     timbangan_manual: ''
                 }]
@@ -349,14 +467,14 @@ export default {
 
             this.showForm = true
         },
-        editData: function(data) {
+        editData(data) {
             this.formTitle = 'EDIT PENGAJUAN PENJUALAN BARANG BEKAS'
             this.formModel = JSON.parse(JSON.stringify(data));
             this.error = {}
             this.formErrors = {}
             this.showForm = true
         },
-        deleteData: function(id) {
+        deleteData(id) {
             this.$confirm('Anda yakin akan menghapus data ini?', 'Warning', {
                 type: 'warning',
                 confirmButtonText: 'Ya',
@@ -376,12 +494,12 @@ export default {
                 })
             }).catch(() => { });
         },
-        refreshData: function() {
+        refreshData() {
             this.keyword = '';
             this.page = 1;
             this.requestData();
         },
-        requestData: function() {
+        requestData() {
             let params = {
                 page: this.page,
                 keyword: this.keyword,
@@ -404,7 +522,7 @@ export default {
             })
         }
     },
-    created: function() {
+    created() {
         this.requestData();
         this.$store.commit('getKategoriBarangList');
         this.$store.commit('getLocationList');
@@ -416,13 +534,9 @@ export default {
 .my-input {
     border: none;
     width: 100%;
-    padding: 5px;
-    /* background-color: #eee; */
-    background-color: transparent;
-}
-
-.my-input:hover, .my-input:focus {
-    border: none;
+    padding: 5px 0 5px 10px;
+    background-color: #eee;
+    /* background-color: transparent; */
 }
 
 .icon-bg {
