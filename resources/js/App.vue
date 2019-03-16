@@ -133,6 +133,10 @@ export default {
             if (command === 'logout') {
                 document.getElementById('logout-form').submit();
             }
+
+            if(command === 'profile') {
+                this.$router.push('/profile')
+            }
         },
         getMenu() {
             axios.get(BASE_URL + '/navigation')

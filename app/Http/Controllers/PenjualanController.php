@@ -23,11 +23,6 @@ class PenjualanController extends Controller
         })->orderBy($sort, $order)->paginate($request->pageSize);
     }
 
-    public function show(Penjualan $penjualan)
-    {
-        return $penjualan->with(['items']);
-    }
-
     public function store(PenjualanRequest $request)
     {
         $input = $request->all();

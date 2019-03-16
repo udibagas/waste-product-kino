@@ -104,8 +104,8 @@ th.label {
     width: 120px;
 }
 
-/* .panel {
+.panel {
     padding: 15px;
-    background-color: #eee;
-} */
+    background-color: #edeff2;
+}
 </style>

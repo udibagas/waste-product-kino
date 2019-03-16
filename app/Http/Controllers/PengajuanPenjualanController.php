@@ -99,9 +99,10 @@ class PengajuanPenjualanController extends Controller
         return ['message' => 'ok'];
     }
 
-    public function getList()
+    public function getList(Request $request)
     {
-        return PengajuanPenjualan::where('status', 1)->get();
+        return PengajuanPenjualan::where('jenis', $request->jenis)
+            ->where('status', 2)->get();
     }
 
     public function approve(Request $request, PengajuanPenjualan $pengajuanPenjualan)

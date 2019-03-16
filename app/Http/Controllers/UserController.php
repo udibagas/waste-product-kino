@@ -46,12 +46,14 @@ class UserController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|confirmed',
             'role' => 'required|in:0,1,9',
-            'status' => 'required|boolean'
+            'status' => 'required|boolean',
+            'location_id' => 'required'
         ], [], [
             'name' => 'Name',
             'email' => 'Email',
             'role' => 'Role',
-            'status' => 'Status'
+            'status' => 'Status',
+            'location_id' => 'Lokasi'
         ]);
 
         $input = $request->all();
@@ -83,7 +85,8 @@ class UserController extends Controller
             'name' => ['required', Rule::unique('users')->ignore($user->id)],
             'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
             'role' => 'required|in:0,1,9',
-            'status' => 'required|boolean'
+            'status' => 'required|boolean',
+            'location_id' => 'required'
         ];
 
         $input = $request->all();
@@ -97,7 +100,8 @@ class UserController extends Controller
             'name' => 'Name',
             'email' => 'Email',
             'role' => 'Role',
-            'status' => 'Status'
+            'status' => 'Status',
+            'location_id' => 'Lokasi'
         ]);
 
         $user->update($input);

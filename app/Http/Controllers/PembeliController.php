@@ -40,4 +40,9 @@ class PembeliController extends Controller
         $pembeli->delete();
         return ['message' => 'ok'];
     }
+
+    public function getList(Request $request)
+    {
+        return Pembeli::orderBy('nama', 'ASC')->get();
+    }
 }

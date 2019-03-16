@@ -7,7 +7,7 @@ import SkemaApprovalPenjualan from './pages/SkemaApprovalPenjualan'
 import Pembeli from './pages/Pembeli'
 import Penerimaan from './pages/Penerimaan'
 import Pengeluaran from './pages/Pengeluaran'
-import Penjualan from './pages/Penjualan'
+import PenjualanBb from './pages/PenjualanBb'
 import PengajuanPenjualanBb from './pages/PengajuanPenjualanBb'
 // import PengajuanPenjualanWp from './pages/PengajuanPenjualanWp'
 import InOutStockBb from './pages/InOutStockBb'
@@ -16,6 +16,7 @@ import ReportBb from './pages/ReportBb'
 import KategoriBarang from './pages/KategoriBarang'
 import KonversiBerat from './pages/KonversiBerat'
 import ApprovalPengajuanPenjualan from './pages/ApprovalPengajuanPenjualan'
+import Profile from './pages/Profile'
 
 Vue.use(VueRouter);
 
@@ -46,9 +47,14 @@ const routes = [
         component: Penerimaan
     },
     {
-        name: 'penjualan',
-        path: '/penjualan',
-        component: Penjualan
+        name: 'profile',
+        path: '/profile',
+        component: Profile
+    },
+    {
+        name: 'penjualanBb',
+        path: '/penjualanBb',
+        component: PenjualanBb
     },
     {
         name: 'pengajuanPenjualanBb',

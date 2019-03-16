@@ -23,14 +23,14 @@
             <td>: {{$pengajuanPenjualan->location->plant}} - {{$pengajuanPenjualan->location->name}}</td>
         </tr>
         <tr>
-            <td><b>Periode</b></td>
-            <td>: {{$pengajuanPenjualan->period_from}} - {{$pengajuanPenjualan->period_to}}</td>
-        </tr>
-        <tr>
             <td><b>Jenis</b></td>
             <td>: {{$pengajuanPenjualan->jenis}}</td>
         </tr>
         @if ($pengajuanPenjualan->jenis == 'WP')
+        <tr>
+            <td><b>Periode</b></td>
+            <td>: {{$pengajuanPenjualan->period_from}} - {{$pengajuanPenjualan->period_to}}</td>
+        </tr>
         <tr>
             <td><b>MVT Type</b></td>
             <td>: {{$pengajuanPenjualan->mvt_type}}</td>
@@ -40,15 +40,19 @@
             <td>: {{$pengajuanPenjualan->sloc}}</td>
         </tr>
         @endif
+        <tr>
+            <td><b>Yang Mengajukan</b></td>
+            <td>: {{$pengajuanPenjualan->user->name}}</td>
+        </tr>
     </tbody>
 </table>
 @endcomponent
 
 @component('mail::table')
-|Kategori | Jumlah | Unit |
-| :--- | :---: | :---: |
+|Kategori | Jumlah | Timbangan (kg) | Unit |
+| :--- | :---: | :---: | :---: |
 @foreach ($pengajuanPenjualan->itemsBb as $item)
-| {{$item->kategori->jenis}} : {{$item->kategori->kode}} - {{$item->kategori->nama}} | {{$item->jumlah_terima}} | {{$item->eun}} |
+| {{$item->kategori->jenis}} : {{$item->kategori->kode}} - {{$item->kategori->nama}} | {{$item->jumlah}} | {{$item->timbangan_manual}} | {{$item->eun}} |
 @endforeach
 @endcomponent
 
