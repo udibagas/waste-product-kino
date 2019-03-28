@@ -28,16 +28,12 @@ class KonversiBeratController extends Controller
     {
         try {
             DB::beginTransaction();
-            foreach ($request->rows as $i => $row) {
-                    $konversi = KonversiBerat::where('plant', $row['plant'])
-                        ->where('material', $row['material'])
-                        ->first();
+            foreach ($request->rows as $row) {
+                    $konversi = KonversiBerat::where('material_id', $row['material_id'])->first();
 
                     if ($konversi) {
-                        $row['quantity'] += $konversi->quantity;
                         DB::table('konversi_berats')->where('id', $konversi->id)->update($row);
                     } else {
-                        $row['quantity'] = $row['quantity'] == null ? 0 : $row['quantity'];
                         DB::table('konversi_berats')->insert($row);
                     }
                 }

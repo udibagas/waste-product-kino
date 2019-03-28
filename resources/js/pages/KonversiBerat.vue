@@ -5,7 +5,7 @@
 
         <el-form :inline="true" class="form-right">
             <el-form-item>
-                <el-button @click="openForm" type="primary" icon="el-icon-upload">UPLOAD DATA MB51</el-button>
+                <el-button @click="openForm" type="primary" icon="el-icon-upload">UPLOAD DATA KONVERSI BERAT</el-button>
             </el-form-item>
             <el-form-item>
                 <el-select class="pager-options" v-model="pageSize" placeholder="Page Size">
@@ -51,7 +51,7 @@
 
         <el-dialog 
         :visible.sync="uploadFormDialog" 
-        title="Upload MB51" 
+        title="Upload Data Konversi Berat" 
         width="700px" 
         v-loading="loading" 
         :close-on-click-modal="false">
@@ -90,16 +90,14 @@ export default {
         }
     },
     methods: {
-        excelTimeToStr(v) {
-            let num = parseFloat(v) * 24
-            return ('0' + Math.floor(num) % 24).slice(-2) + ':' + ((num % 1)*60 + '0').slice(0, 2);
-        },
         openForm() {
             $('#file-upload').val('');
             this.logs = ['Please select file...<br>']
             this.uploadFormDialog = true
         },
         save(data) {
+            // console.log(data)
+            // return;
             let progressCount = 0;
             let progress = setInterval(() => {
                 if (progressCount == 90) {
@@ -114,7 +112,7 @@ export default {
                 elem.scrollTop = elem.scrollHeight;
             }, 1000)
 
-            axios.post(BASE_URL + '/stockWp', { rows: data }).then(r => {
+            axios.post(BASE_URL + '/konversiBerat', { rows: data }).then(r => {
                 this.logs.push('<br>')
                 this.logs.push(r.data);
                 this.requestData()
@@ -142,40 +140,39 @@ export default {
             var result = {};
 
             reader.onload = function (e) {
-                var data = e.target.result;
-                data = new Uint8Array(data);
-                var workbook = XLSX.read(data, {type: 'array'});
-                console.log(workbook);
-                var result = {};
-                // ini kalau mau baca semua sheet
-                // workbook.SheetNames.forEach(function (sheetName) {
-                //     var roa = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {header: 1});
-                //     if (roa.length) result[sheetName] = roa;
-                // });
-                // see the result, caution: it works after reader event is done.
-                var res = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1});
-                _this.logs.push('Reading file completed. Found ' + (res.length - 1) + ' rows <br>')
-                _this.logs.push('Importing data. This may take long moment. Don\'t close this window. Please wait ... <br>')
+                let data = new Uint8Array(e.target.result);
+                let workbook = XLSX.read(data, {type: 'array'});
+                let res = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1});
 
-                var dataToImport = res.map(r => {
+                _this.logs.push('Reading file completed. Found ' + (res.length - 1) + ' rows. <br>')
+
+                let dataToImport = res.map(r => {
                     return {
-                        plant: r[0],
-                        sloc: r[1],
-                        mvt: r[2],
-                        posting_date: r[3],
-                        mat_doc: r[4],
-                        material: r[5],
-                        material_description: r[6],
-                        doc_date: r[7],
-                        entry_date: r[8],
-                        time: _this.excelTimeToStr(r[9]),
-                        bun: r[10],
-                        quantity: r[11]
+                        kategori_jual: r[0],
+                        finished_good: r[1],
+                        material_id: r[2],
+                        material_description: r[3],
+                        berat: r[4] ? r[4] : 0,
+                        keterangan: r[5]
                     }
                 });
                 
-                // buang headernya
-                _this.save(dataToImport.splice(1));
+                _this.logs.push('Filtering data...<br>')
+                dataToImport.splice(0, 1)
+                let uniqueMaterial = [... new Set(dataToImport.map(d => d.material_id))]
+                let finalData = []
+                const map = new Map();
+
+                for (const item of dataToImport) {
+                    if(!map.has(item.material_id)){
+                        map.set(item.material_id, true);    // set any value to Map
+                        finalData.push(item);
+                    }
+                }
+
+                _this.logs.push('Found ' + uniqueMaterial.length + ' unique Material ID. <br>');
+                _this.logs.push('Importing data. This may take long moment. Don\'t close this window. Please wait ... <br>')
+                _this.save(finalData);
             };
 
             reader.readAsArrayBuffer(oFile);
