@@ -39,12 +39,12 @@
             <el-table-column prop="no_sj" label="No. Surat Jalan" sortable="custom"></el-table-column>
             <el-table-column prop="plant" label="Plant" sortable="custom" width="120">
                 <template slot-scope="scope">
-                    {{scope.row.plant}} - {{scope.row.location.name}}
+                    {{scope.row.location.plant}} - {{scope.row.location.name}}
                 </template>
             </el-table-column>
             <el-table-column prop="pembeli_id" label="Pembeli" sortable="custom" width="200">
                 <template slot-scope="scope">
-                    {{scope.row.period_from | readableDate}} - {{scope.row.period_to | readableDate}}
+                    {{scope.row.pembeli.nama}}
                 </template>
             </el-table-column>
             <el-table-column prop="value" label="Value" width="90" align="center" header-align="center" sortable="custom">
@@ -54,7 +54,7 @@
             </el-table-column>
             <el-table-column label="TOP Date" width="90" align="center" header-align="center">
                 <template slot-scope="scope">
-                    {{scope.row.tanggal}}
+                    {{scope.row.top_date}}
                 </template>
             </el-table-column>
             <el-table-column prop="status" width="100" align="center" header-align="center" label="Status" sortable="custom">
@@ -158,8 +158,13 @@
                         </el-form-item>
 
                         <el-form-item label="TOP Date">
-                            <el-input disabled placeholder="TOP Date" v-model="formModel.top_date"></el-input>
+                            <el-date-picker placeholder="TOP Date" v-model="formModel.top_date" value-format="yyyy-MM-dd" style="width:100%;"></el-date-picker>
                             <div class="el-form-item__error" v-if="formErrors.top_date">{{formErrors.top_date[0]}}</div>
+                        </el-form-item>
+
+                        <el-form-item label="Jembatan Timbang">
+                            <el-input type="number" placeholder="Jembatan Timbang" v-model="formModel.jembatan_timbang"></el-input>
+                            <div class="el-form-item__error" v-if="formErrors.jembatan_timbang">{{formErrors.jembatan_timbang[0]}}</div>
                         </el-form-item>
 
                         <el-form-item label="Value Penjualan">
@@ -190,12 +195,12 @@
                             <td class="text-center">{{index+1}}</td>
                             <td class="text-center">{{item.kategori.kode}} - {{item.kategori.nama}}</td>
                             <td class="text-center">{{item.stock_berat | formatNumber}}</td>
-                            <td class="text-center">{{item.jumlah | formatNumber}}</td>
-                            <td class="text-center">{{item.timbangan_manual | formatNumber}}</td>
+                            <td class="text-center">{{item.qty | formatNumber}}</td>
+                            <td class="text-center">{{item.berat | formatNumber}}</td>
                             <td class="text-center"><input type="text" v-model="item.jembatan_timbang" class="my-input" placeholder="Jembatan Timbang"></td>
                             <td class="text-center">{{item.kategori.harga | formatNumber}}</td>
-                            <td class="text-center"><input type="text" v-model="item.harga" class="my-input" placeholder="Harga per Kg"></td>
-                            <td class="text-center">{{item.kategori.harga * item.timbangan_manual | formatNumber}}</td>
+                            <td class="text-center"><input type="text" v-model="item.price_per_kg" class="my-input" placeholder="Harga per Kg"></td>
+                            <td class="text-center">{{item.kategori.harga * item.berat | formatNumber}}</td>
                             <td class="text-center"><input type="text" v-model="item.value" class="my-input" placeholder="Value Jual"></td>
                         </tr>
                     </tbody>
@@ -234,9 +239,21 @@ export default {
             }
 
             let pengajuan = this.$store.state.pengajuanPenjualanList.find(p => p.no_aju == v)
+            // this.formModel.jembatan_timbang = pengajuan.jembatan_timbang
+
             if (!!pengajuan) {
-                this.formModel.items_bb = pengajuan.items_bb
-                console.log(this.formModel.items_bb)
+                this.formModel.items_bb = pengajuan.items_bb.map(i => {
+                    return {
+                        stock_berat: i.stock_berat,
+                        kategori_barang_id: i.kategori_barang_id,
+                        qty: i.jumlah,
+                        jembatan_timbang: i.timbangan_manual,
+                        berat: i.timbangan_manual,
+                        kategori: i.kategori,
+                        price_per_kg: i.kategori.harga
+                    }
+                })
+                // console.log(this.formModel.items_bb)
             }
 
         }
@@ -248,7 +265,7 @@ export default {
             formTitle: '',
             formErrors: {},
             error: {},
-            formModel: { items_bb: [] },
+            formModel: { jenis: 'BB', items_bb: [] },
             keyword: '',
             page: 1,
             pageSize: 10,
@@ -348,6 +365,7 @@ export default {
             this.error = {}
             this.formErrors = {}
             this.formModel = {
+                jenis: 'BB',
                 tanggal: moment().format('YYYY-MM-DD'),
                 status: 0,
                 items_bb: []

@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\KonversiBerat;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Imports\KonversiBeratImport;
+use Illuminate\Support\Facades\DB;
 
 class KonversiBeratController extends Controller
 {
@@ -27,27 +26,27 @@ class KonversiBeratController extends Controller
 
     public function store(Request $request)
     {
-        if ($request->hasFile('file')) 
-        {
-            $file = $request->file('file');
-            $fileName = time().$file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
+        try {
+            DB::beginTransaction();
+            foreach ($request->rows as $i => $row) {
+                    $konversi = KonversiBerat::where('plant', $row['plant'])
+                        ->where('material', $row['material'])
+                        ->first();
 
-            if (!in_array(strtolower($extension), ['xls', 'xlsx', 'csv', 'ods'])) {
-                return response('File extension not supported', 500);
-            }
+                    if ($konversi) {
+                        $row['quantity'] += $konversi->quantity;
+                        DB::table('konversi_berats')->where('id', $konversi->id)->update($row);
+                    } else {
+                        $row['quantity'] = $row['quantity'] == null ? 0 : $row['quantity'];
+                        DB::table('konversi_berats')->insert($row);
+                    }
+                }
 
-            try {
-                $file->move('files/', $fileName);
-            } catch (\Exception $e) {
-                return response('Failed to move file', 500);
-            }
-
-            Excel::import(new KonversiBeratImport, 'files/'.$fileName);
-            unlink(public_path( 'files/' . $fileName));
-            return ['message' => 'ok'];
+            DB::commit();
+            return 'Data imported successfully. You can close this window or uplad more file.<br>';
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return '[ERROR] Failed to import data. ' . $e->getMessage().'<br> ' ;
         }
-
-        return ['message' => 'no file uploaded'];
     }
 }

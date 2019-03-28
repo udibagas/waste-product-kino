@@ -11,6 +11,7 @@ use App\PengajuanPenjualanItemWp;
 use Carbon\Carbon;
 use App\Events\PengajuanPenjualanApproved1;
 use App\Events\PengajuanPenjualanApproved2;
+use App\PengajuanPenjualanApproval;
 
 class PengajuanPenjualanController extends Controller
 {
@@ -142,7 +143,7 @@ class PengajuanPenjualanController extends Controller
         }
         
         $pengajuanPenjualan->update($data);
-        
+
         if ($request->level == 1) {
             event(new PengajuanPenjualanApproved1($pengajuanPenjualan));
         }
@@ -152,6 +153,13 @@ class PengajuanPenjualanController extends Controller
             $pengajuanPenjualan->save();
             event(new PengajuanPenjualanApproved2($pengajuanPenjualan));
         }
+
+        $pengajuanPenjualan->approvals()->create([
+            'user_id' => $request->user()->id,
+            'note' => $request->note,
+            'status' => $request->status,
+            'level' => $request->level
+        ]);
 
         return $pengajuanPenjualan;
     }

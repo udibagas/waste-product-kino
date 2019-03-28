@@ -41,6 +41,11 @@ class PengajuanPenjualan extends Model
         return $this->hasMany(PengajuanPenjualanItemWp::class);
     }
 
+    public function approvals()
+    {
+        return $this->hasMany(PengajuanPenjualanApproval::class, 'pengajuan_penjualan_id', 'id');
+    }
+
     public function location()
     {
         return $this->belongsTo(Location::class);

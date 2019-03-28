@@ -114,7 +114,7 @@
                                 <el-option
                                 v-for="item in $store.state.locationList"
                                 :key="item.id"
-                                :label="item.name"
+                                :label="item.plant + ' - ' + item.name"
                                 :value="item.id">
                                 </el-option>
                             </el-select>
@@ -126,7 +126,7 @@
                                 <el-option
                                 v-for="item in $store.state.locationList"
                                 :key="item.id"
-                                :label="item.name"
+                                :label="item.plant + ' - ' + item.name"
                                 :value="item.id">
                                 </el-option>
                             </el-select>

@@ -16,10 +16,7 @@ class PenjualanController extends Controller
         $order = $request->order == 'ascending' ? 'asc' : 'desc';
 
         return Penjualan::when($request->keyword, function ($q) use ($request) {
-            return $q->where('no_sj', 'LIKE', '%' . $request->keyword . '%')
-                ->orWhere('lokasi_asal', 'LIKE', '%' . $request->keyword . '%')
-                ->orWhere('lokasi_terima', 'LIKE', '%' . $request->keyword . '%')
-                ->orWhere('penerima', 'LIKE', '%' . $request->keyword . '%');
+            return $q->where('no_sj', 'LIKE', '%' . $request->keyword . '%');
         })->orderBy($sort, $order)->paginate($request->pageSize);
     }
 
@@ -28,7 +25,14 @@ class PenjualanController extends Controller
         $input = $request->all();
         $input['user_id'] = $request->user()->id;
         $penjualan = Penjualan::create($input);
-        $penjualan->items()->createMany($request->items);
+
+        if ($request->jenis == 'BB') {
+            $penjualan->itemsBb()->createMany($request->items_bb);
+        }
+
+        if ($request->jenis == 'WP') {
+            $penjualan->itemsWp()->createMany($request->items_wp);
+        }
 
         if ($request->status == 1) {
             event(new PenjualanSubmitted($penjualan));
@@ -58,7 +62,8 @@ class PenjualanController extends Controller
             return response(['message' => 'Penjualan sudah di submit.'], 500);
         }
 
-        $penjualan->items()->delete();
+        $penjualan->itemsBb()->delete();
+        $penjualan->itemsWp()->delete();
         $penjualan->delete();
         return ['message' => 'ok'];
     }

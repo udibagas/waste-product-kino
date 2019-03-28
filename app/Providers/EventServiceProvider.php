@@ -22,7 +22,8 @@ class EventServiceProvider extends ServiceProvider
             'App\Listeners\UpdateStockBbPengeluaran'
         ],
         'App\Events\PenerimaanSubmitted' => [
-            'App\Listeners\UpdateStockBbPenerimaan'
+            'App\Listeners\UpdateStockBbPenerimaan',
+            'App\Listeners\SendReceivedConfirmationNotification'
         ],
         'App\Events\PenjualanSubmitted' => [
             'App\Listeners\UpdateStockBbPenjualan'
@@ -31,13 +32,18 @@ class EventServiceProvider extends ServiceProvider
             'App\Listeners\SendApprovalRequest1Notification'
         ],
         'App\Events\PengajuanPenjualanApproved1' => [
-            // 'App\Listeners\SendApprovalNotification1',
+            'App\Listeners\SendApprovalNotification1',
             'App\Listeners\SendApprovalRequest2Notification',
         ],
         'App\Events\PengajuanPenjualanApproved2' => [
-            // 'App\Listeners\SendApprovalNotification2',
             'App\Listeners\SendApprovalConfirmationNotification',
         ],
+        'App\Events\PengajuanPenjualanRejected1' => [
+            'App\Listeners\SendRejectedNotification1Notification',
+        ],
+        'App\Events\PengajuanPenjualanRejected2' => [
+            'App\Listeners\SendRejectedNotification2Notification',
+        ]
     ];
 
     /**

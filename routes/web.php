@@ -54,6 +54,7 @@ Route::resource('konversiBerat', 'KonversiBeratController')->only(['index', 'sto
 Route::resource('location', 'LocationController')->only(['index', 'store', 'update', 'destroy']);
 Route::resource('pembeli', 'PembeliController')->only(['index', 'store', 'update', 'destroy']);
 Route::resource('skemaApprovalPenjualan', 'SkemaApprovalPenjualanController')->only(['index', 'store', 'update', 'destroy']);
+Route::resource('stockWp', 'StockWpController')->only(['index', 'store', 'update', 'destroy']);
 Route::resource('user', 'UserController')->only(['index', 'show', 'store', 'update', 'destroy']);
 
 // TESTING ONLY

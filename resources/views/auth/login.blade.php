@@ -72,7 +72,7 @@
 </head>
 
 <body class="text-center">
-    <form class="form-signin" method="POST" action="{{ route('login') }}">
+    <form class="form-signin shadow" method="POST" action="{{ route('login') }}" style="border:1px #ddd solid;background:#fff;border-radius:4px">
         @csrf
         <img class="mb-4" src="{{asset('images/logo.png')}}" alt="" width="150">
         <h1 class="h4 mb-3 font-weight-normal">Waste Product Management</h1>

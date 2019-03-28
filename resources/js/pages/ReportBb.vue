@@ -14,7 +14,7 @@
                     </el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item style="margin-right:0;">
+            <el-form-item>
                 <el-date-picker
                 v-model="dateRange"
                 value-format="yyyy-MM-dd"
@@ -23,6 +23,9 @@
                 start-placeholder="Dari"
                 end-placeholder="Sampai">
                 </el-date-picker>
+            </el-form-item>
+            <el-form-item style="margin-right:0;">
+                <el-button @click="exportToExcel" type="primary"><i class="el-icon-download"></i> EXPORT KE EXCEL</el-button>
             </el-form-item>
         </el-form>
 
@@ -59,6 +62,7 @@
 
 <script>
 import moment from 'moment'
+import exportFromJSON from 'export-from-json'
 
 export default {
     watch: {
@@ -81,6 +85,19 @@ export default {
         }
     },
     methods: {
+        exportToExcel() {
+            let data = this.report.map(r => {
+                return {
+                    "Kategori Barang": this.getKategori(r.kategori_id),
+                    "Stock In": r.stock_in,
+                    "Stock Out": r.stock_out,
+                    "Unit": this.getKategori(r.kategori_id),
+                    "Selisih": r.stock_in - r.stock_out
+                }
+            })
+
+            exportFromJSON({ data: data, fileName: 'report-summary-mutasi-bb', exportType: 'xls' })
+        },
         getKategori(id) {
             let kategori = this.$store.state.kategoriBarangList.find(k => k.id == id)
             if (!kategori) {

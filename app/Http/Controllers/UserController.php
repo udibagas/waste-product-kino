@@ -45,7 +45,7 @@ class UserController extends Controller
             'name' => 'required|unique:users',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|confirmed',
-            'role' => 'required|in:0,1,9',
+            'role' => 'required|in:0,1',
             'status' => 'required|boolean',
             'location_id' => 'required'
         ], [], [
@@ -84,7 +84,7 @@ class UserController extends Controller
         $rules = [
             'name' => ['required', Rule::unique('users')->ignore($user->id)],
             'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
-            'role' => 'required|in:0,1,9',
+            'role' => 'required|in:0,1',
             'status' => 'required|boolean',
             'location_id' => 'required'
         ];

@@ -68,14 +68,14 @@
             </el-alert>
 
             <el-form label-width="180px">
-                <el-form-item label="Name">
-                    <el-input placeholder="Name" v-model="formModel.name"></el-input>
-                    <div class="el-form-item__error" v-if="formErrors.name">{{formErrors.name[0]}}</div>
-                </el-form-item>
-
                 <el-form-item label="Plant">
                     <el-input placeholder="Plant" v-model="formModel.plant"></el-input>
                     <div class="el-form-item__error" v-if="formErrors.plant">{{formErrors.plant[0]}}</div>
+                </el-form-item>
+
+                <el-form-item label="Name">
+                    <el-input placeholder="Name" v-model="formModel.name"></el-input>
+                    <div class="el-form-item__error" v-if="formErrors.name">{{formErrors.name[0]}}</div>
                 </el-form-item>
             </el-form>
 

@@ -103,6 +103,11 @@
                             <div class="el-form-item__error" v-if="formErrors.email">{{formErrors.email[0]}}</div>
                         </el-form-item>
 
+                        <el-form-item label="No. Karyawan">
+                            <el-input placeholder="No. Karyawan" v-model="formModel.no_karyawan"></el-input>
+                            <div class="el-form-item__error" v-if="formErrors.no_karyawan">{{formErrors.no_karyawan[0]}}</div>
+                        </el-form-item>
+
                         <el-form-item label="Password">
                             <el-input type="password" placeholder="Password" v-model="formModel.password"></el-input>
                             <div class="el-form-item__error" v-if="formErrors.password">{{formErrors.password[0]}}</div>
@@ -113,11 +118,6 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="No. Karyawan">
-                            <el-input placeholder="No. Karyawan" v-model="formModel.no_karyawan"></el-input>
-                            <div class="el-form-item__error" v-if="formErrors.no_karyawan">{{formErrors.no_karyawan[0]}}</div>
-                        </el-form-item>
-
                         <el-form-item label="Lokasi">
                             <el-select v-model="formModel.location_id" style="width:100%" placeholder="Lokasi">
                                 <el-option
@@ -137,9 +137,8 @@
 
                         <el-form-item label="Role">
                             <el-select placeholder="Role" v-model="formModel.role" style="width:100%;">
-                                <el-option :value="0" label="Member"></el-option>
-                                <el-option :value="1" label="User"></el-option>
-                                <el-option :value="9" label="Admin"></el-option>
+                                <el-option :value="0" label="User"></el-option>
+                                <el-option :value="1" label="Admin"></el-option>
                             </el-select>
                             <div class="el-form-item__error" v-if="formErrors.role">{{formErrors.role[0]}}</div>
                         </el-form-item>
@@ -155,13 +154,15 @@
                 </el-row>
             </el-form>
 
-            <h3>Hak Akses</h3>
-            <hr>
-            <el-tree 
-            :data="$store.state.menuList" 
-            :props="{ children: 'children', label: 'label' }" 
-            show-checkbox
-            @check-change="handleCheckChange"></el-tree>
+            <div v-show="formModel.role == 0">
+                <h3>Hak Akses</h3>
+                <hr>
+                <el-tree 
+                :data="$store.state.menuList" 
+                :props="{ children: 'children', label: 'label' }" 
+                show-checkbox
+                @check-change="handleCheckChange"></el-tree>
+            </div>
 
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="save" icon="el-icon-success">SAVE</el-button>
@@ -183,7 +184,7 @@ export default {
     },
     data: function() {
         return {
-            roles: { 0: 'Member', 1: 'User', 9: 'Admin' },
+            roles: { 0: 'User', 1: 'Admin' },
             loading: false,
             showForm: false,
             formTitle: '',

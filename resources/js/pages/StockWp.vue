@@ -1,6 +1,6 @@
 <template>
     <el-card>
-        <h4>KONVERSI BERAT</h4>
+        <h4>STOCK WASTE PRODUCT</h4>
         <hr>
 
         <el-form :inline="true" class="form-right">
@@ -20,17 +20,24 @@
         </el-form>
 
         <el-table :data="paginatedData.data" stripe
-        :default-sort = "{prop: 'material_id', order: 'ascending'}"
+        :default-sort = "{prop: 'plant', order: 'ascending'}"
         v-loading="loading"
         style="border-top:1px solid #eee;"
         @sort-change="sortChange">
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
-            <el-table-column prop="kategori_jual" label="Kategori Jual" sortable="custom"></el-table-column>
-            <el-table-column prop="finished_good" label="Finished Goods" sortable="custom"></el-table-column>
-            <el-table-column prop="material_id" label="Material ID" sortable="custom"></el-table-column>
+            <el-table-column prop="plant" label="Plant" sortable="custom"></el-table-column>
+            <el-table-column prop="sloc" label="Sloc" sortable="custom"></el-table-column>
+            <el-table-column prop="mvt" label="Mvt" sortable="custom"></el-table-column>
+            <el-table-column prop="posting_date" label="Posting Date" sortable="custom"></el-table-column>
+            <el-table-column prop="mat_doc" label="Mat. Doc" sortable="custom"></el-table-column>
+            <el-table-column prop="material" label="Material" sortable="custom"></el-table-column>
             <el-table-column prop="material_description" label="Material Description" sortable="custom"></el-table-column>
-            <el-table-column prop="berat" label="Berat Rata - Rata" sortable="custom"></el-table-column>
-            <el-table-column prop="keterangan" label="Keterangan" sortable="custom"></el-table-column>
+            <el-table-column prop="doc_date" label="Doc. Date" sortable="custom"></el-table-column>
+            <el-table-column prop="entry_date" label="Entry Date" sortable="custom"></el-table-column>
+            <el-table-column prop="time" label="Time" sortable="custom"></el-table-column>
+            <el-table-column prop="bun" label="Bun" sortable="custom"></el-table-column>
+            <el-table-column prop="quantity" label="Quantity" sortable="custom"></el-table-column>
+            <el-table-column prop="stock" label="Stock" sortable="custom"></el-table-column>
         </el-table>
 
         <br>
@@ -82,7 +89,7 @@ export default {
             keyword: '',
             page: 1,
             pageSize: 10,
-            sort: 'material_id',
+            sort: 'plant',
             order: 'ascending',
             paginatedData: {},
             uploadFormDialog: false,
@@ -206,7 +213,7 @@ export default {
             }
             this.loading = true;
 
-            axios.get(BASE_URL + '/konversiBerat', { params: params }).then(r => {
+            axios.get(BASE_URL + '/stockWp', { params: params }).then(r => {
                 this.loading = false;
                 this.paginatedData = r.data
             }).catch(e => {

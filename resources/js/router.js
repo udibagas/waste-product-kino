@@ -12,6 +12,7 @@ import PengajuanPenjualanBb from './pages/PengajuanPenjualanBb'
 // import PengajuanPenjualanWp from './pages/PengajuanPenjualanWp'
 import InOutStockBb from './pages/InOutStockBb'
 import StockBb from './pages/StockBb'
+import StockWp from './pages/StockWp'
 import ReportBb from './pages/ReportBb'
 import KategoriBarang from './pages/KategoriBarang'
 import KonversiBerat from './pages/KonversiBerat'
@@ -80,6 +81,11 @@ const routes = [
         name: 'stockBb',
         path: '/stockBb',
         component: StockBb
+    },
+    {
+        name: 'stockWp',
+        path: '/stockWp',
+        component: StockWp
     },
     {
         name: 'reportBb',

@@ -36,8 +36,7 @@
                     {{ scope.row.tanggal | readableDate }}
                 </template>
             </el-table-column>
-            <el-table-column prop="no_sj" label="No. Surat Jalan" sortable="custom"></el-table-column>
-            <el-table-column prop="no_sj_keluar" label="No. SJ Keluar" sortable="custom"></el-table-column>
+            <el-table-column prop="no_sj_keluar" label="No. Surat Jalan" sortable="custom"></el-table-column>
             <el-table-column prop="lokasi_asal" label="Lokasi Asal" sortable="custom"></el-table-column>
             <el-table-column prop="lokasi_terima" label="Lokasi Terima" sortable="custom"></el-table-column>
             <el-table-column prop="penerima" label="Penerima" sortable="custom"></el-table-column>
@@ -94,11 +93,6 @@
                             <div class="el-form-item__error" v-if="formErrors.tanggal">{{formErrors.tanggal[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Nomor Surat Jalan">
-                            <el-input placeholder="Nomor Surat Jalan" v-model="formModel.no_sj"></el-input>
-                            <div class="el-form-item__error" v-if="formErrors.no_sj">{{formErrors.no_sj[0]}}</div>
-                        </el-form-item>
-
                         <el-form-item label="Nomor Surat Jalan Keluar">
                             <el-select :disabled="!!formModel.id" v-model="formModel.no_sj_keluar" style="width:100%" filterable default-first-option placeholder="Nomor Surat Jalan Keluar">
                                 <el-option
@@ -109,6 +103,11 @@
                                 </el-option>
                             </el-select>
                             <div class="el-form-item__error" v-if="formErrors.no_sj_keluar">{{formErrors.no_sj_keluar[0]}}</div>
+                        </el-form-item>
+
+                        <el-form-item label="Keterangan">
+                            <el-input type="textarea" rows="3" placeholder="Keterangan" v-model="formModel.keterangan"></el-input>
+                            <div class="el-form-item__error" v-if="formErrors.keterangan">{{formErrors.keterangan[0]}}</div>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
