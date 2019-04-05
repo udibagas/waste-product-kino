@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\StockWp;
+use App\KonversiBerat;
 use Illuminate\Support\Facades\DB;
 
 class StockWpController extends Controller
@@ -43,18 +44,30 @@ class StockWpController extends Controller
                 $stock = StockWp::where('plant', $row['plant'])
                     ->where('material', $row['material'])
                     ->first();
+                
+                // cari konversi
+                $konversi = KonversiBerat::where('material_id', $row['material'])->first();
 
                 if ($stock) {
+                    if ($konversi) {
+                        $row['stock'] = $stock->stock + ($stock->quantity * $konversi->berat);
+                    }
+
                     $row['quantity'] += $stock->quantity;
                     DB::table('stock_wps')->where('id', $stock->id)->update($row);
                 } else {
                     $row['quantity'] = $row['quantity'] == null ? 0 : $row['quantity'];
+                    
+                    if ($konversi) {
+                        $row['stock'] = $row['quantity'] * $konversi->berat;
+                    }
+
                     DB::table('stock_wps')->insert($row);
                 }
             }
 
             DB::commit();
-            return 'Data imported successfully. You can close this window or uplad more file.<br>';
+            return 'Data imported successfully. You can close this window or uplad more files.<br>';
         } catch (\Exception $e) {
             DB::rollBack();
             return '[ERROR] Failed to import data. ' . $e->getMessage().'<br>';

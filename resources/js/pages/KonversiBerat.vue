@@ -27,9 +27,9 @@
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
             <el-table-column prop="kategori_jual" label="Kategori Jual" sortable="custom"></el-table-column>
             <el-table-column prop="finished_good" label="Finished Goods" sortable="custom"></el-table-column>
-            <el-table-column prop="material_id" label="Material ID" sortable="custom"></el-table-column>
-            <el-table-column prop="material_description" label="Material Description" sortable="custom"></el-table-column>
-            <el-table-column prop="berat" label="Berat Rata - Rata" sortable="custom"></el-table-column>
+            <el-table-column prop="material_id" label="Material ID" width="170" sortable="custom"></el-table-column>
+            <el-table-column prop="material_description" width="350" label="Material Description" sortable="custom"></el-table-column>
+            <el-table-column prop="berat" label="Berat Rata - Rata (gr)" align="center" header-align="center" sortable="custom"></el-table-column>
             <el-table-column prop="keterangan" label="Keterangan" sortable="custom"></el-table-column>
         </el-table>
 
