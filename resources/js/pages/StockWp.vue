@@ -25,19 +25,27 @@
         style="border-top:1px solid #eee;"
         @sort-change="sortChange">
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
-            <el-table-column prop="plant" label="Plant" sortable="custom"></el-table-column>
-            <el-table-column prop="sloc" label="Sloc" sortable="custom"></el-table-column>
-            <el-table-column prop="mvt" label="Mvt" sortable="custom"></el-table-column>
-            <el-table-column prop="posting_date" label="Posting Date" sortable="custom"></el-table-column>
-            <el-table-column prop="mat_doc" label="Mat. Doc" sortable="custom"></el-table-column>
-            <el-table-column prop="material" label="Material" sortable="custom"></el-table-column>
-            <el-table-column prop="material_description" label="Material Description" sortable="custom"></el-table-column>
-            <el-table-column prop="doc_date" label="Doc. Date" sortable="custom"></el-table-column>
-            <el-table-column prop="entry_date" label="Entry Date" sortable="custom"></el-table-column>
-            <el-table-column prop="time" label="Time" sortable="custom"></el-table-column>
-            <el-table-column prop="bun" label="Bun" sortable="custom"></el-table-column>
-            <el-table-column prop="quantity" label="Quantity" sortable="custom"></el-table-column>
-            <el-table-column prop="stock" label="Stock" sortable="custom"></el-table-column>
+            <el-table-column prop="plant" label="Plant" width="75" sortable="custom"></el-table-column>
+            <el-table-column prop="sloc" label="Sloc" width="70" sortable="custom"></el-table-column>
+            <el-table-column prop="mvt" label="Mvt" width="70" sortable="custom"></el-table-column>
+            <el-table-column prop="posting_date" label="Posting Date" width="120" sortable="custom"></el-table-column>
+            <el-table-column prop="mat_doc" label="Mat. Doc" width="100" sortable="custom"></el-table-column>
+            <el-table-column prop="material" label="Material" width="170" sortable="custom"></el-table-column>
+            <el-table-column prop="material_description" width="350" label="Material Description" sortable="custom"></el-table-column>
+            <el-table-column prop="doc_date" label="Doc. Date" width="110" sortable="custom"></el-table-column>
+            <el-table-column prop="entry_date" label="Entry Date" width="110" sortable="custom"></el-table-column>
+            <el-table-column prop="time" label="Time" width="75" sortable="custom"></el-table-column>
+            <el-table-column prop="bun" label="Bun" width="70" sortable="custom"></el-table-column>
+            <el-table-column prop="quantity" label="Qty" width="70" sortable="custom" align="right" header-align="right">
+                <template slot-scope="scope">
+                    {{ scope.row.quantity | formatNumber }}
+                </template>
+            </el-table-column>
+            <el-table-column prop="stock" label="Stock (KG)" width="120" sortable="custom" align="right" header-align="right">
+                <template slot-scope="scope">
+                    {{ (scope.row.stock/1000) }}
+                </template>
+            </el-table-column>
         </el-table>
 
         <br>
@@ -93,10 +101,16 @@ export default {
             order: 'ascending',
             paginatedData: {},
             uploadFormDialog: false,
-            logs: ['Please select file...<br>']
+            logs: ['Please select file...<br>'],
+            plants: []
         }
     },
     methods: {
+        getPlant() {
+            axios.get(BASE_URL + '/location/getList').then(r => {
+                this.plants = r.data.map(d => { return parseInt(d.plant) });
+            }).then(e => console.log(e))
+        },
         excelTimeToStr(v) {
             let num = parseFloat(v) * 24
             return ('0' + Math.floor(num) % 24).slice(-2) + ':' + ((num % 1)*60 + '0').slice(0, 2);
@@ -162,7 +176,6 @@ export default {
                 // see the result, caution: it works after reader event is done.
                 var res = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1});
                 _this.logs.push('Reading file completed. Found ' + (res.length - 1) + ' rows <br>')
-                _this.logs.push('Importing data. This may take long moment. Don\'t close this window. Please wait ... <br>')
 
                 var dataToImport = res.map(r => {
                     return {
@@ -179,10 +192,15 @@ export default {
                         bun: r[10],
                         quantity: r[11]
                     }
-                });
+                })
+
+                dataToImport.splice(0, 1)
+                dataToImport = dataToImport.filter(d => _this.plants.indexOf(d.plant) >= 0);
+                _this.logs.push('Found ' + (dataToImport.length) + ' valid rows <br>')
+                _this.logs.push('Importing data. This may take long moment. Don\'t close this window. Please wait ... <br>')
                 
                 // buang headernya
-                _this.save(dataToImport.splice(1));
+                _this.save(dataToImport);
             };
 
             reader.readAsArrayBuffer(oFile);
@@ -227,6 +245,7 @@ export default {
     },
     mounted() {
         this.requestData();
+        this.getPlant();
         let _this = this
         $('body').on('change', '#file-upload', function(ev) {
             _this.readFile(ev);
