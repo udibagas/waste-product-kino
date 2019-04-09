@@ -14,7 +14,7 @@
                 </el-col>
                 <el-col :span="12" class="text-right">
                     <el-dropdown @command="handleCommand">
-                        <span class="el-dropdown-link">Welcome, {{user.name}}!</span>
+                        <span class="el-dropdown-link" style="cursor:pointer">Welcome, {{user.name}}!</span>
                         <!-- <i class="el-icon-more text-white"></i> -->
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item command="profile">My Profile</el-dropdown-item>

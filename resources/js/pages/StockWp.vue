@@ -31,7 +31,7 @@
             <el-table-column prop="posting_date" label="Posting Date" width="120" sortable="custom"></el-table-column>
             <el-table-column prop="mat_doc" label="Mat. Doc" width="100" sortable="custom"></el-table-column>
             <el-table-column prop="material" label="Material" width="170" sortable="custom"></el-table-column>
-            <el-table-column prop="material_description" width="350" label="Material Description" sortable="custom"></el-table-column>
+            <el-table-column prop="material_description" min-width="350" label="Material Description" sortable="custom"></el-table-column>
             <el-table-column prop="doc_date" label="Doc. Date" width="110" sortable="custom"></el-table-column>
             <el-table-column prop="entry_date" label="Entry Date" width="110" sortable="custom"></el-table-column>
             <el-table-column prop="time" label="Time" width="75" sortable="custom"></el-table-column>

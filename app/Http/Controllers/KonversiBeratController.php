@@ -39,7 +39,7 @@ class KonversiBeratController extends Controller
                 }
 
             DB::commit();
-            return 'Data imported successfully. You can close this window or uplad more file.<br>';
+            return 'Data imported successfully. You can close this window or uplad more files.<br>';
         } catch (\Exception $e) {
             DB::rollBack();
             return '[ERROR] Failed to import data. ' . $e->getMessage().'<br> ' ;

@@ -58,7 +58,9 @@ class UserController extends Controller
 
         $input = $request->all();
         $input['password'] = bcrypt($request->password);
-        return User::create($input);
+        $user = User::create($input);
+        $user->rights()->createMany($request->rights);
+        return $user;
     }
 
     /**
@@ -105,6 +107,8 @@ class UserController extends Controller
         ]);
 
         $user->update($input);
+        $user->rights()->delete();
+        $user->rights()->createMany($request->rights);
         return $user;
     }
 

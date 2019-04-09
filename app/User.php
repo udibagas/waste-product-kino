@@ -5,10 +5,15 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use DB;
 
 class User extends Authenticatable
 {
     use Notifiable;
+
+    const ROLE_USER = 0;
+
+    const ROLE_ADMIN = 1;
 
     protected $dateFormat = 'Y-m-d H:i:s';
 
@@ -39,9 +44,15 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    protected $with = ['location'];
+    protected $with = ['location', 'rights'];
 
-    public function location() {
+    public function location() 
+    {
         return $this->belongsTo(Location::class);
+    }
+
+    public function rights()
+    {
+        return $this->hasMany(UserRight::class);
     }
 }

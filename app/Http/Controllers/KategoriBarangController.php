@@ -23,7 +23,9 @@ class KategoriBarangController extends Controller
 
     public function store(KategoriBarangRequest $request)
     {
-        return KategoriBarang::create($request->all());
+        $input = $request->all();
+        $input['status'] = 0;
+        return KategoriBarang::create($input);
     }
 
     public function update(KategoriBarang $kategoriBarang, KategoriBarangRequest $request)

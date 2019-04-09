@@ -24,7 +24,7 @@ Vue.filter('formatNumber', function (v) {
         return parseFloat(v)
             .toFixed(0)
             .toString()
-            .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     } catch (error) {
         return 0
     }

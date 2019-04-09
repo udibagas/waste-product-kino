@@ -25,27 +25,27 @@
         style="border-top:1px solid #eee;"
         @filter-change="filterChange"
         @sort-change="sortChange">
-            <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
-            <el-table-column prop="name" label="Name" sortable="custom" width="180"></el-table-column>
-            <el-table-column prop="no_karyawan" label="No. Karyawan" sortable="custom" width="130"></el-table-column>
-            <el-table-column prop="email" label="Email" sortable="custom" width="220"></el-table-column>
+            <el-table-column type="index" min-width="50" :index="paginatedData.from"> </el-table-column>
+            <el-table-column prop="name" label="Name" sortable="custom" min-width="180"></el-table-column>
+            <el-table-column prop="no_karyawan" label="No. Karyawan" sortable="custom" min-width="130"></el-table-column>
+            <el-table-column prop="email" label="Email" sortable="custom" min-width="220"></el-table-column>
             <el-table-column label="Lokasi" width="200">
                 <template slot-scope="scope" v-if="scope.row.location">
                     {{scope.row.location.plant}} - {{scope.row.location.name}}
                 </template>
             </el-table-column>
-            <el-table-column prop="department" label="Departemen" sortable="custom" width="180"></el-table-column>
-            <el-table-column prop="role" label="Role" sortable="custom" width="120"
+            <el-table-column prop="department" label="Departemen" sortable="custom" min-width="180"></el-table-column>
+            <el-table-column prop="role" label="Role" sortable="custom" min-width="120"
             column-key="role"
             :filters="[{value: 0, text: 'Member'},{value: 1, text: 'User'}, {value: 9, text: 'Admin'}]">
                 <template slot-scope="scope">
                     {{roles[scope.row.role]}}
                 </template>
             </el-table-column>
-            <el-table-column prop="last_login" label="Last Login" sortable="custom" width="180"></el-table-column>
-            <el-table-column prop="login" label="Login" sortable="custom" width="80" header-align="center" align="center"></el-table-column>
+            <el-table-column prop="last_login" label="Last Login" sortable="custom" min-width="180"></el-table-column>
+            <el-table-column prop="login" label="Login" sortable="custom" min-width="80" header-align="center" align="center"></el-table-column>
 
-            <el-table-column prop="status" label="Status" sortable="custom" column-key="status" width="100" align="center" header-align="center"
+            <el-table-column prop="status" label="Status" sortable="custom" column-key="status" min-width="100" align="center" header-align="center"
             :filters="[{value: 0, text: 'Inactive'},{value: 1, text: 'Active'}]">
                 <template slot-scope="scope">
                     <el-tag size="small" :type="scope.row.status ? 'success' : 'danger'">{{scope.row.status ? 'Active' : 'Inactive'}}</el-tag>
@@ -161,7 +161,10 @@
                 :data="$store.state.menuList" 
                 :props="{ children: 'children', label: 'label' }" 
                 show-checkbox
-                @check-change="handleCheckChange"></el-tree>
+                default-expand-all
+                node-key="id"
+                ref="tree"
+                @check="handleCheck"></el-tree>
             </div>
 
             <span slot="footer" class="dialog-footer">
@@ -190,7 +193,7 @@ export default {
             formTitle: '',
             formErrors: {},
             error: {},
-            formModel: {},
+            formModel: { rights: [] },
             keyword: '',
             page: 1,
             pageSize: 10,
@@ -198,23 +201,12 @@ export default {
             order: 'ascending',
             filters: {},
             paginatedData: {},
+            rights: []
         }
     },
     methods: {
-        handleCheckChange(data, checked, indeterminate) {
-            // console.log(data, checked, indeterminate);
-            let index = this.formModel.rights.indexOf(data)
-
-            if (checked) {
-                if (index == -1) {
-                    this.formModel.rights.push(data);
-                } 
-            } else {
-                if (index >= 0) {
-                    this.formModel.rights.splice(index, 1);
-                }
-            }
-            console.log(this.formModel.rights);
+        handleCheck(node, checked) {
+            this.rights = checked.checkedKeys
         },
         sortChange: function(column) {
             if (this.sort !== column.prop || this.order !== column.order) {
@@ -233,6 +225,10 @@ export default {
             this.requestData();
         },
         save() {
+            this.formModel.rights = this.rights.map(r => {
+                return { menu_id: r }
+            })
+
             if (!!this.formModel.id) {
                 this.update()
             } else {
@@ -297,6 +293,10 @@ export default {
                 rights: []
             }
             this.showForm = true
+            let _this = this
+            setTimeout(function() {
+                _this.$refs.tree.setCheckedKeys([]);
+            }, 10)
         },
         editData: function(data) {
             this.formTitle = 'EDIT USER'
@@ -304,6 +304,11 @@ export default {
             this.error = {}
             this.formErrors = {}
             this.showForm = true
+            let _this = this
+
+            setTimeout(function() {
+                _this.$refs.tree.setCheckedKeys(_this.formModel.rights.map(r => { return r.menu_id }));
+            }, 10)
         },
         deleteData: function(id) {
             this.$confirm('Anda yakin akan menghapus user ini?', 'Warning', {
