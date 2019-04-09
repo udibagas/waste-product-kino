@@ -8,7 +8,7 @@ class AppController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware(['auth', 'checkRole']);
     }
 
     public function index()
