@@ -58,11 +58,17 @@ Route::resource('stockWp', 'StockWpController')->only(['index', 'store', 'update
 Route::resource('user', 'UserController')->only(['index', 'show', 'store', 'update', 'destroy']);
 
 // TESTING ONLY
+Route::get('jajal', function() {
+    return auth()->user()->rights;
+});
+
 Route::get('/emailApproval', function() {
     return new App\Mail\ApprovalRequest(PengajuanPenjualan::first(), 1, User::find(1));
 });
 
+// untuk check auth sebelum route vue
+Route::get('checkAuth', 'AppController@checkAuth');
+
 // ROOT & SPA
 Route::get('/', 'AppController@index');
 Route::get('/app/{any}', 'AppController@index')->where('any', '.*');
-

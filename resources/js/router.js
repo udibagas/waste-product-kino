@@ -119,8 +119,21 @@ const routes = [
     }
 ]
 
-export default new VueRouter({
+const router = new VueRouter({
     base: APP_BASE + 'app',
     mode: 'history',
     routes: routes
 })
+
+router.beforeEach((to, from, next) => {
+    let params = { route: to.path }
+    axios.get(BASE_URL + '/checkAuth', { params: params }).then(r => {
+        next()
+    }).catch(e => {
+        alert('Unauthorized')
+        // kalau next disini ga bener bakal looping
+        next(false)
+    })
+});
+
+export default router
