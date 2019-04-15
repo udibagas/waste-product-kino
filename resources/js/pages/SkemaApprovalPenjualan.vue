@@ -35,7 +35,12 @@
                     {{scope.row.location.plant}} - {{scope.row.location.name}}
                 </template>
             </el-table-column>
-            <el-table-column prop="level" label="Level" sortable="custom">
+            <el-table-column 
+            prop="level" 
+            column-key="level"
+            :filters="[{text: 'Level 1', value: 1}, {text: 'Level 2', value: 2}]"
+            label="Level" 
+            sortable="custom">
                 <template slot-scope="scope">
                     Level {{scope.row.level}}
                 </template>
