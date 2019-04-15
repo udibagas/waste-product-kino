@@ -30,4 +30,13 @@ class PenjualanRequest extends FormRequest
             
         ];
     }
+
+    public function attributes()
+    {
+        return [
+            'tanggal' => 'Tanggal',
+            'no_sj' => 'Nomor Surat Jalan',
+            'top_date' => 'TOP Date'
+        ];
+    }
 }

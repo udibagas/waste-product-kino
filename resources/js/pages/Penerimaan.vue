@@ -31,21 +31,47 @@
                     <PenerimaanDetail :data="scope.row" />
                 </template>
             </el-table-column>
-            <el-table-column prop="tanggal" width="100" label="Tanggal" sortable="custom">
+            <el-table-column prop="tanggal" min-width="100" label="Tanggal" sortable="custom">
                 <template slot-scope="scope">
                     {{ scope.row.tanggal | readableDate }}
                 </template>
             </el-table-column>
             <el-table-column prop="no_sj_keluar" label="No. Surat Jalan" sortable="custom"></el-table-column>
-            <el-table-column prop="lokasi_asal" label="Lokasi Asal" sortable="custom"></el-table-column>
-            <el-table-column prop="lokasi_terima" label="Lokasi Terima" sortable="custom"></el-table-column>
+
+            <el-table-column 
+            prop="lokasi_asal" 
+            label="Lokasi Asal" 
+            sortable="custom"
+            column-key="lokasi_asal_id"
+            :filters="$store.state.locationList.map(l => { return {value: l.id, text: l.plant + ' - ' + l.name } })" >
+            </el-table-column>
+            
+            <el-table-column 
+            prop="lokasi_terima" 
+            label="Lokasi Terima" 
+            sortable="custom"
+            column-key="lokasi_terima_id"
+            :filters="$store.state.locationList.map(l => { return {value: l.id, text: l.plant + ' - ' + l.name } })" >
+            </el-table-column>
+            
             <el-table-column prop="penerima" label="Penerima" sortable="custom"></el-table-column>
-            <el-table-column prop="status" width="100" align="center" header-align="center" label="Status" sortable="custom">
+
+            <el-table-column prop="keterangan" label="Keterangan" sortable="custom"></el-table-column>
+            
+            <el-table-column 
+            prop="status" 
+            width="100" 
+            align="center" 
+            header-align="center" 
+            label="Status" 
+            column-key="status"
+            :filters="statuses.map(s => { return {value: s.value, text: s.label} })"
+            sortable="custom">
                 <template slot-scope="scope">
                     <el-tag size="small" :type="statuses[scope.row.status].type">{{statuses[scope.row.status].label}}</el-tag>
                 </template>
             </el-table-column>
-
+            
             <el-table-column fixed="right" width="40px">
                 <template slot-scope="scope">
                     <el-dropdown v-if="scope.row.status == 0">
@@ -228,8 +254,8 @@ export default {
             filters: {},
             paginatedData: {},
             statuses: [
-                {type: 'info', label: 'Draft'},
-                {type: 'success', label: 'Submitted'}
+                {type: 'info', label: 'Draft', value: 0},
+                {type: 'success', label: 'Submitted', value: 1}
             ]
         }
     },
@@ -394,6 +420,7 @@ export default {
         this.requestData();
         this.$store.commit('getKategoriBarangList');
         this.$store.commit('getPengeluaranList');
+        this.$store.commit('getLocationList');
     }
 }
 </script>

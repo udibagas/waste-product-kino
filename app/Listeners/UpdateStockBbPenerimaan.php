@@ -44,7 +44,7 @@ class UpdateStockBbPenerimaan
                 'stock_in' => $item->timbangan_manual_terima, 
                 'qty_out' => 0,
                 'qty_in' => $item->qty_terima, 
-                'no_sj' => $event->penerimaan->no_sj
+                'no_sj' => $event->penerimaan->no_sj_keluar
             ]);
 
             $stock = StockBb::where('location_id', $event->penerimaan->lokasi_terima_id)

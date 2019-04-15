@@ -73,4 +73,31 @@ class StockWpController extends Controller
             return '[ERROR] Failed to import data. ' . $e->getMessage().'<br>';
         }
     }
+
+    public function getSlocList()
+    {
+        $data = DB::select("SELECT DISTINCT(sloc) FROM stock_wps");
+        return array_map(function($d) { 
+            return $d->sloc; 
+        }, $data);
+    }
+
+    public function getMvtList()
+    {
+        $data = DB::select("SELECT DISTINCT(mvt) FROM stock_wps");
+        return array_map(function ($d) {
+            return $d->mvt;
+        }, $data);
+    }
+
+    public function getList(Request $request)
+    {
+        return StockWp::when($request->plant, function ($q) use ($request) {
+            return $q->where('plant', $request->plant);
+        })->when($request->mvt_type, function ($q) use ($request) {
+            return $q->whereIn('mvt', $request->mvt_type);
+        })->when($request->sloc, function ($q) use ($request) {
+            return $q->where('sloc', $request->sloc);
+        })->orderBy('material', 'asc')->get(); 
+    }
 }

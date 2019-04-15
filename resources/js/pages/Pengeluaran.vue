@@ -37,15 +37,39 @@
                 </template>
             </el-table-column>
             <el-table-column prop="no_sj" label="No. Surat Jalan" sortable="custom"></el-table-column>
-            <el-table-column prop="lokasi_asal" label="Lokasi Asal" sortable="custom"></el-table-column>
-            <el-table-column prop="lokasi_terima" label="Lokasi Terima" sortable="custom"></el-table-column>
+            
+            <el-table-column 
+            prop="lokasi_asal" 
+            label="Lokasi Asal" 
+            sortable="custom"
+            column-key="lokasi_asal_id"
+            :filters="$store.state.locationList.map(l => { return {value: l.id, text: l.plant + ' - ' + l.name } })" >
+            </el-table-column>
+            
+            <el-table-column 
+            prop="lokasi_terima" 
+            label="Lokasi Terima" 
+            sortable="custom"
+            column-key="lokasi_terima_id"
+            :filters="$store.state.locationList.map(l => { return {value: l.id, text: l.plant + ' - ' + l.name } })" >
+            </el-table-column>
+            
             <el-table-column prop="penerima" label="Penerima" sortable="custom"></el-table-column>
             <el-table-column prop="jembatan_timbang" label="Jembatan Timbang" sortable="custom" align="right" header-align="right">
                 <template slot-scope="scope">
                     {{ scope.row.jembatan_timbang | formatNumber }} kg
                 </template>
             </el-table-column>
-            <el-table-column prop="status" width="100" align="center" header-align="center" label="Status" sortable="custom">
+            
+            <el-table-column 
+            prop="status" 
+            width="100" 
+            align="center" 
+            header-align="center" 
+            label="Status" 
+            column-key="status"
+            :filters="statuses.map(s => { return {value: s.value, text: s.label} })"
+            sortable="custom">
                 <template slot-scope="scope">
                     <el-tag size="small" :type="statuses[scope.row.status].type">{{statuses[scope.row.status].label}}</el-tag>
                 </template>
@@ -168,7 +192,7 @@
                             <td> <input type="number" v-model="formModel.items[index].timbangan_manual" class="my-input" placeholder="Timbangan Manual"> </td>
                             <td class="text-center"> {{formModel.items[index].eun}} </td>
                             <td class="text-center">
-                                <a v-if="index > 0" href="#" @click="deleteItem(index)" class="icon-bg"><i class="el-icon-delete"></i></a>
+                                <a href="#" @click="deleteItem(index)" class="icon-bg"><i class="el-icon-delete"></i></a>
                             </td>
                         </tr>
                     </tbody>
@@ -231,9 +255,9 @@ export default {
             filters: {},
             paginatedData: {},
             statuses: [
-                {type: 'info', label: 'Draft'},
-                {type: 'warning', label: 'Submitted'},
-                {type: 'success', label: 'Received'},
+                {type: 'info', label: 'Draft', value: 0},
+                {type: 'warning', label: 'Submitted', value: 1},
+                {type: 'success', label: 'Received', value: 2},
             ]
         }
     },
@@ -289,7 +313,11 @@ export default {
             }).catch(() => {})
         },
         save() {
-            // validasi item
+            if (this.formModel.items.length == 0) {
+                this.$message({ message: 'Mohon isi data barang.', showClose: true, type: 'error' });
+                return
+            }
+
             let invalid = this.formModel.items.filter(i => !i.kategori_barang_id || !i.qty || !i.timbangan_manual).length
             
             if (invalid) {
@@ -448,8 +476,8 @@ export default {
     border: none;
     width: 100%;
     padding: 5px;
-    /* background-color: #eee; */
-    background-color: transparent;
+    background-color: #eee;
+    /* background-color: transparent; */
 }
 
 .my-input:hover, .my-input:focus {

@@ -17,7 +17,9 @@ export default new Vuex.Store({
         userList: [],
         menuList: [],
         pembeliList: [],
-        pengajuanPenjualanList: []
+        pengajuanPenjualanList: [],
+        slocList: [],
+        mvtList: []
     },
     mutations: {
         getKategoriBarangList(state) {
@@ -60,6 +62,18 @@ export default new Vuex.Store({
             axios
                 .get(BASE_URL + "/navigation")
                 .then(r => (state.menuList = r.data))
+                .catch(e => console.log(e));
+        },
+        getSlocList(state) {
+            axios
+                .get(BASE_URL + "/getSlocList")
+                .then(r => (state.slocList = r.data))
+                .catch(e => console.log(e));
+        },
+        getMvtList(state) {
+            axios
+                .get(BASE_URL + "/getMvtList")
+                .then(r => (state.mvtList = r.data))
                 .catch(e => console.log(e));
         }
     }

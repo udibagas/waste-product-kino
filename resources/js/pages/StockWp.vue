@@ -25,9 +25,34 @@
         style="border-top:1px solid #eee;"
         @sort-change="sortChange">
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
-            <el-table-column prop="plant" label="Plant" width="75" sortable="custom"></el-table-column>
-            <el-table-column prop="sloc" label="Sloc" width="70" sortable="custom"></el-table-column>
-            <el-table-column prop="mvt" label="Mvt" width="70" sortable="custom"></el-table-column>
+            
+            <el-table-column 
+            prop="plant" 
+            label="Plant" 
+            width="90" 
+            column-key="plant"
+            :filters="$store.state.locationList.map(l => { return {value: l.plant, text: l.plant + ' - ' + l.name } })"
+            sortable="custom">
+            </el-table-column>
+            
+            <el-table-column 
+            prop="sloc" 
+            label="Sloc" 
+            width="90" 
+            column-key="sloc"
+            :filters="$store.state.slocList.map(l => { return {value: l, text: l } })"
+            sortable="custom">
+            </el-table-column>
+            
+            <el-table-column 
+            prop="mvt" 
+            label="Mvt" 
+            width="90" 
+            column-key="mvt"
+            :filters="$store.state.mvtList.map(l => { return {value: l, text: l } })"
+            sortable="custom">
+            </el-table-column>
+            
             <el-table-column prop="posting_date" label="Posting Date" width="120" sortable="custom"></el-table-column>
             <el-table-column prop="mat_doc" label="Mat. Doc" width="100" sortable="custom"></el-table-column>
             <el-table-column prop="material" label="Material" width="170" sortable="custom"></el-table-column>
@@ -246,6 +271,9 @@ export default {
     mounted() {
         this.requestData();
         this.getPlant();
+        this.$store.commit('getSlocList')
+        this.$store.commit('getMvtList')
+        this.$store.commit('getLocationList')
         let _this = this
         $('body').on('change', '#file-upload', function(ev) {
             _this.readFile(ev);

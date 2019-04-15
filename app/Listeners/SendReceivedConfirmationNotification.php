@@ -7,6 +7,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Mail\ReceiptNotification;
 use App\Pengeluaran;
+use Illuminate\Support\Facades\Mail;
 
 class SendReceivedConfirmationNotification
 {
@@ -28,10 +29,9 @@ class SendReceivedConfirmationNotification
      */
     public function handle(PenerimaanSubmitted $event)
     {
-        $pengeluaran = Pengeluaran::where('no_sj', $event->penerimaan->no_sj_keluar)->first();
-
-        if ($pengeluaran) {
-            Mail::to($event->pengeluaran->user)
+        if ($event->penerimaan->pengeluaran) {
+            Mail::to($event->penerimaan->pengeluaran->user->email)
+                ->to($event->penerimaan->user->email)
                 ->cc('bagas@lamsolusi.com')
                 ->queue(new ReceiptNotification($event->penerimaan));
         }

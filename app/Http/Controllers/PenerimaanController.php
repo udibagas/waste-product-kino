@@ -16,10 +16,18 @@ class PenerimaanController extends Controller
         $order = $request->order == 'ascending' ? 'asc' : 'desc';
 
         return Penerimaan::when($request->keyword, function ($q) use ($request) {
-            return $q->where('no_sj', 'LIKE', '%' . $request->keyword . '%')
+            return $q->where('no_sj_keluar', 'LIKE', '%' . $request->keyword . '%')
                 ->orWhere('lokasi_asal', 'LIKE', '%' . $request->keyword . '%')
                 ->orWhere('lokasi_terima', 'LIKE', '%' . $request->keyword . '%')
                 ->orWhere('penerima', 'LIKE', '%' . $request->keyword . '%');
+        })->when($request->lokasi_asal_id, function ($q) use ($request) {
+            return $q->whereIn('lokasi_asal_id', $request->lokasi_asal_id);
+        })->when($request->lokasi_terima_id, function ($q) use ($request) {
+            return $q->whereIn('lokasi_terima_id', $request->lokasi_terima_id);
+        })->when($request->status, function ($q) use ($request) {
+            return $q->whereIn('status', $request->status);
+        })->when($request->user()->role == \App\User::ROLE_USER, function ($q) use ($request) {
+            return $q->where('lokasi_terima_id', $request->user()->location_id);
         })->orderBy($sort, $order)->paginate($request->pageSize);
     }
 
@@ -35,7 +43,7 @@ class PenerimaanController extends Controller
         $penerimaan = Penerimaan::create($input);
         $penerimaan->items()->createMany($request->items);
 
-        if ($request->status == 1) {
+        if ($request->status == Penerimaan::STATUS_SUBMITTED) {
             event(new PenerimaanSubmitted($penerimaan));
         }
 
@@ -50,7 +58,7 @@ class PenerimaanController extends Controller
             PenerimaanItem::find($i['id'])->update($i);
         }
 
-        if ($request->status == 1) {
+        if ($request->status == Penerimaan::STATUS_SUBMITTED) {
             event(new PenerimaanSubmitted($penerimaan));
         }
 

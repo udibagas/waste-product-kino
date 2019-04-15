@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\PengajuanPenjualan;
 use App\User;
+use App\Penerimaan;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,13 +34,17 @@ Route::get('pembeli/getList', 'PembeliController@getList');
 Route::get('pengajuanPenjualan/getList', 'PengajuanPenjualanController@getList');
 Route::get('pengeluaran/getList', 'PengeluaranController@getList');
 Route::get('user/getList', 'UserController@getList');
+Route::get('stockWp/getList', 'StockWpController@getList');
+Route::get('getSlocList', 'StockWpController@getSlocList');
+Route::get('getMvtList', 'StockWpController@getMvtList');
 
 // TRANSACTION
 Route::resource('penerimaan', 'PenerimaanController')->only(['index', 'store', 'update', 'destroy']);
-Route::put( 'pengajuanPenjualan/{pengajuanPenjualan}/approve', 'PengajuanPenjualanController@approve');
+Route::put('pengajuanPenjualan/{pengajuanPenjualan}/approve', 'PengajuanPenjualanController@approve');
+Route::delete('pengajuanPenjualanItemBb/{pengajuanPenjualanItemBb}', 'PengajuanPenjualanItemBbController@destroy');
 Route::resource('pengajuanPenjualan', 'PengajuanPenjualanController')->only(['index', 'edit', 'show', 'store', 'update', 'destroy']);
 Route::resource('pengeluaran', 'PengeluaranController')->only(['index', 'store', 'update', 'destroy']);
-Route::resource('pengeluaranItem', 'PengeluaranItemController')->only(['destroy']);
+Route::delete('pengeluaranItem/{pengeluaranItem}', 'PengeluaranItemController@destroy');
 Route::resource('penjualan','PenjualanController')->only(['index', 'store', 'update', 'destroy']);
 
 // REPORT
@@ -64,6 +69,11 @@ Route::get('jajal', function() {
 
 Route::get('/emailApproval', function() {
     return new App\Mail\ApprovalRequest(PengajuanPenjualan::first(), 1, User::find(1));
+});
+
+Route::get('/emailPenerimaan', function() {
+    $penerimaan = Penerimaan::find(3015);
+    return new App\Mail\ReceiptNotification($penerimaan);
 });
 
 // untuk check auth sebelum route vue

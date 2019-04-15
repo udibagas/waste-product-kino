@@ -27,8 +27,8 @@
                     <td class="text-center">{{item.qty_terima | formatNumber}}</td>
                     <td class="text-center">{{item.qty_kirim - item.qty_terima | formatNumber}}</td>
                     <td class="text-center">{{item.eun}}</td>
-                    <td class="text-center">{{item.timbangan_manual_kirim | formatNumber}}</td>
-                    <td class="text-center">{{item.timbangan_manual_terima | formatNumber}}</td>
+                    <td class="text-right">{{item.timbangan_manual_kirim | formatNumber}}</td>
+                    <td class="text-right">{{item.timbangan_manual_terima | formatNumber}}</td>
                     <td class="text-center">{{item.timbangan_manual_kirim - item.timbangan_manual_terima | formatNumber}}</td>
                     <td>{{item.keterangan}}</td>
                 </tr>

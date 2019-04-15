@@ -9,7 +9,7 @@ import Penerimaan from './pages/Penerimaan'
 import Pengeluaran from './pages/Pengeluaran'
 import PenjualanBb from './pages/PenjualanBb'
 import PengajuanPenjualanBb from './pages/PengajuanPenjualanBb'
-// import PengajuanPenjualanWp from './pages/PengajuanPenjualanWp'
+import PengajuanPenjualanWp from './pages/PengajuanPenjualanWp'
 import InOutStockBb from './pages/InOutStockBb'
 import StockBb from './pages/StockBb'
 import StockWp from './pages/StockWp'
@@ -62,11 +62,11 @@ const routes = [
         path: '/pengajuanPenjualanBb',
         component: PengajuanPenjualanBb,
     },
-    // {
-    //     name: 'pengajuanPenjualanWp',
-    //     path: '/pengajuanPenjualanWp',
-    //     component: PengajuanPenjualanWp,
-    // },
+    {
+        name: 'pengajuanPenjualanWp',
+        path: '/pengajuanPenjualanWp',
+        component: PengajuanPenjualanWp,
+    },
     {
         name: 'location',
         path: '/location',

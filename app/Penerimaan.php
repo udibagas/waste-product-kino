@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Penerimaan extends Model
 {
+    const STATUS_DRAFT = 0;
+
+    const STATUS_SUBMITTED = 1;
+    
     protected $dateFormat = 'Y-m-d H:i:s';
 
     protected $fillable = [
@@ -19,5 +23,15 @@ class Penerimaan extends Model
     public function items()
     {
         return $this->hasMany(PenerimaanItem::class);
+    }
+
+    public function pengeluaran()
+    {
+        return $this->hasOne(Pengeluaran::class, 'no_sj', 'no_sj_keluar');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

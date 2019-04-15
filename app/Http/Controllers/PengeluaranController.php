@@ -25,6 +25,14 @@ class PengeluaranController extends Controller
                 ->orWhere('lokasi_asal', 'LIKE', '%' . $request->keyword . '%')
                 ->orWhere('lokasi_terima', 'LIKE', '%' . $request->keyword . '%')
                 ->orWhere('penerima', 'LIKE', '%' . $request->keyword . '%');
+        })->when($request->lokasi_asal_id, function($q) use ($request) {
+            return $q->whereIn('lokasi_asal_id', $request->lokasi_asal_id);
+        })->when($request->lokasi_terima_id, function ($q) use ($request) {
+            return $q->whereIn('lokasi_terima_id', $request->lokasi_terima_id);
+        })->when($request->status, function ($q) use ($request) {
+            return $q->whereIn('status', $request->status);
+        })->when($request->user()->role == \App\User::ROLE_USER, function ($q) use ($request) {
+            return $q->where('lokasi_asal_id', $request->user()->location_id);
         })->orderBy($sort, $order)->paginate($request->pageSize);
     }
 
@@ -35,7 +43,7 @@ class PengeluaranController extends Controller
         $pengeluaran = Pengeluaran::create($input);
         $pengeluaran->items()->createMany($request->items);
 
-        if ($request->status == 1) {
+        if ($request->status == Pengeluaran::STATUS_SUBMITTED) {
             event(new PengeluaranSubmitted($pengeluaran));
         }
 
@@ -55,7 +63,7 @@ class PengeluaranController extends Controller
             }
         }
 
-        if ($request->status == 1) {
+        if ($request->status == Pengeluaran::STATUS_SUBMITTED) {
             event(new PengeluaranSubmitted($pengeluaran));
         }
 
@@ -73,8 +81,15 @@ class PengeluaranController extends Controller
         return ['message' => 'ok'];
     }
 
-    public function getList()
+    /**
+     * List pengeluaran yang sudah disbmit untuk dropdown di penerimaan
+     * 
+     */
+    public function getList(Request $request)
     {
-        return Pengeluaran::where('status', 1)->get();
+        return Pengeluaran::where('status', Pengeluaran::STATUS_SUBMITTED)
+            ->when($request->user()->role == \App\User::ROLE_USER, function($q) use ($request) {
+                return $q->where('lokasi_terima_id', $request->user()->location_id);
+            })->get();
     }
 }

@@ -15,7 +15,7 @@
                     <td>{{index+1}}.</td>
                     <td>{{item.barang.kode}} - {{item.barang.nama}}</td>
                     <td class="text-center">{{item.qty | formatNumber}}</td>
-                    <td class="text-center">{{item.timbangan_manual | formatNumber}}</td>
+                    <td class="text-right">{{item.timbangan_manual | formatNumber}}</td>
                     <td class="text-center">{{item.eun}}</td>
                 </tr>
             </tbody>

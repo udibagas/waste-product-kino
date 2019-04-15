@@ -24,7 +24,6 @@ class PenerimaanRequest extends FormRequest
     public function rules()
     {
         return [
-            'no_sj' => 'required',
             'tanggal' => 'required|date',
             'no_sj_keluar' => 'required',
             'penerima' => 'required',
@@ -36,7 +35,6 @@ class PenerimaanRequest extends FormRequest
     public function attributes()
     {
         return [
-            'no_sj' => 'Nomor Surat Jalan',
             'tanggal' => 'Tanggal',
             'no_sj_keluar' => 'Nomor Surat Jalan Keluar',
             'penerima' => 'Penerima',

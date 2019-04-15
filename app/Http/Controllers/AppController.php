@@ -20,14 +20,20 @@ class AppController extends Controller
 
     public function checkAuth(Request $request) 
     {
-        $sql = "SELECT * from menus m JOIN user_rights ur ON ur.menu_id = m.id WHERE ur.user_id = ?";
-        $menus = DB::select($sql, [auth()->user()->id]);
+        if (auth()->user()->role == \App\User::ROLE_ADMIN) {
+            return 'OK';
+        }
 
-        $rights = array_map(function ($r) {
-            return $r->url;
-        }, $menus);
+        $sql = "SELECT * 
+            FROM menus m 
+            JOIN user_rights ur 
+                ON ur.menu_id = m.id 
+            WHERE ur.user_id = ? 
+                AND m.url = ?";
+        
+        $allowed = DB::select($sql, [auth()->user()->id, $request->route]);
 
-        if (!in_array($request->route, $rights)) {
+        if (!$allowed) {
             return response('Unauthorized', 403);
         }
 
