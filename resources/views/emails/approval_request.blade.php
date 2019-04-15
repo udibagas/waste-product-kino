@@ -11,7 +11,7 @@
 <table style="width:100%">
     <tbody>
         <tr>
-            <td><b>No. Pengajuan</b></td>
+            <td style="width:200px"><b>No. Pengajuan</b></td>
             <td>: {{$pengajuanPenjualan->no_aju}}</td>
         </tr>
         <tr>
