@@ -20,7 +20,7 @@ class CreatePenjualansTable extends Migration
             $table->string('no_sj', 100);
             $table->integer('value', false, true);
             $table->date('top_date');
-            $table->integer('jembatan_timbang', false, true);
+            $table->decimal('jembatan_timbang', 38, 4);
             $table->integer('user_id', false, true);
             $table->tinyInteger('status')->default(0);
             $table->timestamps();

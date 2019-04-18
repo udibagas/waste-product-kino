@@ -1,11 +1,11 @@
 <template>
     <el-card>
-        <h4>PENGAJUAN PENJUALAN</h4>
+        <h4>PENGAJUAN PENJUALAN WASTE PRODUCT</h4>
         <hr>
 
         <el-form :inline="true" class="form-right">
             <el-form-item>
-                <el-button @click="addData" type="primary"><i class="el-icon-plus"></i> INPUT PENGAJUAN PENJUALAN</el-button>
+                <el-button @click="addData" type="primary"><i class="el-icon-plus"></i> INPUT PENGAJUAN PENJUALAN WASTE PRODUCT</el-button>
             </el-form-item>
             <el-form-item>
                 <el-select class="pager-options" v-model="pageSize" placeholder="Page Size">
@@ -87,6 +87,7 @@
             </el-col>
         </el-row>
 
+        <!-- DIALOG UNTUK FORM -->
         <el-dialog center :visible.sync="showForm" :title="formTitle" width="900px" v-loading="loading" :close-on-click-modal="false">
             <el-alert type="error" title="ERROR"
                 :description="error.message + '\n' + error.file + ':' + error.line"
@@ -107,6 +108,18 @@
                             <div class="el-form-item__error" v-if="formErrors.no_aju">{{formErrors.no_aju[0]}}</div>
                         </el-form-item>
 
+                        <el-form-item label="Period From">
+                            <el-date-picker v-model="formModel.period_from" type="date" value-format="yyyy-MM-dd" placeholder="Period From" style="width:100%;"> </el-date-picker>
+                            <div class="el-form-item__error" v-if="formErrors.period_from">{{formErrors.period_from[0]}}</div>
+                        </el-form-item>
+
+                        <el-form-item label="Period To">
+                            <el-date-picker v-model="formModel.period_to" type="date" value-format="yyyy-MM-dd" placeholder="Period To" style="width:100%;"> </el-date-picker>
+                            <div class="el-form-item__error" v-if="formErrors.period_to">{{formErrors.period_to[0]}}</div>
+                        </el-form-item>
+                    </el-col>
+
+                    <el-col :span="12">
                         <el-form-item label="Plant">
                             <el-select v-model="formModel.location_id" style="width:100%" placeholder="Plant">
                                 <el-option
@@ -119,76 +132,61 @@
                             <div class="el-form-item__error" v-if="formErrors.location_id">{{formErrors.location_id[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item v-show="formModel.jenis == 'WP'" label="MVT Type">
-                            <el-input placeholder="MVT Type" v-model="formModel.mvt_type"></el-input>
-                            <div class="el-form-item__error" v-if="formErrors.mvt_type">{{formErrors.mvt_type[0]}}</div>
-                        </el-form-item>
-                    </el-col>
-
-                    <el-col :span="12">
-                        <el-form-item label="Period From">
-                            <el-date-picker v-model="formModel.period_from" type="date" value-format="yyyy-MM-dd" placeholder="Period From" style="width:100%;"> </el-date-picker>
-                            <div class="el-form-item__error" v-if="formErrors.period_from">{{formErrors.period_from[0]}}</div>
-                        </el-form-item>
-
-                        <el-form-item label="Period To">
-                            <el-date-picker v-model="formModel.period_to" type="date" value-format="yyyy-MM-dd" placeholder="Period To" style="width:100%;"> </el-date-picker>
-                            <div class="el-form-item__error" v-if="formErrors.period_to">{{formErrors.period_to[0]}}</div>
-                        </el-form-item>
-
-                        <el-form-item label="Jenis">
-                            <el-select :disabled="!!formModel.id" v-model="formModel.jenis" style="width:100%" placeholder="Jenis">
+                        <el-form-item label="MVT Type">
+                            <el-select v-model="formModel.mvt_type" filterable default-first-option style="width:100%" placeholder="MVT Type" multiple>
                                 <el-option
-                                v-for="item in ['BB', 'WP']"
-                                :key="item"
+                                v-for="(item, id) in $store.state.mvtList"
+                                :key="id"
                                 :label="item"
                                 :value="item">
                                 </el-option>
                             </el-select>
-                            <div class="el-form-item__error" v-if="formErrors.jenis">{{formErrors.jenis[0]}}</div>
+                            <div class="el-form-item__error" v-if="formErrors.mvt_type">{{formErrors.mvt_type[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item v-show="formModel.jenis == 'WP'" label="Sloc">
-                            <el-input placeholder="Sloc" v-model="formModel.sloc"></el-input>
+                        <el-form-item label="Sloc">
+                            <el-select v-model="formModel.sloc" filterable style="width:100%" placeholder="Sloc">
+                                <el-option
+                                v-for="(item, id) in $store.state.slocList"
+                                :key="id"
+                                :label="item"
+                                :value="item">
+                                </el-option>
+                            </el-select>
                             <div class="el-form-item__error" v-if="formErrors.sloc">{{formErrors.sloc[0]}}</div>
                         </el-form-item>
                     </el-col>
                 </el-row>
+
+                <p> <el-button type="primary" @click="searchMaterial" icon="el-icon-search">SEARCH MATERIAL</el-button> </p>
                 
-                <table class="table table-sm" v-show="formModel.jenis == 'BB'">
+                <table class="table table-sm table-striped table-hover">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Kategori</th>
-                            <th>Jumlah</th>
-                            <th>Jumlah Diterima</th>
-                            <th class="text-center">Eun</th>
-                            <th>Timbangan Manual (kg)</th>
-                            <th class="text-center">Selisih</th>
-                            <th class="text-center">
-                                <a href="#" @click="addItem" class="icon-bg"><i class="el-icon-circle-plus-outline"></i></a>
-                            </th>
+                            <th>Material ID</th>
+                            <th>Material Name</th>
+                            <th class="text-center">Unit</th>
+                            <th class="text-center">Qty</th>
+                            <th class="text-right">Stock (kg)</th>
+                            <th class="text-center">Diajukan (kg)</th>
+                            <th>Price/Unit (Rp)</th>
+                            <th>Value (Rp)</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(item, index) in formModel.items_bb" :key="index">
-                            <td>{{index+1}}.</td>
-                            <td>
-                                <select name="kat" placeholder="Kategori" v-model="formModel.items_bb[index].kategori_barang_id" class="my-input" @change="updateEun($event, index)">
-                                    <option value="">-- Pilih Kategori --</option>
-                                    <option v-for="(k, i) in $store.state.kategoriBarangList.filter(k => k.status == 1)" :key="i" :value="k.id">
-                                        {{k.jenis}} : {{k.kode}} - {{k.nama}}
-                                    </option>
-                                </select>
-                            </td>
-                            <td><input type="number" v-model="formModel.items_bb[index].jumlah" class="my-input" placeholder="Jumlah"> </td>
-                            <td><input type="number" v-model="formModel.items_bb[index].jumlah_terima" class="my-input" placeholder="Jumlah Diterima"></td>
-                            <td class="text-center"> {{formModel.items_bb[index].eun}} </td>
-                            <td><input type="number" v-model="formModel.items_bb[index].timbangan_manual" class="my-input" placeholder="Timbangan Manual"></td>
-                            <td>{{item.jumlah - item.jumlah_terima | formatNumber}}</td>
-                            <td class="text-center">
-                                <a v-if="index > 0" href="#" @click="deleteItem(index)" class="icon-bg"><i class="el-icon-delete"></i></a>
-                            </td>
+                        <tr v-for="(m, i) in formModel.items_wp" :key="i">
+                            <td>{{i + 1}}.</td>
+                            <td>{{m.material}}</td>
+                            <td>{{m.material_description}}</td>
+                            <td class="text-center">{{m.bun}}</td>
+                            <td class="text-center">{{m.quantity}}</td>
+                            <td class="text-right">{{m.stock / 1000 | formatNumber}}</td>
+                            <td><input type="number" step="any" class="my-input" v-model="m.diajukan" placeholder="Diajukan"></td>
+                            <td><input type="number" class="my-input" v-model="m.price_per_unit" placeholder="Price/Unit"></td>
+                            <td>{{ (m.diajukan * m.price_per_unit).toFixed(0) }}</td>
+                            <td><a href="#" @click="deleteItem(i)" class="icon-bg"><i class="el-icon-delete"></i></a></td>
                         </tr>
                     </tbody>
                 </table>
@@ -200,15 +198,68 @@
                 <el-button type="info" @click="showForm = false" icon="el-icon-error">CANCEL</el-button>
             </span>
         </el-dialog>
+
+        <!-- DIALOG UNTUK SEARCH MATERIAL -->
+        <el-dialog center 
+        :visible.sync="showMaterialList" 
+        title="Select Material" 
+        width="900px" 
+        v-loading="loading" 
+        :close-on-click-modal="false">
+            <el-input prefix-icon="el-icon-search" v-model="materialKeyword" placeholder="Search Material"></el-input>
+            <br><br>
+            <table class="table table-sm table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Material ID</th>
+                            <th>Material Name</th>
+                            <th class="text-center">Unit</th>
+                            <th class="text-center">Qty</th>
+                            <th class="text-right">Stock (kg)</th>
+                            <th style="width:80px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(m, i) in filteredMaterial.slice((materialPage - 1) * 10, materialPage * 10)" :key="i">
+                            <td>{{(i + 1) + ((materialPage - 1) * 10)}}.</td>
+                            <td>{{m.material}}</td>
+                            <td>{{m.material_description}}</td>
+                            <td class="text-center">{{m.bun}}</td>
+                            <td class="text-center">{{m.quantity}}</td>
+                            <td class="text-right">{{m.stock / 1000 | formatNumber}}</td>
+                            <td class="text-center"><input type="checkbox" :value="m" v-model="selectedMaterial"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <el-row>
+                    <el-col :span="12">
+                        <el-pagination @current-change="(p) => materialPage = p"
+                            :page-size="10"
+                            background
+                            layout="prev, pager, next"
+                            :total="filteredMaterial.length">
+                        </el-pagination>
+                    </el-col>
+                    <el-col :span="12" class="text-right">
+                        <strong>Total: {{filteredMaterial.length | formatNumber}} items</strong>
+                    </el-col>
+                </el-row>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="selectMaterial" icon="el-icon-success">DONE</el-button>
+                <el-button type="info" @click="showMaterialList = false" icon="el-icon-error">CANCEL</el-button>
+            </span>
+        </el-dialog>
     </el-card>
 </template>
 
 <script>
 import moment from 'moment'
-import PengajuanPenjualanDetailBb from '../components/PengajuanPenjualanDetailBb'
+import PengajuanPenjualanDetailWp from '../components/PengajuanPenjualanDetailWp'
 
 export default {
-    components: { PengajuanPenjualanDetailBb },
+    components: { PengajuanPenjualanDetailWp },
     watch: {
         keyword: function(v, o) {
             this.requestData()
@@ -222,21 +273,24 @@ export default {
             }
         }
     },
+    computed: {
+        filteredMaterial() {
+            let keyword = this.materialKeyword.toLowerCase();
+            return this.materials
+                .filter(m => m.material.toLowerCase().includes(keyword) || m.material_description.toLowerCase().includes(keyword))
+        }
+    },
     data: function() {
         return {
             loading: false,
             showForm: false,
+            showMaterialList: false,
             formTitle: '',
             formErrors: {},
             error: {},
             formModel: {
-                items_bb: [{
-                    kategori_barang_id: '',
-                    jumlah: '',
-                    jumlah_terima: '',
-                    eun: '',
-                    timbangan_manual: ''
-                }]
+                jenis: 'WP',
+                items_wp: []
             },
             keyword: '',
             page: 1,
@@ -249,15 +303,41 @@ export default {
                 {type: 'info', label: 'Draft'},
                 {type: 'warning', label: 'Submitted'},
                 {type: 'success', label: 'Approved'},
-            ]
+            ],
+            materials: [],
+            selectedMaterial: [],
+            materialKeyword: '',
+            materialPage: 1
         }
     },
     methods: {
-        updateEun(event, index) {
-            if (this.formModel.jenis == 'BB') {
-                let selectedKategori = this.$store.state.kategoriBarangList.find(k => k.id == event.target.value)
-                this.formModel.items_bb[index].eun = selectedKategori.unit;
+        searchMaterial() {
+            if (!this.formModel.plant) {
+                this.$message({ message: 'Mohon pilih Plant', showClose: true, type: 'error' });
+                return
             }
+
+            if (!this.formModel.sloc) {
+                this.$message({ message: 'Mohon pilih Sloc', showClose: true, type: 'error' });
+                return
+            }
+
+            let params = {
+                plant: this.formModel.plant,
+                mvt_type: this.formModel.mvt_type,
+                sloc: this.formModel.sloc
+            }
+            axios.get(BASE_URL + '/stockWp/getList', { params: params }).then(r => {
+                this.materials = r.data
+                this.showMaterialList = true
+            }).catch(e => console.log(e))
+        },
+        selectMaterial() {
+            this.showMaterialList = false
+            this.formModel.items_wp = this.selectedMaterial.map(m => {
+                m.diajukan = m.stock / 1000;
+                return m
+            })
         },
         sortChange: function(column) {
             if (this.sort !== column.prop || this.order !== column.order) {
@@ -275,48 +355,48 @@ export default {
             this.page = p;
             this.requestData();
         },
-        addItem() {
-            if (this.formModel.jenis == 'BB') {
-                this.formModel.items_bb.push({
-                    kategori_barang_id: '',
-                    jumlah: '',
-                    jumlah_terima: '',
-                    eun: '',
-                    timbangan_manual: ''
-                })
-            }
-        },
         deleteItem(index) {
-            let items = this.formModel.jenis == 'BB' ? this.formModel.items_bb : this.formModel.items_wp
-            let url = this.formModel.jenis == 'BB' ? '/pengajuanPenjualanItemBb/' : '/pengajuanPenjualanItemWp/'
+            let items = this.formModel.items_wp
+            items.splice(index, 1)
 
-            if (!items[index].id) {
-                items.splice(index, 1)
+            // if (!items[index].id) {
+            //     items.splice(index, 1)
+            //     return
+            // }
+
+            // this.$confirm('Anda yakin akan menghapus item ini?', 'Warning', {
+            //     type: 'warning',
+            //     confirmButtonText: 'Ya',
+            //     cancelButtonText: 'Tidak'
+            // }).then(() => {
+            //     axios.delete(BASE_URL + url + items[index].id).then(r => {
+            //         this.$message({ message: 'Item berhasil dihapus', showClose: true, type: 'success' });
+            //         items.splice(index, 1);
+            //     }).catch(e => {
+            //         this.$message({ message: 'Item gagal dihapus', showClose: true, type: 'error' });
+            //         console.log(e);
+            //     })
+            // }).catch(() => {})
+        },
+        save() {
+            let invalid = this.formModel.items_wp.filter(i => i.diajukan > i.stock / 1000)
+            if (invalid.length > 0) {
+                this.$message({
+                    message: 'Jumlah diajukan melebihi stock.',
+                    type: 'error',
+                    showClose: true
+                });
                 return
             }
 
-            this.$confirm('Anda yakin akan menghapus item ini?', 'Warning', {
-                type: 'warning',
-                confirmButtonText: 'Ya',
-                cancelButtonText: 'Tidak'
-            }).then(() => {
-                axios.delete(BASE_URL + url + items[index].id).then(r => {
-                    this.$message({ message: 'Item berhasil dihapus', showClose: true, type: 'success' });
-                    items.splice(index, 1);
-                }).catch(e => {
-                    this.$message({ message: 'Item gagal dihapus', showClose: true, type: 'error' });
-                    console.log(e);
-                })
-            }).catch(() => {})
-        },
-        save() {
-            // validasi item
-            if (this.formModel.jenis == 'BB') {
-                let invalid = this.formModel.items_bb.filter(i => !i.kategori_barang_id || !i.jumlah || !i.jumlah_terima || !i.timbangan_manual).length
-                if (invalid) {
-                    this.$message({ message: 'Mohon lengkapi data barang.', showClose: true, type: 'error' });
-                    return
-                }
+            let invalid_price = this.formModel.items_wp.filter(i => !i.price_per_unit)
+            if (invalid_price.length > 0) {
+                this.$message({
+                    message: 'Masukkan Price/Unit.',
+                    type: 'error',
+                    showClose: true
+                });
+                return
             }
 
             if (!!this.formModel.id) {
@@ -342,7 +422,8 @@ export default {
                 this.showForm = false;
                 this.$message({
                     message: 'Data BERHASIL disimpan.',
-                    type: 'success'
+                    type: 'success',
+                    showClose: true
                 });
                 this.requestData();
             }).catch(e => {
@@ -365,7 +446,8 @@ export default {
                 this.showForm = false
                 this.$message({
                     message: 'Data BERHASIL disimpan.',
-                    type: 'success'
+                    type: 'success',
+                    showClose: true
                 });
                 this.requestData()
             }).catch(e => {
@@ -382,25 +464,20 @@ export default {
             })
         },
         addData: function() {
-            this.formTitle = 'INPUT PENGAJUAN PENJUALAN'
+            this.formTitle = 'INPUT PENGAJUAN PENJUALAN WASTE PRODUCT'
             this.error = {}
             this.formErrors = {}
             this.formModel = {
+                jenis: 'WP',
                 tanggal: moment().format('YYYY-MM-DD'),
                 status: 0,
-                items_bb: [{
-                    kategori_barang_id: '',
-                    jumlah: '',
-                    jumlah_terima: '',
-                    eun: '',
-                    timbangan_manual: ''
-                }]
+                items_wp: []
             }
 
             this.showForm = true
         },
         editData: function(data) {
-            this.formTitle = 'EDIT PENGAJUAN PENJUALAN'
+            this.formTitle = 'EDIT PENGAJUAN PENJUALAN WASTE PRODUCT'
             this.formModel = JSON.parse(JSON.stringify(data));
             this.error = {}
             this.formErrors = {}
@@ -416,12 +493,14 @@ export default {
                     this.requestData();
                     this.$message({
                         message: 'Data BERHASIL dihapus.',
-                        type: 'success'
+                        type: 'success',
+                        showClose: true
                     });
                 }).catch(e => {
                     this.$message({
                         message: 'Data GAGAL dihapus. ' + e.response.data.message,
-                        type: 'error'
+                        type: 'error',
+                        showClose: true
                     });
                 })
             }).catch(() => { });
@@ -438,6 +517,7 @@ export default {
                 pageSize: this.pageSize,
                 sort: this.sort,
                 order: this.order,
+                jenis: 'WP'
             }
 
             this.loading = true;
@@ -449,15 +529,17 @@ export default {
                 this.loading = false;
                 this.$message({
                     message: e.response.data.message || e.response.message,
-                    type: 'error'
+                    type: 'error',
+                    showClose: true
                 });
             })
         }
     },
     created: function() {
         this.requestData();
-        this.$store.commit('getKategoriBarangList');
         this.$store.commit('getLocationList');
+        this.$store.commit('getSlocList');
+        this.$store.commit('getMvtList');
     }
 }
 </script>
@@ -465,10 +547,14 @@ export default {
 <style lang="css" scoped>
 .my-input {
     border: none;
-    width: 100%;
+    width: 100px;
     padding: 5px;
-    /* background-color: #eee; */
-    background-color: transparent;
+    background-color: #eee;
+}
+
+input[type=checkbox] {
+    width: 15px;
+    height: 15px;
 }
 
 .my-input:hover, .my-input:focus {

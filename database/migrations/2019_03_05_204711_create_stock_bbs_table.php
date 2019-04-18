@@ -18,7 +18,7 @@ class CreateStockBbsTable extends Migration
             $table->integer('kategori_barang_id', false, true);
             $table->string('lokasi', 20);
             $table->string('plant', 10);
-            $table->integer('stock', false, true);
+            $table->decimal('stock', 38, 4);
             $table->timestamps();
         });
     }

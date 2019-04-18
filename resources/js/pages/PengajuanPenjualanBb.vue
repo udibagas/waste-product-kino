@@ -28,7 +28,14 @@
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
             <el-table-column type="expand" width="20px">
                 <template slot-scope="scope">
-                    <PengajuanPenjualanDetailBb :data="scope.row" />
+                    <el-tabs type="border-card">
+                        <el-tab-pane label="Items">
+                            <PengajuanPenjualanItemBb :data="scope.row" />
+                        </el-tab-pane>
+                        <el-tab-pane label="Approval History">
+                            <ApprovalHistory :pengajuan="scope.row.id" />
+                        </el-tab-pane>
+                    </el-tabs>
                 </template>
             </el-table-column>
             <el-table-column prop="tanggal" width="100" label="Tanggal" sortable="custom">
@@ -37,27 +44,61 @@
                 </template>
             </el-table-column>
             <el-table-column prop="no_aju" label="No. Pengajuan" sortable="custom"></el-table-column>
-            <el-table-column prop="location_id" label="Plant" sortable="custom">
+            
+            <el-table-column 
+            prop="location_id" 
+            label="Plant" 
+            column-key="location_id"
+            :filters="$store.state.locationList.map(l => { return {value: l.id, text: l.plant + ' - ' + l.name } })"
+            sortable="custom">
                 <template slot-scope="scope">
                     {{scope.row.location.plant}} - {{scope.row.location.name}}
                 </template>
             </el-table-column>
+
             <el-table-column prop="user.name" label="Yang Mengajukan"></el-table-column>
-            <el-table-column prop="approval1_status" width="110" align="center" header-align="center" label="Approval 1" sortable="custom">
+            
+            <el-table-column 
+            prop="approval1_status" 
+            width="130" 
+            align="center" 
+            header-align="center" 
+            label="Approval 1" 
+            column-key="approval1_status"
+            :filters="approval_statuses.map(s => { return {value: s.value, text: s.label} })"
+            sortable="custom">
                 <template slot-scope="scope">
                     <el-tag size="small" :type="approval_statuses[scope.row.approval1_status].type">
                         {{approval_statuses[scope.row.approval1_status].label}}
                     </el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="approval2_status" width="110" align="center" header-align="center" label="Approval 2" sortable="custom">
+
+            <el-table-column 
+            prop="approval2_status" 
+            width="130" 
+            align="center" 
+            header-align="center" 
+            label="Approval 2" 
+            column-key="approval2_status"
+            :filters="approval_statuses.map(s => { return {value: s.value, text: s.label} })"
+            sortable="custom">
                 <template slot-scope="scope">
                     <el-tag size="small" :type="approval_statuses[scope.row.approval2_status].type">
                         {{approval_statuses[scope.row.approval2_status].label}}
                     </el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="status" width="100" align="center" header-align="center" label="Status" sortable="custom">
+            
+            <el-table-column 
+            prop="status" 
+            width="100" 
+            align="center" 
+            header-align="center" 
+            label="Status" 
+            column-key="status"
+            :filters="statuses.map(s => { return {value: s.value, text: s.label} })"
+            sortable="custom">
                 <template slot-scope="scope">
                     <el-tag size="small" :type="statuses[scope.row.status].type">{{statuses[scope.row.status].label}}</el-tag>
                 </template>
@@ -65,22 +106,19 @@
 
             <el-table-column fixed="right" width="40px">
                 <template slot-scope="scope">
-                    <el-dropdown v-if="scope.row.status == 0">
+                    <el-dropdown v-if="scope.row.approval2_status != 1">
                         <span class="el-dropdown-link">
                             <i class="el-icon-more"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
-                            <el-dropdown-item @click.native.prevent="deleteData(scope.row.id)"><i class="el-icon-delete"></i> Hapus</el-dropdown-item>
-                        </el-dropdown-menu>
-                    </el-dropdown>
-                    <el-dropdown v-if="scope.row.status == 1 && scope.row.approval2_status == 0">
-                        <span class="el-dropdown-link">
-                            <i class="el-icon-more"></i>
-                        </span>
-                        <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item @click.native.prevent="approve(scope.row, 1)"><i class="el-icon-check"></i> Approve</el-dropdown-item>
-                            <el-dropdown-item @click.native.prevent="approve(scope.row, 2)"><i class="el-icon-close"></i> Reject</el-dropdown-item>
+                            <!-- bisa diedit kalau status draft atau rejected -->
+                            <el-dropdown-item v-if="scope.row.status == 0 || scope.row.status == 3" @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
+                            <!-- bisa dihapus kalau status draft -->
+                            <el-dropdown-item v-if="scope.row.status == 0" @click.native.prevent="deleteData(scope.row.id)"><i class="el-icon-delete"></i> Hapus</el-dropdown-item>
+                            <!-- bisa diapprove kalau status submitted -->
+                            <el-dropdown-item v-if="scope.row.status == 1" @click.native.prevent="approve(scope.row, 1)"><i class="el-icon-check"></i> Approve</el-dropdown-item>
+                            <!-- bisa di reject kalau status submitted -->
+                            <el-dropdown-item v-if="scope.row.status == 1" @click.native.prevent="approve(scope.row, 2)"><i class="el-icon-close"></i> Reject</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </template>
@@ -122,7 +160,7 @@
                 </el-form-item>
 
                 <el-form-item label="Plant">
-                    <el-select v-model="formModel.location_id" style="width:100%" placeholder="Plant">
+                    <el-select :disabled="user.role == 0" v-model="formModel.location_id" style="width:100%" placeholder="Plant">
                         <el-option
                         v-for="item in $store.state.locationList"
                         :key="item.id"
@@ -156,21 +194,21 @@
                         <tr v-for="(item, index) in formModel.items_bb" :key="index">
                             <td>{{index+1}}.</td>
                             <td>
-                                <select name="kat" placeholder="Kategori" v-model="formModel.items_bb[index].kategori_barang_id" class="my-input" @change="updateStockInfo($event, index)">
+                                <select name="kat" placeholder="Kategori" :disabled="!!item.id" v-model="item.kategori_barang_id" class="my-input" @change="updateStockInfo($event, index)">
                                     <option value="">-- Pilih Kategori --</option>
                                     <option v-for="(k, i) in $store.state.kategoriBarangList.filter(k => k.status == 2 && k.jenis == 'BB')" :key="i" :value="k.id">
                                         {{k.kode}} - {{k.nama}}
                                     </option>
                                 </select>
                             </td>
-                            <td class="text-center">{{formModel.items_bb[index].stock_qty | formatNumber}}</td>
-                            <td class="text-center">{{formModel.items_bb[index].stock_berat | formatNumber}}</td>
-                            <td><input type="number" v-model="formModel.items_bb[index].jumlah" class="my-input" placeholder="Jumlah Diajukan"></td>
+                            <td class="text-center">{{item.stock_qty | formatNumber}}</td>
+                            <td class="text-center">{{item.stock_berat | formatNumber}}</td>
+                            <td><input type="number" v-model="item.jumlah" class="my-input" placeholder="Jumlah Diajukan"></td>
                             <td class="text-center">{{item.stock_qty - item.jumlah | formatNumber}}</td>
-                            <td class="text-center"> {{formModel.items_bb[index].eun}} </td>
-                            <td><input type="number" v-model="formModel.items_bb[index].timbangan_manual" class="my-input" placeholder="Timbangan Manual"></td>
+                            <td class="text-center"> {{item.eun}} </td>
+                            <td><input type="number" v-model="item.timbangan_manual" class="my-input" placeholder="Timbangan Manual"></td>
                             <td class="text-center">
-                                <a v-if="index > 0" href="#" @click="deleteItem(index)" class="icon-bg"><i class="el-icon-delete"></i></a>
+                                <a href="#" @click="deleteItem(index)" class="icon-bg"><i class="el-icon-delete"></i></a>
                             </td>
                         </tr>
                     </tbody>
@@ -188,10 +226,11 @@
 
 <script>
 import moment from 'moment'
-import PengajuanPenjualanDetailBb from '../components/PengajuanPenjualanDetailBb'
+import PengajuanPenjualanItemBb from '../components/PengajuanPenjualanItemBb'
+import ApprovalHistory from '../components/ApprovalHistory'
 
 export default {
-    components: { PengajuanPenjualanDetailBb },
+    components: { PengajuanPenjualanItemBb, ApprovalHistory },
     watch: {
         keyword: function(v, o) {
             this.requestData()
@@ -202,6 +241,7 @@ export default {
     },
     data: function() {
         return {
+            user: USER,
             loading: false,
             showForm: false,
             formTitle: '',
@@ -211,7 +251,7 @@ export default {
                 jenis: 'BB',
                 items_bb: [{
                     kategori_barang_id: '',
-                    jumlah: '',
+                    jumlah: 0,
                     stock_qty: 0,
                     stock_berat: 0,
                     eun: '',
@@ -226,51 +266,62 @@ export default {
             filters: {},
             paginatedData: {},
             statuses: [
-                {type: 'info', label: 'Draft'},
-                {type: 'warning', label: 'Submitted'},
-                {type: 'success', label: 'Approved'},
+                {type: 'info', label: 'Draft', value: 0},
+                {type: 'warning', label: 'Submitted', value: 1},
+                {type: 'success', label: 'Approved', value: 2},
+                {type: 'danger', label: 'Rejected', value: 3},
             ],
             approval_statuses: [
-                {type: 'info', label: 'Pending'},
-                {type: 'success', label: 'Approved'},
-                {type: 'danger', label: 'Rejected'},
+                {type: 'info', label: 'Pending', value: 0},
+                {type: 'success', label: 'Approved', value: 1},
+                {type: 'danger', label: 'Rejected', value: 2},
             ]
         }
     },
     methods: {
         approve(data, status) {
-            this.$confirm('Anda yakin?', 'Warning', {
-                type: 'warning',
-                confirmButtonText: 'Ya',
-                cancelButtonText: 'Tidak'
-            }).then(() => {
-                if (data.approval1_status == 0) {
-                    var approval_data = { level: 1, status: status }
-                }
+            // kalau reject harus pake note
+            if (status == 2) {
+                this.$prompt('Mohon masukkan note').then(({value}) => {
+                    this.doApprove(data, status, value)
+                }).catch((e) => console.log(e))
+            } else if (status == 1) {
+                this.$confirm('Anda yakin?', 'Warning', {
+                    type: 'warning',
+                    confirmButtonText: 'Ya',
+                    cancelButtonText: 'Tidak'
+                }).then(() => {
+                    this.doApprove(data, status, '')
+                }).catch(e => console.log(e));
+            }
+        },
+        doApprove(data, status, note) {
+            if (data.approval1_status == 0 || data.approval1_status == 2) {
+                var approval_data = { level: 1, status: status, note: note }
+            }
 
-                else if (data.approval2_status == 0) {
-                    var approval_data = { level: 2, status: status }
-                }
+            else if (data.approval2_status == 0 || data.approval2_status == 2) {
+                var approval_data = { level: 2, status: status, note: note }
+            }
 
-                else {
-                    return;
-                }
+            else {
+                return;
+            }
 
-                axios.put(BASE_URL + '/pengajuanPenjualan/' + data.id + '/approve', approval_data).then(r => {
-                    this.requestData();
-                    this.$message({
-                        message: 'Approval berhasil.',
-                        type: 'success',
-                        showClose: true
-                    });
-                }).catch(e => {
-                    this.$message({
-                        message: 'Approval gagal. ' + e.response.data.message,
-                        type: 'error',
-                        showClose: true
-                    });
-                })
-            }).catch(e => console.log(e));
+            axios.put(BASE_URL + '/pengajuanPenjualan/' + data.id + '/approve', approval_data).then(r => {
+                this.requestData();
+                this.$message({
+                    message: 'Approval berhasil.',
+                    type: 'success',
+                    showClose: true
+                });
+            }).catch(e => {
+                this.$message({
+                    message: 'Approval gagal. ' + e.response.data.message,
+                    type: 'error',
+                    showClose: true
+                });
+            })
         },
         updateStockInfo(event, index) {
             if (!this.formModel.location_id) {
@@ -335,7 +386,7 @@ export default {
             if (this.formModel.jenis == 'BB') {
                 this.formModel.items_bb.push({
                     kategori_barang_id: '',
-                    jumlah: '',
+                    jumlah: 0,
                     stock_qty: 0,
                     stock_berat: 0,
                     eun: '',
@@ -366,6 +417,11 @@ export default {
             }).catch(() => {})
         },
         save() {
+            if (this.formModel.items_bb.length == 0) {
+                this.$message({ message: 'Mohon masukkan item', showClose: true, type: 'error' });
+                return
+            }
+
             let invalid = this.formModel.items_bb.filter(i => !i.kategori_barang_id || !i.jumlah || !i.timbangan_manual).length
             if (invalid) {
                 this.$message({ message: 'Mohon lengkapi data barang.', showClose: true, type: 'error' });
@@ -455,6 +511,7 @@ export default {
                 tanggal: moment().format('YYYY-MM-DD'),
                 status: 0,
                 jenis: 'BB',
+                location_id: this.user.role == 0 ? this.user.location_id : '',
                 items_bb: [{
                     kategori_barang_id: '',
                     jumlah: '',
@@ -506,6 +563,7 @@ export default {
                 pageSize: this.pageSize,
                 sort: this.sort,
                 order: this.order,
+                jenis: 'BB'
             }
 
             this.loading = true;

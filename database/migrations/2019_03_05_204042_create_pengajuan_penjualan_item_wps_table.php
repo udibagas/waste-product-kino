@@ -19,7 +19,7 @@ class CreatePengajuanPenjualanItemWpsTable extends Migration
             $table->string('material_id');
             $table->string('divisi', 30);
             $table->string('unit', 10);
-            $table->decimal('qty_reject');
+            $table->decimal('qty_reject', 38, 4);
             $table->integer('price_per_unit', false, true);
             $table->integer('value', false, true);
             $table->timestamps();

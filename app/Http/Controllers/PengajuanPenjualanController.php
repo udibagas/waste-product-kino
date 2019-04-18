@@ -11,13 +11,16 @@ use App\PengajuanPenjualanItemWp;
 use Carbon\Carbon;
 use App\Events\PengajuanPenjualanApproved1;
 use App\Events\PengajuanPenjualanApproved2;
-use App\PengajuanPenjualanApproval;
+use App\Events\PengajuanPenjualanRejected1;
+use App\Events\PengajuanPenjualanRejected2;
+use App\SkemaApprovalPenjualan;
+use Illuminate\Support\Facades\Auth;
 
 class PengajuanPenjualanController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth')->except(['approvalForm']);
     }
 
     public function index(Request $request)
@@ -26,8 +29,19 @@ class PengajuanPenjualanController extends Controller
         $order = $request->order == 'ascending' ? 'asc' : 'desc';
 
         return PengajuanPenjualan::when($request->keyword, function ($q) use ($request) {
-            return $q->where('no_aju', 'LIKE', '%' . $request->keyword . '%')
-                ->orWhere('plant', 'LIKE', '%' . $request->keyword . '%');
+            return $q->where('no_aju', 'LIKE', '%' . $request->keyword . '%');
+        })->when($request->jenis, function ($q) use ($request) {
+            return $q->where('jenis', $request->jenis);
+        })->when($request->location_id, function ($q) use ($request) {
+            return $q->whereIn('location_id', $request->location_id);
+        })->when($request->approval1_status, function ($q) use ($request) {
+            return $q->whereIn('approval1_status', $request->approval1_status);
+        })->when($request->approval2_status, function ($q) use ($request) {
+            return $q->whereIn('approval2_status', $request->approval2_status);
+        })->when($request->status, function ($q) use ($request) {
+            return $q->whereIn('status', $request->status);
+        })->when($request->user()->role == \App\User::ROLE_USER, function ($q) use ($request) {
+            return $q->where('location_id', $request->user()->location_id);
         })->orderBy($sort, $order)->paginate($request->pageSize);
     }
 
@@ -50,7 +64,7 @@ class PengajuanPenjualanController extends Controller
             $pengajuanPenjualan->itemsWp()->createMany($request->items_wp);
         }
 
-        if ($request->status == 1) {
+        if ($request->status == PengajuanPenjualan::STATUS_SUBMITTED) {
             event(new PengajuanPenjualanSubmitted($pengajuanPenjualan));
         }
 
@@ -81,7 +95,7 @@ class PengajuanPenjualanController extends Controller
             }
         }
 
-        if ($request->status == 1) {
+        if ($request->status == PengajuanPenjualan::STATUS_SUBMITTED) {
             event(new PengajuanPenjualanSubmitted($pengajuanPenjualan));
         }
 
@@ -90,7 +104,8 @@ class PengajuanPenjualanController extends Controller
 
     public function destroy(PengajuanPenjualan $pengajuanPenjualan)
     {
-        if ($pengajuanPenjualan->status > 0) {
+        // status bukan draft
+        if ($pengajuanPenjualan->status > PengajuanPenjualan::STATUS_DRAFT) {
             return response(['message' => 'Pengajuan penjualan sudah di submit.'], 500);
         }
 
@@ -103,21 +118,50 @@ class PengajuanPenjualanController extends Controller
     public function getList(Request $request)
     {
         return PengajuanPenjualan::where('jenis', $request->jenis)
-            ->where('status', 2)->get();
+            ->where('status', PengajuanPenjualan::STATUS_APPROVED)->get();
     }
 
-    public function approve(Request $request, PengajuanPenjualan $pengajuanPenjualan)
+    /**
+     * Fungsi untuk menampilkan form approval pengajuan penjualan
+     */
+    public function approvalForm(PengajuanPenjualan $pengajuanPenjualan, Request $request)
     {
-        if ($pengajuanPenjualan->status == 0) {
+        // cek bener gak approvernya
+        $skema = SkemaApprovalPenjualan::where('location_id', $pengajuanPenjualan->location_id)
+            ->where('level', $request->level)
+            ->first();
+        
+        if ($skema->user->api_token != $request->api_token) {
+            return response('Anda tidak berhak melakukan approval untuk request ini.', 403);
+        }
+
+        Auth::login($skema->user);
+
+        return view('pengajuanPenjualan.approvalForm', [
+            'data' => $pengajuanPenjualan
+        ]);
+    }
+
+    /**
+     * Proses approval pengajuan, bisa reject, bisa berkali2
+     */
+    public function approve(PengajuanPenjualan $pengajuanPenjualan, Request $request)
+    {
+        $skema = SkemaApprovalPenjualan::where('location_id', $pengajuanPenjualan->location_id)
+            ->where('level', $request->level)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if (!$skema) {
+            return response(['message' => 'Anda tidak berhak melakukan approval untuk request ini.'], 500);
+        }
+
+        if ($pengajuanPenjualan->status == PengajuanPenjualan::STATUS_DRAFT) {
             return response(['message' => 'Pengajuan belum disubmit'], 500);
         }
 
         if ($request->level == 1) 
         {
-            if ($pengajuanPenjualan->approval1_status > 0) {
-                return response(['message' => 'Pengajuan sudah diapprove sebelumnya'], 500);
-            }
-
             $data = [
                 'approval1_status' => $request->status,
                 'approval1_by' => $request->user()->id,
@@ -127,12 +171,8 @@ class PengajuanPenjualanController extends Controller
 
         if ($request->level == 2) 
         {
-            if ($pengajuanPenjualan->approval1_status != 1) {
+            if ($pengajuanPenjualan->approval1_status != PengajuanPenjualan::STATUS_APPROVAL_APPROVED) {
                 return response(['message' => 'Pengajuan level 1 belum/tidak disetujui'], 500);
-            }
-
-            if ($pengajuanPenjualan->approval2_status > 0) {
-                return response(['message' => 'Pengajuan sudah diapprove sebelumnya'], 500);
             }
 
             $data = [
@@ -141,17 +181,37 @@ class PengajuanPenjualanController extends Controller
                 'approval2_time' => Carbon::now()
             ];
         }
-        
-        $pengajuanPenjualan->update($data);
 
-        if ($request->level == 1) {
-            event(new PengajuanPenjualanApproved1($pengajuanPenjualan));
+        if ($request->status == PengajuanPenjualan::STATUS_APPROVAL_REJECTED) {
+            $data['status'] = PengajuanPenjualan::STATUS_REJECTED;
         }
 
-        if ($request->level == 2) {
-            $pengajuanPenjualan->status = 2;
-            $pengajuanPenjualan->save();
-            event(new PengajuanPenjualanApproved2($pengajuanPenjualan));
+        $pengajuanPenjualan->update($data);
+
+        if ($request->level == 1) 
+        {
+            if ($request->status == PengajuanPenjualan::STATUS_APPROVAL_APPROVED) {
+                event(new PengajuanPenjualanApproved1($pengajuanPenjualan));
+            }
+
+            if ($request->status == PengajuanPenjualan::STATUS_APPROVAL_REJECTED) {
+                event(new PengajuanPenjualanRejected1($pengajuanPenjualan));
+            }
+        }
+
+        if ($request->level == 2) 
+        {
+            if ($request->status == PengajuanPenjualan::STATUS_APPROVAL_APPROVED) {
+                $pengajuanPenjualan->status = PengajuanPenjualan::STATUS_APPROVED;
+                $pengajuanPenjualan->save();
+                event(new PengajuanPenjualanApproved2($pengajuanPenjualan));
+            }
+
+            if ($request->status == PengajuanPenjualan::STATUS_APPROVAL_REJECTED) {
+                $pengajuanPenjualan->status = PengajuanPenjualan::STATUS_REJECTED;
+                $pengajuanPenjualan->save();
+                event(new PengajuanPenjualanRejected2($pengajuanPenjualan));
+            }
         }
 
         $pengajuanPenjualan->approvals()->create([
@@ -162,5 +222,10 @@ class PengajuanPenjualanController extends Controller
         ]);
 
         return $pengajuanPenjualan;
+    }
+
+    public function getApprovalHistory(PengajuanPenjualan $pengajuanPenjualan)
+    {
+        return $pengajuanPenjualan->approvals;
     }
 }

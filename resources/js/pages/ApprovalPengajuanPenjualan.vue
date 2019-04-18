@@ -22,7 +22,7 @@
             </table>
         </div>
         <br>
-        <PengajuanPenjualanDetailBb :data="data" />
+        <PengajuanPenjualanItemBb :data="data" />
 
         <br>
         <el-button v-if="!submitted" :disabled="submitting" type="primary" icon="el-icon-success" @click="approve(1)">APPROVE</el-button>
@@ -31,10 +31,10 @@
 </template>
 
 <script>
-import PengajuanPenjualanDetailBb from '../components/PengajuanPenjualanDetailBb'
+import PengajuanPenjualanItemBb from '../components/PengajuanPenjualanItemBb'
 
 export default {
-    components: { PengajuanPenjualanDetailBb },
+    components: { PengajuanPenjualanItemBb },
     props: ['id'],
     data() {
         return {

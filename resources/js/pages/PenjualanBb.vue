@@ -37,12 +37,26 @@
                 </template>
             </el-table-column>
             <el-table-column prop="no_sj" label="No. Surat Jalan" sortable="custom"></el-table-column>
-            <el-table-column prop="plant" label="Plant" sortable="custom" width="120">
+            
+            <el-table-column 
+            prop="plant" 
+            label="Plant" 
+            sortable="custom" 
+            column-key="location_id"
+            :filters="$store.state.locationList.map(l => { return {value: l.id, text: l.plant + ' - ' + l.name } })"
+            width="120">
                 <template slot-scope="scope">
                     {{scope.row.location.plant}} - {{scope.row.location.name}}
                 </template>
             </el-table-column>
-            <el-table-column prop="pembeli_id" label="Pembeli" sortable="custom" width="200">
+
+            <el-table-column 
+            prop="pembeli_id" 
+            label="Pembeli" 
+            sortable="custom" 
+            column-key="pembeli_id"
+            :filters="$store.state.pembeliList.map(l => { return {value: l.id, text: l.nama } })"
+            width="200">
                 <template slot-scope="scope">
                     {{scope.row.pembeli.nama}}
                 </template>
@@ -52,12 +66,21 @@
                     {{scope.row.value | formatNumber}}
                 </template>
             </el-table-column>
-            <el-table-column label="TOP Date" width="90" align="center" header-align="center">
+            <el-table-column label="TOP Date" width="100" align="center" header-align="center">
                 <template slot-scope="scope">
-                    {{scope.row.top_date}}
+                    {{scope.row.top_date | readableDate}}
                 </template>
             </el-table-column>
-            <el-table-column prop="status" width="100" align="center" header-align="center" label="Status" sortable="custom">
+
+            <el-table-column 
+            prop="status" 
+            width="100" 
+            align="center" 
+            header-align="center" 
+            label="Status" 
+            column-key="status"
+            :filters="statuses.map(s => { return {value: s.value, text: s.label} })"
+            sortable="custom">
                 <template slot-scope="scope">
                     <el-tag size="small" :type="statuses[scope.row.status].type">{{statuses[scope.row.status].label}}</el-tag>
                 </template>
@@ -167,8 +190,8 @@
                             <div class="el-form-item__error" v-if="formErrors.jembatan_timbang">{{formErrors.jembatan_timbang[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Value Penjualan">
-                            <el-input type="number" placeholder="Value Penjualan" v-model="formModel.value"></el-input>
+                        <el-form-item label="Value Penjualan (Rp)">
+                            <el-input type="number" placeholder="Value Penjualan (Rp)" v-model="formModel.value"></el-input>
                             <div class="el-form-item__error" v-if="formErrors.value">{{formErrors.value[0]}}</div>
                         </el-form-item>
 
@@ -274,9 +297,9 @@ export default {
             filters: {},
             paginatedData: {},
             statuses: [
-                {type: 'info', label: 'Draft'},
-                {type: 'warning', label: 'Submitted'},
-                {type: 'success', label: 'Approved'},
+                {type: 'info', label: 'Draft', value: 0},
+                {type: 'warning', label: 'Submitted', value: 1},
+                {type: 'success', label: 'Approved', value: 2},
             ]
         }
     },
@@ -367,6 +390,7 @@ export default {
             this.formModel = {
                 jenis: 'BB',
                 tanggal: moment().format('YYYY-MM-DD'),
+                top_date: moment().add(30, 'days').format('YYYY-MM-DD'),
                 status: 0,
                 items_bb: []
             }

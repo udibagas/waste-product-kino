@@ -15,7 +15,7 @@ class AddStockBeratInPengajuanPenjualansItemBbs extends Migration
     {
         Schema::table('pengajuan_penjualan_item_bbs', function (Blueprint $table) {
             $table->integer('stock_qty')->nullable();
-            $table->integer('stock_berat')->nullable();
+            $table->decimal('stock_berat', 38, 4)->nullable();
         });
     }
 

@@ -58,6 +58,7 @@ class UserController extends Controller
 
         $input = $request->all();
         $input['password'] = bcrypt($request->password);
+        $input['api_token'] = str_random(60);
         $user = User::create($input);
         $user->rights()->createMany($request->rights);
         return $user;

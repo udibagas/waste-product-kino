@@ -20,8 +20,8 @@ class CreateInOutStockBbsTable extends Migration
             $table->string('lokasi_terima', 50);
             $table->integer('kategori_barang_id', false, true);
             $table->string('eun', 10);
-            $table->integer('stock_in', false, true);
-            $table->integer('stock_out', false, true);
+            $table->decimal('stock_in', 38, 4);
+            $table->decimal('stock_out', 38, 4);
             $table->string('no_sj', 100);
             $table->timestamps();
         });

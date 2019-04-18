@@ -21,7 +21,7 @@ class CreatePengeluaransTable extends Migration
             $table->string('lokasi_asal', 30)->nullable();
             $table->string('lokasi_terima', 30)->nullable();
             $table->integer('user_id', false, true);
-            $table->integer('jembatan_timbang', false, true)->default(0);
+            $table->decimal('jembatan_timbang', 38, 4);
             $table->timestamps();
         });
     }

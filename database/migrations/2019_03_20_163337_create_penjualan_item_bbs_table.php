@@ -18,7 +18,7 @@ class CreatePenjualanItemBbsTable extends Migration
             $table->integer('penjualan_id', false, true);
             $table->integer('kategori_barang_id', false, true);
             $table->integer('qty', false, true);
-            $table->decimal('berat', 8, 4);
+            $table->decimal('berat', 38, 4);
             $table->integer('price_per_kg');
             $table->integer('value', false, true);
             $table->string('keterangan')->nullable();

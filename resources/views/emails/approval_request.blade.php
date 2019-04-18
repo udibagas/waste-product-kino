@@ -56,7 +56,7 @@
 @endforeach
 @endcomponent
 
-@component('mail::button', ['url' => config('app.url') . '/approvalPengajuanPenjualan/'. $pengajuanPenjualan->id . '?level=' .$level . '&api_token=' . $user->api_token])
+@component('mail::button', ['url' => config('app.url') . '/pengajuanPenjualan/'. $pengajuanPenjualan->id . '/approvalForm?level=' .$level . '&api_token=' . $user->api_token])
 KLIK DI SINI UNTUK APPROVAL
 @endcomponent
 

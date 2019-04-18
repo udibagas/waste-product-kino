@@ -19,7 +19,7 @@ class CreatePengeluaranItemsTable extends Migration
             $table->integer('kategori_barang_id', false, true);
             $table->integer('qty', false, true);
             $table->string('eun', 10);
-            $table->integer('timbangan_manual', false, true);
+            $table->decimal('timbangan_manual', 38, 4);
             $table->timestamps();
         });
     }

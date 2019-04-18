@@ -19,7 +19,7 @@ class CreateKonversiBeratsTable extends Migration
             $table->string('finished_good')->nullable();
             $table->string('material_id');
             $table->string('material_description');
-            $table->decimal('berat');
+            $table->decimal('berat', 38, 4);
             $table->string('keterangan')->nullable();
             $table->timestamps();
         });

@@ -16,10 +16,10 @@ class CreatePengajuanPenjualanItemBbsTable extends Migration
         Schema::create('pengajuan_penjualan_item_bbs', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('kategori_barang_id', false, true);
-            $table->decimal('jumlah');
-            $table->decimal('jumlah_terima');
+            $table->decimal('jumlah', 38, 4);
+            $table->decimal('jumlah_terima', 38, 4);
             $table->string('eun', 10);
-            $table->decimal('timbangan_manual');
+            $table->decimal('timbangan_manual', 38, 4);
             $table->timestamps();
         });
     }

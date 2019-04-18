@@ -17,7 +17,7 @@ class CreatePenjualanItemsTable extends Migration
             $table->increments('id');
             $table->integer('penjualan_id', false, true);
             $table->integer('kategori_produk_id', false, true);
-            $table->integer('timbangan_manual', false, true);
+            $table->decimal('timbangan_manual', 38, 4);
             $table->integer('harga_per_kg', false, true);
             $table->integer('value', false, true);
             $table->timestamps();

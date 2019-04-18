@@ -40,6 +40,8 @@ Route::get('getMvtList', 'StockWpController@getMvtList');
 
 // TRANSACTION
 Route::resource('penerimaan', 'PenerimaanController')->only(['index', 'store', 'update', 'destroy']);
+Route::get('pengajuanPenjualan/{pengajuanPenjualan}/approvalForm', 'PengajuanPenjualanController@approvalForm');
+Route::get('pengajuanPenjualan/{pengajuanPenjualan}/getApprovalHistory', 'PengajuanPenjualanController@getApprovalHistory');
 Route::put('pengajuanPenjualan/{pengajuanPenjualan}/approve', 'PengajuanPenjualanController@approve');
 Route::delete('pengajuanPenjualanItemBb/{pengajuanPenjualanItemBb}', 'PengajuanPenjualanItemBbController@destroy');
 Route::resource('pengajuanPenjualan', 'PengajuanPenjualanController')->only(['index', 'edit', 'show', 'store', 'update', 'destroy']);

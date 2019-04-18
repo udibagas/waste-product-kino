@@ -20,8 +20,8 @@ class CreatePenerimaanItemsTable extends Migration
             $table->integer('qty_kirim', false, true);
             $table->integer('qty_terima', false, true);
             $table->string('eun', 10);
-            $table->integer('timbangan_manual_kirim', false, true);
-            $table->integer('timbangan_manual_terima', false, true);
+            $table->decimal('timbangan_manual_kirim', 38, 4);
+            $table->decimal('timbangan_manual_terima', 18, 4);
             $table->timestamps();
         });
     }

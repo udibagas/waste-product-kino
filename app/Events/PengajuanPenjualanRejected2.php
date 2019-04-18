@@ -9,19 +9,22 @@ use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use App\PengajuanPenjualan;
 
 class PengajuanPenjualanRejected2
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+
+    public $pengajuanPenjualan;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(PengajuanPenjualan $pengajuanPenjualan)
     {
-        //
+        $this->pengajuanPenjualan = $pengajuanPenjualan;
     }
 
     /**

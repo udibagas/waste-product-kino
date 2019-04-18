@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Penjualan extends Model
 {
+    const STATUS_DRAFT = 0;
+
+    const STATUS_SUBMITTED = 1;
+    
     protected $dateFormat = 'Y-m-d H:i:s';
 
     protected $fillable = [

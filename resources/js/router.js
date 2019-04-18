@@ -18,6 +18,7 @@ import KategoriBarang from './pages/KategoriBarang'
 import KonversiBerat from './pages/KonversiBerat'
 import ApprovalPengajuanPenjualan from './pages/ApprovalPengajuanPenjualan'
 import Profile from './pages/Profile'
+import { Message } from 'element-ui';
 
 Vue.use(VueRouter);
 
@@ -130,8 +131,12 @@ router.beforeEach((to, from, next) => {
     axios.get(BASE_URL + '/checkAuth', { params: params }).then(r => {
         next()
     }).catch(e => {
-        alert('Unauthorized')
-        // kalau next disini ga bener bakal looping
+        Message({
+            message: 'You have no right to access this menu or your session is expired. Please refresh your browser.',
+            type: 'error',
+            showClose: true,
+            duration: 10000
+        })
         next(false)
     })
 });
