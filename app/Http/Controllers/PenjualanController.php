@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\PenjualanRequest;
 use App\Penjualan;
-use App\PenjualanItem;
 use App\Events\PenjualanSubmitted;
+use App\PenjualanItemBb;
 
 class PenjualanController extends Controller
 {
@@ -53,8 +53,8 @@ class PenjualanController extends Controller
     {
         $penjualan->update($request->all());
 
-        foreach ($request->items as $i) {
-            PenjualanItem::find($i['id'])->update($i);
+        foreach ($request->items_bb as $i) {
+            PenjualanItemBb::find($i['id'])->update($i);
         }
 
         if ($request->status == Penjualan::STATUS_SUBMITTED) {

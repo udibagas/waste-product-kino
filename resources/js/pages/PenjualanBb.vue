@@ -28,7 +28,7 @@
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
             <el-table-column type="expand" width="20px">
                 <template slot-scope="scope">
-                    {{scope.row.id}}
+                    <PenjualanItemBb :data="scope.row" />
                 </template>
             </el-table-column>
             <el-table-column prop="tanggal" width="100" label="Tanggal" sortable="custom">
@@ -36,7 +36,8 @@
                     {{ scope.row.tanggal | readableDate }}
                 </template>
             </el-table-column>
-            <el-table-column prop="no_sj" label="No. Surat Jalan" sortable="custom"></el-table-column>
+            <el-table-column min-width="150px" prop="no_sj" label="No. Surat Jalan" sortable="custom"></el-table-column>
+            <el-table-column min-width="150px" prop="no_aju" label="No. Pengajuan" sortable="custom"></el-table-column>
             
             <el-table-column 
             prop="plant" 
@@ -56,11 +57,18 @@
             sortable="custom" 
             column-key="pembeli_id"
             :filters="$store.state.pembeliList.map(l => { return {value: l.id, text: l.nama } })"
-            width="200">
+            min-width="200">
                 <template slot-scope="scope">
-                    {{scope.row.pembeli.nama}}
+                    {{scope.row.pembeli.nama}} ({{scope.row.pembeli.kontak}})
                 </template>
             </el-table-column>
+
+            <el-table-column prop="jembatan_timbang" label="Jembatan Timbang" min-width="200" align="center" header-align="center" sortable="custom">
+                <template slot-scope="scope">
+                    {{scope.row.jembatan_timbang | formatNumber}} kg
+                </template>
+            </el-table-column>
+
             <el-table-column prop="value" label="Value" width="90" align="center" header-align="center" sortable="custom">
                 <template slot-scope="scope">
                     {{scope.row.value | formatNumber}}
@@ -117,7 +125,7 @@
             </el-col>
         </el-row>
 
-        <el-dialog center :visible.sync="showForm" :title="formTitle" width="900px" v-loading="loading" :close-on-click-modal="false">
+        <el-dialog center :visible.sync="showForm" :title="formTitle" width="950px" v-loading="loading" :close-on-click-modal="false">
             <el-alert type="error" title="ERROR"
                 :description="error.message + '\n' + error.file + ':' + error.line"
                 v-show="error.message"
@@ -138,7 +146,7 @@
                         </el-form-item>
 
                         <el-form-item label="Plant">
-                            <el-select v-model="formModel.location_id" style="width:100%" placeholder="Plant">
+                            <el-select :disabled="!!formModel.id" v-model="formModel.location_id" style="width:100%" placeholder="Plant">
                                 <el-option
                                 v-for="item in $store.state.locationList"
                                 :key="item.id"
@@ -150,7 +158,7 @@
                         </el-form-item>
 
                         <el-form-item label="Nomor Pengajuan">
-                            <el-select v-model="formModel.no_aju" style="width:100%" placeholder="Nomor Pengajuan">
+                            <el-select :disabled="!!formModel.id" v-model="formModel.no_aju" style="width:100%" placeholder="Nomor Pengajuan">
                                 <el-option
                                 v-for="item in $store.state.pengajuanPenjualanList.filter(p => p.location_id == formModel.location_id)"
                                 :key="item.id"
@@ -201,15 +209,21 @@
                 <table class="table table-sm table-bordered" v-if="formModel.items_bb.length > 0">
                     <thead>
                         <tr>
-                            <th class="text-center">#</th>
-                            <th class="text-center">Kategori</th>
-                            <th class="text-center">Stock (kg)</th>
+                            <th rowspan="2" class="text-center">#</th>
+                            <th rowspan="2" class="text-center">Kategori</th>
+                            <th colspan="2" class="text-center">Stock</th>
+                            <th colspan="4" class="text-center">Pengajuan</th>
+                            <th colspan="3" class="text-center">Aktual</th>
+                        </tr>
+                        <tr>
+                            <th class="text-center">Berat (kg)</th>
                             <th class="text-center">Qty</th>
                             <th class="text-center">Timbangan Manual (kg)</th>
-                            <th class="text-center">Jembatan Timbang (kg)</th>
+                            <th class="text-center">Qty</th>
                             <th class="text-center">Harga/Kg Sistem (Rp)</th>
-                            <th class="text-center">Harga/Kg Aktual (Rp)</th>
                             <th class="text-center">Value Jual Sistem (Rp)</th>
+                            <th class="text-center">Jembatan Timbang (kg)</th>
+                            <th class="text-center">Harga/Kg Aktual (Rp)</th>
                             <th class="text-center">Value Jual Aktual (Rp)</th>
                         </tr>
                     </thead>
@@ -218,13 +232,14 @@
                             <td class="text-center">{{index+1}}</td>
                             <td class="text-center">{{item.kategori.kode}} - {{item.kategori.nama}}</td>
                             <td class="text-center">{{item.stock_berat | formatNumber}}</td>
+                            <td class="text-center">{{item.stock_qty | formatNumber}}</td>
+                            <td class="text-center">{{item.timbangan_manual | formatNumber}}</td>
                             <td class="text-center">{{item.qty | formatNumber}}</td>
-                            <td class="text-center">{{item.berat | formatNumber}}</td>
-                            <td class="text-center"><input type="text" v-model="item.jembatan_timbang" class="my-input" placeholder="Jembatan Timbang"></td>
                             <td class="text-center">{{item.kategori.harga | formatNumber}}</td>
+                            <td class="text-center">{{item.kategori.harga * item.timbangan_manual | formatNumber}}</td>
+                            <td class="text-center"><input type="text" v-model="item.jembatan_timbang" class="my-input" placeholder="Jembatan Timbang"></td>
                             <td class="text-center"><input type="text" v-model="item.price_per_kg" class="my-input" placeholder="Harga per Kg"></td>
-                            <td class="text-center">{{item.kategori.harga * item.berat | formatNumber}}</td>
-                            <td class="text-center"><input type="text" v-model="item.value" class="my-input" placeholder="Value Jual"></td>
+                            <td class="text-center">Rp {{item.jembatan_timbang * item.price_per_kg | formatNumber}}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -241,8 +256,10 @@
 
 <script>
 import moment from 'moment'
+import PenjualanItemBb from '../components/PenjualanItemBb'
 
 export default {
+    components: { PenjualanItemBb },
     watch: {
         keyword: function(v, o) {
             this.requestData()
@@ -256,24 +273,30 @@ export default {
                 this.formModel.kontak_pembeli = pembeli.kontak
             }
         },
+        'formModel.location_id'(v, o) {
+            if (!this.formModel.id) {
+                this.formModel.items_bb = []
+            }
+        },
         'formModel.no_aju'(v, o) {
             if (!!this.formModel.id) {
                 return
             }
 
             let pengajuan = this.$store.state.pengajuanPenjualanList.find(p => p.no_aju == v)
-            // this.formModel.jembatan_timbang = pengajuan.jembatan_timbang
 
             if (!!pengajuan) {
                 this.formModel.items_bb = pengajuan.items_bb.map(i => {
                     return {
                         stock_berat: i.stock_berat,
+                        stock_qty: i.stock_qty,
                         kategori_barang_id: i.kategori_barang_id,
                         qty: i.jumlah,
                         jembatan_timbang: i.timbangan_manual,
-                        berat: i.timbangan_manual,
+                        timbangan_manual: i.timbangan_manual,
                         kategori: i.kategori,
-                        price_per_kg: i.kategori.harga
+                        price_per_kg: i.kategori.harga,
+                        value: i.kategori.harga * i.timbangan_manual
                     }
                 })
                 // console.log(this.formModel.items_bb)

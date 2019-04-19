@@ -9,8 +9,9 @@ class PenjualanItemBb extends Model
     protected $dateFormat = 'Y-m-d H:i:s';
 
     protected $fillable = [
-        'kategori_barang_id', 'qty', 'berat', 'price',
-        'price_per_kg', 'value', 'keterangan', 'penjualan_id'
+        'kategori_barang_id', 'qty', 'jembatan_timbang', 'price', 'timbangan_manual',
+        'price_per_kg', 'value', 'keterangan', 'penjualan_id',
+        'stock_berat', 'stock_qty'
     ];
 
     protected $with = ['kategori'];
