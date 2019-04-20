@@ -10,6 +10,11 @@ use App\Events\PenerimaanSubmitted;
 
 class PenerimaanController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
     public function index(Request $request)
     {
         $sort = $request->sort ? $request->sort : 'tanggal';
