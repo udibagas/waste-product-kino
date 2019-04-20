@@ -78,13 +78,19 @@
 
             <el-table-column prop="value" label="Value" width="120" align="center" header-align="center" sortable="custom">
                 <template slot-scope="scope">
-                    Rp {{scope.row.value | formatNumber}}
+                    <span class="text-info">Rp {{scope.row.value | formatNumber}}</span>
                 </template>
             </el-table-column>
 
             <el-table-column label="Terbayar" width="120" align="center" header-align="center">
                 <template slot-scope="scope">
-                    Rp {{scope.row.terbayar | formatNumber}}
+                    <span class="text-success">Rp {{scope.row.terbayar | formatNumber}}</span>
+                </template>
+            </el-table-column>
+
+            <el-table-column label="Outstanding" width="120" align="center" header-align="center">
+                <template slot-scope="scope">
+                    <span class="text-danger">Rp {{scope.row.value - scope.row.terbayar | formatNumber}}</span>
                 </template>
             </el-table-column>
 
@@ -131,7 +137,7 @@
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item v-if="scope.row.status === 0" @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
                             <el-dropdown-item v-if="scope.row.status === 0" @click.native.prevent="deleteData(scope.row.id)"><i class="el-icon-delete"></i> Hapus</el-dropdown-item>
-                            <el-dropdown-item v-if="scope.row.status === 1 && scope.row.status_pembayaran !== 2" @click.native.prevent="inputPembayaran(scope.row)"><i class="el-icon-check"></i> Input Pembayaran</el-dropdown-item>
+                            <el-dropdown-item v-if="scope.row.status === 1 || scope.row.status_pembayaran !== 2" @click.native.prevent="inputPembayaran(scope.row)"><i class="el-icon-check"></i> Input Pembayaran</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </template>

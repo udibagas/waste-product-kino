@@ -1,51 +1,46 @@
 <template>
     <el-row :gutter="10">
         <el-col :span="12">
-            <el-card :body-style="{ padding: '0px' }">
-                <div slot="header" class="clearfix">
-                    <span>DETAIL PENJUALAN</span>
-                </div>
-                <table class="table table-sm table-bordered table-striped" style="margin-bottom:0">
-                    <tbody>
-                        <tr>
-                            <td class="label">No. Surat Jalan</td>
-                            <td>{{penjualan.no_sj}}</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Tanggal</td>
-                            <td>{{penjualan.tanggal | readableDate}}</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Plant</td>
-                            <td>{{penjualan.location.plant}} - {{penjualan.location.name}}</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Pembeli</td>
-                            <td>{{penjualan.pembeli.nama}}</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Kontak Pembeli</td>
-                            <td> {{penjualan.pembeli.kontak}}</td>
-                        </tr>
-                        <tr>
-                            <td class="label">TOP Date</td>
-                            <td>{{penjualan.top_date | readableDate}}</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Value</td>
-                            <td>Rp {{penjualan.value | formatNumber}}</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Terbayar</td>
-                            <td class="text-success">Rp {{penjualan.terbayar | formatNumber}}</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Outstanding</td>
-                            <td class="text-danger">Rp {{penjualan.value - penjualan.terbayar | formatNumber}}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </el-card>
+            <table class="table table-sm table-bordered table-striped" style="margin-bottom:0">
+                <tbody>
+                    <tr>
+                        <td class="label">No. Surat Jalan</td>
+                        <td>{{penjualan.no_sj}}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Tanggal</td>
+                        <td>{{penjualan.tanggal | readableDate}}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Plant</td>
+                        <td>{{penjualan.location.plant}} - {{penjualan.location.name}}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Pembeli</td>
+                        <td>{{penjualan.pembeli.nama}}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Kontak Pembeli</td>
+                        <td> {{penjualan.pembeli.kontak}}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">TOP Date</td>
+                        <td>{{penjualan.top_date | readableDate}}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Value</td>
+                        <td class="text-info">Rp {{penjualan.value | formatNumber}}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Terbayar</td>
+                        <td class="text-success">Rp {{penjualan.terbayar | formatNumber}}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Outstanding</td>
+                        <td class="text-danger">Rp {{penjualan.value - penjualan.terbayar | formatNumber}}</td>
+                    </tr>
+                </tbody>
+            </table>
         </el-col>
         <el-col :span="12">
             <el-alert type="error" title="ERROR"
@@ -77,11 +72,13 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 export default {
     props: ['penjualan'],
     data() {
         return {
-            formModel: {},
+            formModel: { tanggal: moment().format('YYYY-MM-DD') },
             formErrors: {},
             error: {}
         }
