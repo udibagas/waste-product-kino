@@ -48,6 +48,7 @@ Route::resource('pengajuanPenjualan', 'PengajuanPenjualanController')->only(['in
 Route::resource('pengeluaran', 'PengeluaranController')->only(['index', 'store', 'update', 'destroy']);
 Route::delete('pengeluaranItem/{pengeluaranItem}', 'PengeluaranItemController@destroy');
 Route::resource('penjualan','PenjualanController')->only(['index', 'store', 'update', 'destroy']);
+Route::resource('pembayaran','PembayaranController')->only(['store']);
 
 // REPORT
 Route::get('inOutStockBb', 'InOutStockBbController@index');

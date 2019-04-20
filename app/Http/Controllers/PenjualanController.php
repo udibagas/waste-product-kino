@@ -23,6 +23,8 @@ class PenjualanController extends Controller
             return $q->whereIn('location_id', $request->location_id);
         })->when($request->status, function ($q) use ($request) {
             return $q->whereIn('status', $request->status);
+        })->when($request->status_pembayaran, function ($q) use ($request) {
+            return $q->whereIn('status_pembayaran', $request->status_pembayaran);
         })->when($request->user()->role == \App\User::ROLE_USER, function ($q) use ($request) {
             return $q->where('location_id', $request->user()->location_id);
         })->orderBy($sort, $order)->paginate($request->pageSize);

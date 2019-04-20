@@ -28,7 +28,14 @@
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
             <el-table-column type="expand" width="20px">
                 <template slot-scope="scope">
-                    <PenjualanItemBb :data="scope.row" />
+                    <el-tabs type="border-card">
+                        <el-tab-pane label="Items">
+                            <PenjualanItemBb :data="scope.row" />
+                        </el-tab-pane>
+                        <el-tab-pane label="Pembayaran">
+                            <Pembayaran :data="scope.row.pembayaran" />
+                        </el-tab-pane>
+                    </el-tabs>
                 </template>
             </el-table-column>
             <el-table-column prop="tanggal" width="100" label="Tanggal" sortable="custom">
@@ -69,11 +76,18 @@
                 </template>
             </el-table-column>
 
-            <el-table-column prop="value" label="Value" width="90" align="center" header-align="center" sortable="custom">
+            <el-table-column prop="value" label="Value" width="120" align="center" header-align="center" sortable="custom">
                 <template slot-scope="scope">
-                    {{scope.row.value | formatNumber}}
+                    Rp {{scope.row.value | formatNumber}}
                 </template>
             </el-table-column>
+
+            <el-table-column label="Terbayar" width="120" align="center" header-align="center">
+                <template slot-scope="scope">
+                    Rp {{scope.row.terbayar | formatNumber}}
+                </template>
+            </el-table-column>
+
             <el-table-column label="TOP Date" width="100" align="center" header-align="center">
                 <template slot-scope="scope">
                     {{scope.row.top_date | readableDate}}
@@ -94,15 +108,30 @@
                 </template>
             </el-table-column>
 
+            <el-table-column 
+            prop="status_pembayaran" 
+            width="170" 
+            align="center" 
+            header-align="center" 
+            label="Status Pembayaran" 
+            column-key="status_pembayaran"
+            :filters="statuses_pembayaran.map(s => { return {value: s.value, text: s.label} })"
+            sortable="custom">
+                <template slot-scope="scope">
+                    <el-tag size="small" :type="statuses_pembayaran[scope.row.status_pembayaran].type">{{statuses_pembayaran[scope.row.status_pembayaran].label}}</el-tag>
+                </template>
+            </el-table-column>
+
             <el-table-column fixed="right" width="40px">
                 <template slot-scope="scope">
-                    <el-dropdown v-if="scope.row.status === 0">
+                    <el-dropdown v-if="scope.row.status === 0 || scope.row.status_pembayaran !== 2">
                         <span class="el-dropdown-link">
                             <i class="el-icon-more"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
-                            <el-dropdown-item @click.native.prevent="deleteData(scope.row.id)"><i class="el-icon-delete"></i> Hapus</el-dropdown-item>
+                            <el-dropdown-item v-if="scope.row.status === 0" @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
+                            <el-dropdown-item v-if="scope.row.status === 0" @click.native.prevent="deleteData(scope.row.id)"><i class="el-icon-delete"></i> Hapus</el-dropdown-item>
+                            <el-dropdown-item v-if="scope.row.status === 1 && scope.row.status_pembayaran !== 2" @click.native.prevent="inputPembayaran(scope.row)"><i class="el-icon-check"></i> Input Pembayaran</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </template>
@@ -125,6 +154,21 @@
             </el-col>
         </el-row>
 
+        <!-- FORM PEMBAYARAN -->
+        <el-dialog 
+        center 
+        :visible.sync="showFormPembayaran" 
+        :title="!!formModelPembayaran.id ? 'Input Pembayaran' : 'Edit Pembayaran'"
+        v-loading="loading" 
+        width="900px"
+        :close-on-click-modal="false">
+            <FormPembayaran 
+            @close-form="showFormPembayaran = false" 
+            @reload-data="requestData" 
+            :penjualan="formModelPembayaran" />
+        </el-dialog>
+
+        <!-- FORM INPUT/EDIT PENJUALAN -->
         <el-dialog center :visible.sync="showForm" :title="formTitle" width="950px" v-loading="loading" :close-on-click-modal="false">
             <el-alert type="error" title="ERROR"
                 :description="error.message + '\n' + error.file + ':' + error.line"
@@ -257,9 +301,11 @@
 <script>
 import moment from 'moment'
 import PenjualanItemBb from '../components/PenjualanItemBb'
+import Pembayaran from '../components/Pembayaran'
+import FormPembayaran from '../components/FormPembayaran'
 
 export default {
-    components: { PenjualanItemBb },
+    components: { PenjualanItemBb, Pembayaran, FormPembayaran },
     watch: {
         keyword: function(v, o) {
             this.requestData()
@@ -308,10 +354,12 @@ export default {
         return {
             loading: false,
             showForm: false,
+            showFormPembayaran: false,
             formTitle: '',
             formErrors: {},
             error: {},
             formModel: { jenis: 'BB', items_bb: [] },
+            formModelPembayaran: {},
             keyword: '',
             page: 1,
             pageSize: 10,
@@ -323,10 +371,19 @@ export default {
                 {type: 'info', label: 'Draft', value: 0},
                 {type: 'warning', label: 'Submitted', value: 1},
                 {type: 'success', label: 'Approved', value: 2},
+            ],
+            statuses_pembayaran: [
+                {type: 'info', label: 'No Payment', value: 0},
+                {type: 'warning', label: 'Partial', value: 1},
+                {type: 'success', label: 'Paid', value: 2},
             ]
         }
     },
     methods: {
+        inputPembayaran(data) {
+            this.formModelPembayaran = data
+            this.showFormPembayaran = true
+        },
         sortChange: function(column) {
             if (this.sort !== column.prop || this.order !== column.order) {
                 this.sort = column.prop;
