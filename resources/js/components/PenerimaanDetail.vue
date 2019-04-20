@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <el-card>
         <table class="table table-sm table-bordered" v-if="data.items.length > 0">
             <thead>
                 <tr>
@@ -34,7 +34,7 @@
                 </tr>
             </tbody>
         </table>
-    </div>
+    </el-card>
 </template>
 
 <script>

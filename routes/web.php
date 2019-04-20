@@ -47,6 +47,7 @@ Route::delete('pengajuanPenjualanItemBb/{pengajuanPenjualanItemBb}', 'PengajuanP
 Route::resource('pengajuanPenjualan', 'PengajuanPenjualanController')->only(['index', 'edit', 'show', 'store', 'update', 'destroy']);
 Route::resource('pengeluaran', 'PengeluaranController')->only(['index', 'store', 'update', 'destroy']);
 Route::delete('pengeluaranItem/{pengeluaranItem}', 'PengeluaranItemController@destroy');
+Route::get('penjualan/{penjualan}/printSlip', 'PenjualanController@printSlip');
 Route::resource('penjualan','PenjualanController')->only(['index', 'store', 'update', 'destroy']);
 Route::resource('pembayaran','PembayaranController')->only(['store']);
 

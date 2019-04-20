@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <el-card>
         <table class="table table-sm table-bordered">
             <thead>
                 <tr>
@@ -20,7 +20,7 @@
                 </tr>
             </tbody>
         </table>
-    </div>
+    </el-card>
 </template>
 
 <script>

@@ -33,6 +33,10 @@ class Penjualan extends Model
         return $this->hasMany(PenjualanItemBb::class);
     }
 
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
+
     public function location() {
         return $this->belongsTo(Location::class);
     }
@@ -45,9 +49,22 @@ class Penjualan extends Model
         return $this->hasMany(Pembayaran::class);
     }
 
+    public function getPengajuanAttribute() {
+        $sql = "SELECT * FROM pengajuan_penjualans WHERE no_aju = ?";
+        return DB::select($sql, [$this->no_aju])[0];
+    }
+
     public function getTerbayarAttribute() {
         $sql = "SELECT SUM(value) AS terbayar FROM pembayarans WHERE penjualan_id = ?";
         $terbayar = DB::SELECT($sql, [$this->id])[0]->terbayar;
         return $terbayar ? $terbayar : 0;
+    }
+
+    public function getApprover1Attribute() {
+        return 'a';
+    }
+
+    public function getApprover2Attribute() {
+        return 'a';
     }
 }

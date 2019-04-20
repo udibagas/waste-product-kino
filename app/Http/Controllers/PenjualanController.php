@@ -77,4 +77,9 @@ class PenjualanController extends Controller
         $penjualan->delete();
         return ['message' => 'ok'];
     }
+
+    public function printSlip(Penjualan $penjualan)
+    {
+        return view('penjualan.print_slip', ['penjualan' => $penjualan]);
+    }
 }

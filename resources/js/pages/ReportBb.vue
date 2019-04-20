@@ -9,7 +9,7 @@
                     <el-option
                     v-for="item in $store.state.locationList"
                     :key="item.id"
-                    :label="item.name"
+                    :label="item.plant + ' - ' + item.name"
                     :value="item.id">
                     </el-option>
                 </el-select>
@@ -53,7 +53,7 @@
             </el-table-column>
             <el-table-column width="110" label="Selisih" align="center" header-align="center">
                 <template slot-scope="scope">
-                    {{ scope.row.stock_in - scope.row.stock_out | formatNumber }}
+                    {{ (scope.row.stock_in - scope.row.stock_out).toFixed(4) | formatNumber }}
                 </template>
             </el-table-column>
         </el-table>

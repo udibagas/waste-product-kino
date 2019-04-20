@@ -40,7 +40,7 @@
             </el-table-column>
             <el-table-column prop="location.name" width="130" label="Lokasi" sortable="custom"></el-table-column>
             <el-table-column prop="lokasi_asal" width="130" label="Lokasi Asal" sortable="custom"></el-table-column>
-            <el-table-column prop="barang.nama" label="Kategori Barang" sortable="custom">
+            <el-table-column prop="barang.nama" width="200" label="Kategori Barang" sortable="custom">
                 <template slot-scope="scope">
                     {{ scope.row.barang.jenis }} : {{ scope.row.barang.kode }} - {{ scope.row.barang.nama }}
                 </template>
@@ -66,7 +66,7 @@
                 </template>
             </el-table-column>
             <el-table-column prop="eun" width="70" label="Eun" sortable="custom"></el-table-column>
-            <el-table-column prop="no_sj" label="No. Surat Jalan" sortable="custom"></el-table-column>
+            <el-table-column prop="no_sj" width="200" label="No. Surat Jalan" sortable="custom"></el-table-column>
         </el-table>
 
         <br>

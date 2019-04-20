@@ -91,25 +91,18 @@ class NavigationController extends Controller
                 'order' => 4
             ],
             [
-                'icon' => 'file-invoice-dollar',
-                'label' => 'Pembayaran',
-                'url' => '/pembayaran',
-                'parent_id' => 2,
-                'order' => 5
-            ],
-            [
                 'icon' => 'exchange-alt',
                 'label' => 'In Out Stock',
                 'url' => '/inOutStockBb',
                 'parent_id' => 2,
-                'order' => 6
+                'order' => 5
             ],
             [
                 'icon' => 'chart-bar',
                 'label' => 'Laporan',
                 'url' => '/reportBb',
                 'parent_id' => 2,
-                'order' => 7
+                'order' => 6
             ],
             // Sub Menu Waste Product (ID : 3)
             [
@@ -134,18 +127,11 @@ class NavigationController extends Controller
                 'order' => 2
             ],
             [
-                'icon' => 'file-invoice-dollar',
-                'label' => 'Pembayaran',
-                'url' => '/pembayaran',
-                'parent_id' => 3,
-                'order' => 3
-            ],
-            [
                 'icon' => 'chart-bar',
                 'label' => 'Laporan',
                 'url' => '/reportWp',
                 'parent_id' => 3,
-                'order' => 4
+                'order' => 3
             ],
             // Sub Menu Master Data (ID : 4)
             [

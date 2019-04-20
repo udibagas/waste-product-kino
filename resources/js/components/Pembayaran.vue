@@ -1,7 +1,8 @@
 <template>
-    <table class="table table-sm table-striped table-bordered table-hover" style="width: 500px">
+    <table class="table table-sm table-striped table-bordered table-hover" style="width: 600px">
         <thead>
             <tr>
+                <th class="text-center">Update Time</th>
                 <th class="text-center">Date</th>
                 <th class="text-center">Value</th>
                 <th class="text-center">User</th>
@@ -11,6 +12,7 @@
         </thead>
         <tbody>
             <tr v-for="d in data" :key="d.id">
+                <td class="text-center">{{d.updated_at | readableDateTime}}</td>
                 <td class="text-center">{{d.tanggal | readableDate}}</td>
                 <td class="text-center">Rp {{d.value | formatNumber}}</td>
                 <td class="text-center">{{d.user}}</td>
