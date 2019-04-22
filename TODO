@@ -1,1 +1,48 @@
-- approval kategori
+Masukan:
+- export excel di semua menu
+
+PENGELUARAN
+- DONE
+
+PENERIMAAN BB
+- dropdown sj di penerimaan cek lagi. 
+    - exclude kalau sudah di proses meski cuma draft
+
+PENGAJUAN PENJUALAN BB
+- screen approval yang bagus, ada remark kalau reject
+- cek lagi email notifikasi approval 1 & 2
+    - tiap kali approval harus notif
+    - email kalau rejected
+
+PENJUALAN BB
+- dropdown pengajuan penjualan
+- DONE
+
+PEMBAYARAN BB
+- DONE
+
+STOCK BB
+- DONE
+
+REPORT
+- belum semua
+
+IN OUT STOCK BB
+- filter lokasi
+--------------
+
+WP
+
+STOCK
+    - sembunyikan qty
+
+Install php sql server
+https://github.com/Microsoft/msphpsql/releases/download/v5.6.1/Windows-7.3.zip
+
+Install php untuk iis
+https://docs.microsoft.com/en-us/iis/application-frameworks/scenario-build-a-php-website-on-iis/configuring-step-1-install-iis-and-php
+
+- Laporan:
+    - Laporan Stock Out alias laporan penjualan
+    
+

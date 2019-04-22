@@ -35,11 +35,11 @@
                         <el-input disabled v-model="formModel.role"></el-input>
                     </el-form-item>
                     
-                    <el-form-item label="Plant">
+                    <el-form-item label="Plant" v-if="formModel.location">
                         <el-input disabled placeholder="Plant" v-model="formModel.location.plant"></el-input>
                     </el-form-item>
 
-                    <el-form-item label="Lokasi">
+                    <el-form-item label="Lokasi" v-if="formModel.location">
                         <el-input disabled placeholder="Lokasi" v-model="formModel.location.name"></el-input>
                     </el-form-item>
 

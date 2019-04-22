@@ -55,12 +55,12 @@
                     {{ scope.row.qty_out | formatNumber }}
                 </template>
             </el-table-column>
-            <el-table-column prop="stock_in" width="110" label="Stock In" sortable="custom" align="center" header-align="center">
+            <el-table-column prop="stock_in" width="150" label="Stock In (kg)" sortable="custom" align="center" header-align="center">
                 <template slot-scope="scope">
                     {{ scope.row.stock_in | formatNumber }}
                 </template>
             </el-table-column>
-            <el-table-column prop="stock_out" width="110" label="Stock Out" sortable="custom" align="center" header-align="center">
+            <el-table-column prop="stock_out" width="150" label="Stock Out (kg)" sortable="custom" align="center" header-align="center">
                 <template slot-scope="scope">
                     {{ scope.row.stock_out | formatNumber }}
                 </template>

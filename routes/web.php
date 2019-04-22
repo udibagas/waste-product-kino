@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\PengajuanPenjualan;
 use App\User;
 use App\Penerimaan;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TestEmail;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +20,13 @@ use App\Penerimaan;
 
 Route::get('/migrate', function () {
     return Artisan::call('migrate');
+});
+
+Route::get('testEmail', function() {
+    Mail::to('bagas@lamsolusi.com')
+        ->cc('udibagas@gmail.com')
+        ->send(new TestEmail());
+    return 'mail sent';
 });
 
 // AUTH
