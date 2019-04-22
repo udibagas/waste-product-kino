@@ -15,8 +15,6 @@ class User extends Authenticatable
 
     const ROLE_ADMIN = 1;
 
-    protected $dateFormat = 'Y-m-d H:i:s';
-
     /**
      * The attributes that are mass assignable.
      *

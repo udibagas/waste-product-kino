@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class PengajuanPenjualanItemBb extends Model
 {
-    protected $dateFormat = 'Y-m-d H:i:s';
-
     protected $fillable = [
         'pengajuan_penjualan_id', 'kategori_barang_id', 'jumlah', 
         'eun', 'timbangan_manual', 'stock_berat', 'stock_qty'

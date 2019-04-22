@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class InOutStockBb extends Model
 {
-    protected $dateFormat = 'Y-m-d H:i:s';
-
     protected $fillable = [
         'tanggal', 'lokasi_asal', 'kategori_barang_id', 'location_id',
         'eun', 'stock_in', 'stock_out', 'no_sj', 'lokasi_asal_id',

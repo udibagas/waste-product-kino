@@ -15,7 +15,7 @@ class PenjualanSubmitted
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    protected $penjualan;
+    public $penjualan;
  
     /**
      * Create a new event instance.

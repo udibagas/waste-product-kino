@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class SkemaApprovalPenjualan extends Model
 {
-    protected $dateFormat = 'Y-m-d H:i:s';
-
     protected $fillable = ['level', 'user_id', 'location_id'];
 
     protected $with = ['user', 'location'];

@@ -20,8 +20,6 @@ class PengajuanPenjualan extends Model
 
     const STATUS_APPROVAL_REJECTED = 2;
 
-    protected $dateFormat = 'Y-m-d H:i:s';
-
     protected $fillable = [
         'tanggal', 'no_aju', 'plant', 'period_from', 'period_to',
         'jenis', 'mvt_type', 'sloc', 'user_id', 'location_id', 'status',

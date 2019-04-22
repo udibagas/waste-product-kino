@@ -12,8 +12,6 @@ class Pengeluaran extends Model
 
     const STATUS_RECEIVED = 2;
     
-    protected $dateFormat = 'Y-m-d H:i:s';
-
     protected $fillable = [
         'no_sj', 'tanggal', 'penerima', 'status',
         'lokasi_asal', 'lokasi_terima', 'user_id', 'jembatan_timbang',

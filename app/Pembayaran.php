@@ -11,8 +11,6 @@ class Pembayaran extends Model
 
     const STATUS_SUBMITTED = 1;
 
-    protected $dateFormat = "Y-m-d H:i:s";
-
     protected $fillable = ['penjualan_id', 'tanggal', 'value', 'user_id', 'status', 'keterangan'];
 
     protected $appends = ['user'];

@@ -10,8 +10,6 @@ class Penerimaan extends Model
 
     const STATUS_SUBMITTED = 1;
     
-    protected $dateFormat = 'Y-m-d H:i:s';
-
     protected $fillable = [
         'tanggal', 'no_sj_keluar', 'penerima', 'keterangan',
         'lokasi_asal', 'lokasi_terima', 'user_id', 'status',

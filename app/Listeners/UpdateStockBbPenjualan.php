@@ -6,6 +6,7 @@ use App\Events\PenjualanSubmitted;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\InOutStockBb;
+use App\StockBb;
 use DB;
 
 class UpdateStockBbPenjualan
@@ -28,25 +29,51 @@ class UpdateStockBbPenjualan
      */
     public function handle(PenjualanSubmitted $event)
     {
-        foreach ($event->penjualan->items as $item) 
+        if ($event->penjualan->jenis == 'BB')
         {
-            InOutStockBb::create([
-                'tanggal' => $event->penjualan->tanggal,
-                'lokasi_asal' => $event->penjualan->lokasi_asal,
-                'lokasi_terima' => '',
-                'kategori_barang_id' => $item->kategori_barang_id,
-                'eun' => $item->eun,
-                'stock_in' => 0,
-                'stock_out' => $item->timbangan_manual, // tanya lagi, atau pakai qty?
-                'no_sj' => $event->penjualan->no_sj
-            ]);
+            foreach ($event->penjualan->itemsBb as $item) 
+            {
+                InOutStockBb::create([
+                    'tanggal' => $event->penjualan->tanggal,
+                    'lokasi_asal' => '',
+                    'lokasi_asal_id' => '',
+                    'location_id' => $event->penjualan->location_id,
+                    'kategori_barang_id' => $item->kategori_barang_id,
+                    'eun' => $item->kategori->unit,
+                    'stock_in' => 0,
+                    'stock_out' => $item->timbangan_manual,
+                    'qty_in' => 0,
+                    'qty_out' => $item->qty,
+                    'no_sj' => $event->penjualan->no_sj
+                ]);
 
-            // kurangi stock di lokasi_asal
-            DB::update("UPDATE stock_bbs SET stock = stock - :jumlah WHERE kategori_barang_id = :kategori AND lokasi = :lokasi", [
-                ':jumlah' => $item->timbangan_manual,
-                ':kategori' => $item->kategori_barang_id,
-                ':lokasi' => $event->penjualan->lokasi_terima
-            ]);
+                $stock = StockBb::where('location_id', $event->penjualan->location_id)
+                    ->where('kategori_barang_id', $item->kategori_barang_id)
+                    ->first();
+
+                if ($stock) {
+                    $stock->stock = $stock->stock - $item->timbangan_manual;
+                    $stock->qty = $stock->qty - $item->qty;
+                    $stock->save();
+                } else {
+                    StockBb::create([
+                        'kategori_barang_id' => $item->kategori_barang_id,
+                        'location_id' => $event->penjualan->location_id,
+                        'lokasi' => $event->penjualan->location->name,
+                        'qty' => 0,
+                        'stock' => 0,
+                        'unit' => $item->kategori->unit,
+                    ]);
+                }
+            }
         }
+
+        // if ($event->penjualan->jenis == 'WP')
+        // {
+        //     foreach($event->penjualan->itemsWp as $item)
+        //     {
+
+        //     }
+        // }
     }
 }
