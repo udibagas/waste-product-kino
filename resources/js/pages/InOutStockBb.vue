@@ -38,13 +38,35 @@
                     {{ scope.row.tanggal | readableDate }}
                 </template>
             </el-table-column>
-            <el-table-column prop="location.name" width="130" label="Lokasi" sortable="custom"></el-table-column>
-            <el-table-column prop="lokasi_asal" width="130" label="Lokasi Asal" sortable="custom"></el-table-column>
-            <el-table-column prop="barang.nama" width="200" label="Kategori Barang" sortable="custom">
+
+            <el-table-column prop="location.name" 
+            width="130" 
+            label="Lokasi" 
+            column-key="location_id"
+            :filters="$store.state.locationList.map(l => { return {value: l.id, text: l.plant + ' - ' + l.name } })"
+            sortable="custom">
+            </el-table-column>
+
+            <el-table-column 
+            prop="lokasi_asal" 
+            width="130" 
+            label="Lokasi Asal" 
+            column-key="lokasi_asal"
+            :filters="$store.state.locationList.map(l => { return {value: l.name, text: l.plant + ' - ' + l.name } })"
+            sortable="custom"></el-table-column>
+            
+            <el-table-column 
+            prop="barang.nama" 
+            width="200" 
+            label="Kategori Barang" 
+            column-key="kategori_barang_id" 
+            :filters="$store.state.kategoriBarangList.map(l => {return {text: l.kode + ' - ' + l.nama, value: l.id}})"
+            sortable="custom">
                 <template slot-scope="scope">
                     {{ scope.row.barang.jenis }} : {{ scope.row.barang.kode }} - {{ scope.row.barang.nama }}
                 </template>
             </el-table-column>
+
             <el-table-column prop="qty_in" width="110" label="Qty In" sortable="custom" align="center" header-align="center">
                 <template slot-scope="scope">
                     {{ scope.row.qty_in | formatNumber }}
@@ -163,6 +185,8 @@ export default {
     },
     created: function() {
         this.requestData();
+        this.$store.commit('getLocationList')
+        this.$store.commit('getKategoriBarangList')
     }
 }
 </script>

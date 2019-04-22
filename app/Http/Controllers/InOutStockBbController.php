@@ -21,6 +21,12 @@ class InOutStockBbController extends Controller
             return $q->where('no_sj', 'LIKE', '%' . $request->keyword . '%')
                 ->orWhere('plant', 'LIKE', '%' . $request->keyword . '%')
                 ->orWhere('lokasi', 'LIKE', '%' . $request->keyword . '%');
+        })->when($request->location_id, function ($q) use ($request) {
+            return $q->whereIn('location_id', $request->location_id);
+        })->when($request->lokasi_asal, function ($q) use ($request) {
+            return $q->whereIn('lokasi_asal', $request->lokasi_asal);
+        })->when($request->kategori_barang_id, function ($q) use ($request) {
+            return $q->whereIn('kategori_barang_id', $request->kategori_barang_id);
         })->orderBy($sort, $order)->paginate($request->pageSize);
     }
 }
