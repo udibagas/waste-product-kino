@@ -14,6 +14,8 @@ class PengajuanPenjualan extends Model
 
     const STATUS_REJECTED = 3;
 
+    const STATUS_PROCESSED = 4;
+
     const STATUS_APPROVAL_PENDING = 0;
 
     const STATUS_APPROVAL_APPROVED = 1;

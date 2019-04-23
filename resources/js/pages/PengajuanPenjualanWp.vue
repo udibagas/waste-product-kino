@@ -166,12 +166,12 @@
                             <th>#</th>
                             <th>Material ID</th>
                             <th>Material Name</th>
-                            <th class="text-center">Unit</th>
-                            <th class="text-center">Qty</th>
-                            <th class="text-right">Stock (kg)</th>
+                            <!-- <th class="text-center">Unit</th> -->
+                            <!-- <th class="text-center">Qty</th> -->
+                            <th class="text-right">Stock</th>
                             <th class="text-center">Diajukan (kg)</th>
                             <th>Price/Unit (Rp)</th>
-                            <th>Value (Rp)</th>
+                            <th>Value</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -180,12 +180,12 @@
                             <td>{{i + 1}}.</td>
                             <td>{{m.material}}</td>
                             <td>{{m.material_description}}</td>
-                            <td class="text-center">{{m.bun}}</td>
-                            <td class="text-center">{{m.quantity}}</td>
-                            <td class="text-right">{{m.stock / 1000 | formatNumber}}</td>
+                            <!-- <td class="text-center">{{m.bun}}</td> -->
+                            <!-- <td class="text-center">{{m.quantity}}</td> -->
+                            <td class="text-right">{{(m.stock / 1000).toFixed(4) | formatNumber}} kg</td>
                             <td><input type="number" step="any" class="my-input" v-model="m.diajukan" placeholder="Diajukan"></td>
                             <td><input type="number" class="my-input" v-model="m.price_per_unit" placeholder="Price/Unit"></td>
-                            <td>{{ (m.diajukan * m.price_per_unit).toFixed(0) }}</td>
+                            <td class="text-right">Rp {{ (m.diajukan * m.price_per_unit).toFixed(0) | formatNumber }}</td>
                             <td><a href="#" @click="deleteItem(i)" class="icon-bg"><i class="el-icon-delete"></i></a></td>
                         </tr>
                     </tbody>
@@ -214,8 +214,8 @@
                             <th>#</th>
                             <th>Material ID</th>
                             <th>Material Name</th>
-                            <th class="text-center">Unit</th>
-                            <th class="text-center">Qty</th>
+                            <!-- <th class="text-center">Unit</th> -->
+                            <!-- <th class="text-center">Qty</th> -->
                             <th class="text-right">Stock (kg)</th>
                             <th style="width:80px"></th>
                         </tr>
@@ -225,9 +225,9 @@
                             <td>{{(i + 1) + ((materialPage - 1) * 10)}}.</td>
                             <td>{{m.material}}</td>
                             <td>{{m.material_description}}</td>
-                            <td class="text-center">{{m.bun}}</td>
-                            <td class="text-center">{{m.quantity}}</td>
-                            <td class="text-right">{{m.stock / 1000 | formatNumber}}</td>
+                            <!-- <td class="text-center">{{m.bun}}</td> -->
+                            <!-- <td class="text-center">{{m.quantity}}</td> -->
+                            <td class="text-right">{{(m.stock / 1000).toFixed(4) | formatNumber}}</td>
                             <td class="text-center"><input type="checkbox" :value="m" v-model="selectedMaterial"></td>
                         </tr>
                     </tbody>
@@ -335,7 +335,7 @@ export default {
         selectMaterial() {
             this.showMaterialList = false
             this.formModel.items_wp = this.selectedMaterial.map(m => {
-                m.diajukan = m.stock / 1000;
+                m.diajukan = (m.stock / 1000).toFixed(4);
                 return m
             })
         },

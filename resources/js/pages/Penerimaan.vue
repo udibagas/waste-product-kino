@@ -299,6 +299,7 @@ export default {
             }).then(() => {
                 this.formModel.status = 1
                 this.save()
+                this.$store.commit('getPengeluaranList');
             }).catch(() => {})
         },
         store: function() {

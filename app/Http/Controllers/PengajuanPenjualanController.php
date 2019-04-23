@@ -117,6 +117,7 @@ class PengajuanPenjualanController extends Controller
 
     public function getList(Request $request)
     {
+        // TODO: exclude yg sudah di jual
         return PengajuanPenjualan::where('jenis', $request->jenis)
             ->where('status', PengajuanPenjualan::STATUS_APPROVED)->get();
     }

@@ -61,12 +61,12 @@
             <el-table-column prop="entry_date" label="Entry Date" width="110" sortable="custom"></el-table-column>
             <el-table-column prop="time" label="Time" width="75" sortable="custom"></el-table-column>
             <el-table-column prop="bun" label="Bun" width="70" sortable="custom"></el-table-column>
-            <el-table-column prop="quantity" label="Qty" width="70" sortable="custom" align="right" header-align="right">
+            <!-- <el-table-column prop="quantity" label="Qty" width="70" sortable="custom" align="right" header-align="right">
                 <template slot-scope="scope">
                     {{ scope.row.quantity | formatNumber }}
                 </template>
-            </el-table-column>
-            <el-table-column prop="stock" label="Stock (KG)" width="120" sortable="custom" align="right" header-align="right">
+            </el-table-column> -->
+            <el-table-column prop="stock" label="Stock (kg)" width="120" sortable="custom" align="right" header-align="right">
                 <template slot-scope="scope">
                     {{ (scope.row.stock/1000) }}
                 </template>

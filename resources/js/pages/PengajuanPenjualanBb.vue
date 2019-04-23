@@ -177,15 +177,18 @@
                             <th rowspan="2">#</th>
                             <th rowspan="2">Kategori</th>
                             <th colspan="2" class="text-center">Stock</th>
-                            <th rowspan="2" class="text-center">Jumlah Diajukan</th>
-                            <th rowspan="2" class="text-center">Selisih</th>
+                            <th colspan="2" class="text-center">Pengajuan</th>
+                            <th colspan="2" class="text-center">Selisih</th>
                             <th rowspan="2" class="text-center">Eun</th>
-                            <th rowspan="2">Timbangan Manual (kg)</th>
                             <th rowspan="2" class="text-center">
                                 <a href="#" @click="addItem" class="icon-bg"><i class="el-icon-circle-plus-outline"></i></a>
                             </th>
                         </tr>
                         <tr>
+                            <th style="width:80px" class="text-center">Qty</th>
+                            <th style="width:80px" class="text-center">Berat (kg)</th>
+                            <th style="width:80px" class="text-center">Qty</th>
+                            <th style="width:80px" class="text-center">Berat (kg)</th>
                             <th style="width:80px" class="text-center">Qty</th>
                             <th style="width:80px" class="text-center">Berat (kg)</th>
                         </tr>
@@ -203,10 +206,11 @@
                             </td>
                             <td class="text-center">{{item.stock_qty | formatNumber}}</td>
                             <td class="text-center">{{item.stock_berat | formatNumber}}</td>
-                            <td><input type="number" v-model="item.jumlah" class="my-input" placeholder="Jumlah Diajukan"></td>
+                            <td><input type="number" v-model="item.jumlah" class="my-input" placeholder="Qty"></td>
+                            <td><input type="number" v-model="item.timbangan_manual" class="my-input" placeholder="Berat"></td>
                             <td class="text-center">{{item.stock_qty - item.jumlah | formatNumber}}</td>
+                            <td class="text-center">{{item.stock_berat - item.timbangan_manual | formatNumber}}</td>
                             <td class="text-center"> {{item.eun}} </td>
-                            <td><input type="number" v-model="item.timbangan_manual" class="my-input" placeholder="Timbangan Manual"></td>
                             <td class="text-center">
                                 <a href="#" @click="deleteItem(index)" class="icon-bg"><i class="el-icon-delete"></i></a>
                             </td>
@@ -270,6 +274,7 @@ export default {
                 {type: 'warning', label: 'Submitted', value: 1},
                 {type: 'success', label: 'Approved', value: 2},
                 {type: 'danger', label: 'Rejected', value: 3},
+                {type: '', label: 'Processed', value: 4},
             ],
             approval_statuses: [
                 {type: 'info', label: 'Pending', value: 0},

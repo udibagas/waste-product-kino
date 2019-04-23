@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use App\InOutStockBb;
 use App\StockBb;
 use DB;
+use App\PengajuanPenjualan;
 
 class UpdateStockBbPenjualan
 {
@@ -29,6 +30,11 @@ class UpdateStockBbPenjualan
      */
     public function handle(PenjualanSubmitted $event)
     {
+        DB::update("UPDATE pengajuan_penjualans SET status = :status WHERE no_aju = :no_aju", [
+            ':status' => PengajuanPenjualan::STATUS_PROCESSED,
+            ':no_aju' => $event->penjualan->no_aju
+        ]);
+
         if ($event->penjualan->jenis == 'BB')
         {
             foreach ($event->penjualan->itemsBb as $item) 
