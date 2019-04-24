@@ -97,6 +97,8 @@ class UserController extends Controller
         if ($request->password) {
             $rules['password'] = 'required|string|min:6|confirmed';
             $input['password'] = bcrypt($request->password);
+        } else {
+            unset($input['password']);
         }
 
         $request->validate($rules, [], [
