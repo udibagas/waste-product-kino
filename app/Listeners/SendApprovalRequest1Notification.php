@@ -29,13 +29,14 @@ class SendApprovalRequest1Notification implements ShouldQueue
      */
     public function handle(PengajuanPenjualanSubmitted $event)
     {
-        $skema = SkemaApprovalPenjualan::where('level', 1) 
+        $skema = SkemaApprovalPenjualan::where('level', 1)
             ->where('location_id', $event->pengajuanPenjualan->location_id)
             ->first();
 
         if ($skema) {
             Mail::to($skema->user)
                 ->cc('bagas@lamsolusi.com')
+                ->subject('[WP APP] Approval Request Level 1')
                 ->queue(new ApprovalRequest($event->pengajuanPenjualan, 1, $skema->user));
         }
     }

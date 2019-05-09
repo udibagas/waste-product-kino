@@ -33,6 +33,7 @@ class SendReceivedConfirmationNotification
             Mail::to($event->penerimaan->pengeluaran->user->email)
                 ->to($event->penerimaan->user->email)
                 ->cc('bagas@lamsolusi.com')
+                ->subject('[WP APP] Receipt Notification')
                 ->queue(new ReceiptNotification($event->penerimaan));
         }
     }

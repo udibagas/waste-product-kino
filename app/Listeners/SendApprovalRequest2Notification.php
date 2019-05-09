@@ -36,6 +36,7 @@ class SendApprovalRequest2Notification implements ShouldQueue
         if ($skema) {
             Mail::to($skema->user)
                 ->cc('bagas@lamsolusi.com')
+                ->subject('[WP APP] Approval Request Level 2')
                 ->queue(new ApprovalRequest($event->pengajuanPenjualan, 2, $skema->user));
         }
     }
