@@ -15,6 +15,11 @@ class Pembayaran extends Model
 
     protected $appends = ['user'];
 
+    protected $casts = [
+        'penjualan_id' => 'integer',
+        'user_id' => 'integer'
+    ];
+
     public function penjualan() {
         return $this->belongsTo(Penjualan::class);
     }

@@ -146,16 +146,18 @@ export default {
 
                 _this.logs.push('Reading file completed. Found ' + (res.length - 1) + ' rows. <br>')
 
-                let dataToImport = res.map(r => {
-                    return {
-                        kategori_jual: r[0],
-                        finished_good: r[1],
-                        material_id: r[2],
-                        material_description: r[3],
-                        berat: r[4] ? r[4] : 0,
-                        keterangan: r[5]
-                    }
-                });
+                let dataToImport = res
+                    .filter(r => !!r[1]) // ambil yg finished good tidak kosong
+                    .map(r => {
+                        return {
+                            kategori_jual: r[0],
+                            finished_good: r[1],
+                            material_id: r[2],
+                            material_description: r[3],
+                            berat: r[4] ? r[4] : 0,
+                            keterangan: r[5]
+                        }
+                    });
                 
                 _this.logs.push('Filtering data...<br>')
                 dataToImport.splice(0, 1)

@@ -9,11 +9,18 @@ class Penerimaan extends Model
     const STATUS_DRAFT = 0;
 
     const STATUS_SUBMITTED = 1;
-    
+
     protected $fillable = [
         'tanggal', 'no_sj_keluar', 'penerima', 'keterangan',
         'lokasi_asal', 'lokasi_terima', 'user_id', 'status',
         'lokasi_asal_id', 'lokasi_terima_id'
+    ];
+
+    protected $casts = [
+        'user_id' => 'integer',
+        'lokasi_asal_id' => 'integer',
+        'lokasi_terima_id' => 'integer',
+        'status' => 'boolean'
     ];
 
     protected $with = ['items'];

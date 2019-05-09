@@ -8,6 +8,13 @@ class SkemaApprovalPenjualan extends Model
 {
     protected $fillable = ['level', 'user_id', 'location_id'];
 
+    protected $casts = [
+        'user_id' => 'integer',
+        'location_id' => 'integer',
+        'level' => 'integer'
+    ];
+
+
     protected $with = ['user', 'location'];
 
     public function user() {

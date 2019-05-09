@@ -21,7 +21,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'status', 'role', 
+        'name', 'email', 'password', 'status', 'role',
         'department', 'location_id', 'no_karyawan', 'api_token'
     ];
 
@@ -41,11 +41,12 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'location_id' => 'integer'
     ];
 
     protected $with = ['location', 'rights'];
 
-    public function location() 
+    public function location()
     {
         return $this->belongsTo(Location::class);
     }

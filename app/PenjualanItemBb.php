@@ -12,6 +12,13 @@ class PenjualanItemBb extends Model
         'stock_berat', 'stock_qty'
     ];
 
+    protected $casts = [
+        'penjualan_id' => 'integer',
+        'kategori_barang_id' => 'integer',
+        'qty' => 'integer',
+        'stock_qty' => 'integer',
+    ];
+
     protected $with = ['kategori'];
 
     public function kategori() {

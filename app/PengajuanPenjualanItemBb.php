@@ -7,8 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class PengajuanPenjualanItemBb extends Model
 {
     protected $fillable = [
-        'pengajuan_penjualan_id', 'kategori_barang_id', 'jumlah', 
+        'pengajuan_penjualan_id', 'kategori_barang_id', 'jumlah',
         'eun', 'timbangan_manual', 'stock_berat', 'stock_qty'
+    ];
+
+    protected $casts = [
+        'pengajuan_penjualan_id' => 'integer',
+        'kategori_barang_id' => 'integer',
+        'jumlah' => 'integer',
+        'stock_qty' => 'integer'
     ];
 
     protected $with = ['kategori'];

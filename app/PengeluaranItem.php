@@ -11,6 +11,12 @@ class PengeluaranItem extends Model
         'eun', 'timbangan_manual'
     ];
 
+    protected $casts = [
+        'pengeluaran_id' => 'integer',
+        'kategori_barang_id' => 'integer',
+        'qty' => 'integer',
+    ];
+
     protected $with = ['barang'];
 
     public function barang() {

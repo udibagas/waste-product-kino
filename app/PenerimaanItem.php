@@ -11,6 +11,13 @@ class PenerimaanItem extends Model
         'eun', 'timbangan_manual_kirim', 'timbangan_manual_terima', 'keterangan'
     ];
 
+    protected $casts = [
+        'penerimaan_id' => 'integer',
+        'kategori_barang_id' => 'integer',
+        'qty_kirim' => 'integer',
+        'qty_terima' => 'integer',
+    ];
+
     protected $with = ['barang'];
 
     public function barang()

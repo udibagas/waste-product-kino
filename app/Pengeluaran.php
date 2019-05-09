@@ -11,11 +11,18 @@ class Pengeluaran extends Model
     const STATUS_SUBMITTED = 1;
 
     const STATUS_RECEIVED = 2;
-    
+
     protected $fillable = [
         'no_sj', 'tanggal', 'penerima', 'status',
         'lokasi_asal', 'lokasi_terima', 'user_id', 'jembatan_timbang',
         'lokasi_asal_id', 'lokasi_terima_id'
+    ];
+
+    protected $casts = [
+        'user_id' => 'integer',
+        'lokasi_asal_id' => 'integer',
+        'lokasi_terima_id' => 'integer',
+        'status' => 'boolean',
     ];
 
     protected $with = ['items'];

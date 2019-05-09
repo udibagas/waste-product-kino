@@ -29,6 +29,14 @@ class PengajuanPenjualan extends Model
         'approval2_status', 'approval2_time', 'approval2_by'
     ];
 
+    protected $casts = [
+        'user_id' => 'integer',
+        'location_id' => 'integer',
+        'status' => 'integer',
+        'approval1_status' => 'integer',
+        'approval2_status' => 'integer',
+    ];
+
     protected $with = ['itemsBb', 'itemsWp', 'location', 'user'];
 
     public function itemsBb()

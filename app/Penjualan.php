@@ -16,11 +16,17 @@ class Penjualan extends Model
     const STATUS_PEMBAYARAN_PARTIAL = 1;
 
     const STATUS_PEMBAYARAN_PAID = 2;
-    
+
     protected $fillable = [
-        'tanggal', 'no_aju', 'pembeli_id', 'no_sj', 'value', 
+        'tanggal', 'no_aju', 'pembeli_id', 'no_sj', 'value',
         'top_date', 'jembatan_timbang', 'user_id', 'status',
         'jenis', 'location_id', 'status_pembayaran'
+    ];
+
+    protected $casts = [
+        'pembeli_id' => 'integer',
+        'user_id' => 'integer',
+        'location_id' => 'integer',
     ];
 
     protected $with = ['itemsBb', 'location', 'pembeli', 'pembayaran'];

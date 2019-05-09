@@ -41,10 +41,12 @@
             </tr>
             <tr>
                 <td><strong>Tanggal Transaksi</strong></td>
-                <td>{{$penjualan->tanggal}}</td>
+                <td>{{date('d-M-Y', strtotime($penjualan->tanggal))}}</td>
             </tr>
         </tbody>
     </table>
+
+    <br><br>
 
     <table class="table table-striped table-bordered table-sm">
         <thead>
@@ -104,8 +106,8 @@
                 <th class="text-center">Manager Plant</th>
             </tr>
             <tr>
-                <td class="text-center">{{date('d-m-Y')}}</td>
-                <td class="text-center">{{ date('d-m-Y', strtotime($penjualan->tanggal)) }}</td>
+                <td class="text-center">{{date('d-M-Y')}}</td>
+                <td class="text-center">{{ date('d-M-Y', strtotime($penjualan->tanggal)) }}</td>
                 <td class="text-center">{{ date('d-M-Y', strtotime($penjualan->pengajuan->approval1_time)) }}</td>
                 <td class="text-center">{{ date('d-M-Y', strtotime($penjualan->pengajuan->approval2_time)) }}</td>
             </tr>
