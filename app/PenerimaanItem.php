@@ -16,6 +16,8 @@ class PenerimaanItem extends Model
         'kategori_barang_id' => 'integer',
         'qty_kirim' => 'integer',
         'qty_terima' => 'integer',
+        'timbangan_manual_kirim' => 'float',
+        'timbangan_manual_terima' => 'float',
     ];
 
     protected $with = ['barang'];

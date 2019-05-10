@@ -15,6 +15,7 @@ class PengeluaranItem extends Model
         'pengeluaran_id' => 'integer',
         'kategori_barang_id' => 'integer',
         'qty' => 'integer',
+        'timbangan_manual' => 'float'
     ];
 
     protected $with = ['barang'];
