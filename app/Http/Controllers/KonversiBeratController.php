@@ -20,7 +20,9 @@ class KonversiBeratController extends Controller
 
         return KonversiBerat::when($request->keyword, function ($q) use ($request) {
             return $q->where('material_id', 'LIKE', '%' . $request->keyword . '%')
-                    ->orWhere('material_description', 'LIKE', '%' . $request->keyword . '%');
+                    ->orWhere('material_description', 'LIKE', '%' . $request->keyword . '%')
+                    ->orWhere('finished_good', 'LIKE', '%' . $request->keyword . '%')
+                    ->orWhere('kategori_jual', 'LIKE', '%' . $request->keyword . '%');
         })->orderBy($sort, $order)->paginate($request->pageSize);
     }
 
