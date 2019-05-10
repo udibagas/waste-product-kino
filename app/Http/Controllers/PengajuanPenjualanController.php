@@ -54,8 +54,17 @@ class PengajuanPenjualanController extends Controller
     {
         $input = $request->all();
         $input['user_id'] = $request->user()->id;
+
+        if (!$request->period_from) {
+            $input['period_from'] = date('Y-m-d');
+        }
+
+        if (!$request->period_to) {
+            $input['period_to'] = date('Y-m-d');
+        }
+
         $pengajuanPenjualan = PengajuanPenjualan::create($input);
-        
+
         if ($request->jenis == 'BB') {
             $pengajuanPenjualan->itemsBb()->createMany($request->items_bb);
         }
@@ -131,7 +140,7 @@ class PengajuanPenjualanController extends Controller
         $skema = SkemaApprovalPenjualan::where('location_id', $pengajuanPenjualan->location_id)
             ->where('level', $request->level)
             ->first();
-        
+
         if ($skema->user->api_token != $request->api_token) {
             return response('Anda tidak berhak melakukan approval untuk request ini.', 403);
         }
@@ -161,7 +170,7 @@ class PengajuanPenjualanController extends Controller
             return response(['message' => 'Pengajuan belum disubmit'], 500);
         }
 
-        if ($request->level == 1) 
+        if ($request->level == 1)
         {
             $data = [
                 'approval1_status' => $request->status,
@@ -170,7 +179,7 @@ class PengajuanPenjualanController extends Controller
             ];
         }
 
-        if ($request->level == 2) 
+        if ($request->level == 2)
         {
             if ($pengajuanPenjualan->approval1_status != PengajuanPenjualan::STATUS_APPROVAL_APPROVED) {
                 return response(['message' => 'Pengajuan level 1 belum/tidak disetujui'], 500);
@@ -189,7 +198,7 @@ class PengajuanPenjualanController extends Controller
 
         $pengajuanPenjualan->update($data);
 
-        if ($request->level == 1) 
+        if ($request->level == 1)
         {
             if ($request->status == PengajuanPenjualan::STATUS_APPROVAL_APPROVED) {
                 event(new PengajuanPenjualanApproved1($pengajuanPenjualan));
@@ -200,7 +209,7 @@ class PengajuanPenjualanController extends Controller
             }
         }
 
-        if ($request->level == 2) 
+        if ($request->level == 2)
         {
             if ($request->status == PengajuanPenjualan::STATUS_APPROVAL_APPROVED) {
                 $pengajuanPenjualan->status = PengajuanPenjualan::STATUS_APPROVED;
