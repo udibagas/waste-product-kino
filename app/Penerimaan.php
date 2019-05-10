@@ -20,7 +20,7 @@ class Penerimaan extends Model
         'user_id' => 'integer',
         'lokasi_asal_id' => 'integer',
         'lokasi_terima_id' => 'integer',
-        'status' => 'boolean'
+        'status' => 'integer'
     ];
 
     protected $with = ['items'];
