@@ -15,7 +15,8 @@ class PengajuanPenjualanItemBb extends Model
         'pengajuan_penjualan_id' => 'integer',
         'kategori_barang_id' => 'integer',
         'jumlah' => 'integer',
-        'stock_qty' => 'integer'
+        'stock_qty' => 'integer',
+        'stock_berat' => 'float'
     ];
 
     protected $with = ['kategori'];
