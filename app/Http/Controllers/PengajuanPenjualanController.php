@@ -238,4 +238,10 @@ class PengajuanPenjualanController extends Controller
     {
         return $pengajuanPenjualan->approvals;
     }
+
+    public function getLastRecord(Request $request)
+    {
+        return PengajuanPenjualan::whereRaw('YEAR(tanggal) = ? ', [$request->tahun])
+            ->orderBy('id', 'DESC')->first();
+    }
 }

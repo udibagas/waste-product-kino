@@ -39,27 +39,27 @@
                 </template>
             </el-table-column>
 
-            <el-table-column prop="location.name" 
-            width="130" 
-            label="Lokasi" 
+            <el-table-column prop="location.name"
+            min-width="130"
+            label="Lokasi"
             column-key="location_id"
             :filters="$store.state.locationList.map(l => { return {value: l.id, text: l.plant + ' - ' + l.name } })"
             sortable="custom">
             </el-table-column>
 
-            <el-table-column 
-            prop="lokasi_asal" 
-            width="130" 
-            label="Lokasi Asal" 
+            <el-table-column
+            prop="lokasi_asal"
+            min-width="130"
+            label="Lokasi Asal"
             column-key="lokasi_asal"
             :filters="$store.state.locationList.map(l => { return {value: l.name, text: l.plant + ' - ' + l.name } })"
             sortable="custom"></el-table-column>
-            
-            <el-table-column 
-            prop="barang.nama" 
-            width="200" 
-            label="Kategori Barang" 
-            column-key="kategori_barang_id" 
+
+            <el-table-column
+            prop="barang.nama"
+            min-width="200"
+            label="Kategori Barang"
+            column-key="kategori_barang_id"
             :filters="$store.state.kategoriBarangList.map(l => {return {text: l.kode + ' - ' + l.nama, value: l.id}})"
             sortable="custom">
                 <template slot-scope="scope">
@@ -67,28 +67,28 @@
                 </template>
             </el-table-column>
 
-            <el-table-column prop="qty_in" width="110" label="Qty In" sortable="custom" align="center" header-align="center">
+            <el-table-column prop="qty_in" min-width="110" label="Qty In" sortable="custom" align="center" header-align="center">
                 <template slot-scope="scope">
                     {{ scope.row.qty_in | formatNumber }}
                 </template>
             </el-table-column>
-            <el-table-column prop="qty_out" width="110" label="Qty Out" sortable="custom" align="center" header-align="center">
+            <el-table-column prop="qty_out" min-width="110" label="Qty Out" sortable="custom" align="center" header-align="center">
                 <template slot-scope="scope">
                     {{ scope.row.qty_out | formatNumber }}
                 </template>
             </el-table-column>
-            <el-table-column prop="stock_in" width="150" label="Stock In (kg)" sortable="custom" align="center" header-align="center">
+            <el-table-column prop="stock_in" min-width="150" label="Stock In (kg)" sortable="custom" align="center" header-align="center">
                 <template slot-scope="scope">
                     {{ scope.row.stock_in | formatNumber }}
                 </template>
             </el-table-column>
-            <el-table-column prop="stock_out" width="150" label="Stock Out (kg)" sortable="custom" align="center" header-align="center">
+            <el-table-column prop="stock_out" min-width="150" label="Stock Out (kg)" sortable="custom" align="center" header-align="center">
                 <template slot-scope="scope">
                     {{ scope.row.stock_out | formatNumber }}
                 </template>
             </el-table-column>
-            <el-table-column prop="eun" width="70" label="Eun" sortable="custom"></el-table-column>
-            <el-table-column prop="no_sj" width="200" label="No. Surat Jalan" sortable="custom"></el-table-column>
+            <el-table-column prop="eun" min-width="70" label="Eun" sortable="custom"></el-table-column>
+            <el-table-column prop="no_sj" min-width="200" label="No. Surat Jalan" sortable="custom"></el-table-column>
         </el-table>
 
         <br>

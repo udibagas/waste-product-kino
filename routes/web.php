@@ -53,10 +53,13 @@ Route::get('pengajuanPenjualan/{pengajuanPenjualan}/approvalForm', 'PengajuanPen
 Route::get('pengajuanPenjualan/{pengajuanPenjualan}/getApprovalHistory', 'PengajuanPenjualanController@getApprovalHistory');
 Route::put('pengajuanPenjualan/{pengajuanPenjualan}/approve', 'PengajuanPenjualanController@approve');
 Route::delete('pengajuanPenjualanItemBb/{pengajuanPenjualanItemBb}', 'PengajuanPenjualanItemBbController@destroy');
+Route::get('pengajuanPenjualan/getLastRecord', 'PengajuanPenjualanController@getLastRecord');
 Route::resource('pengajuanPenjualan', 'PengajuanPenjualanController')->only(['index', 'edit', 'show', 'store', 'update', 'destroy']);
+Route::get('pengeluaran/getLastRecord', 'PengeluaranController@getLastRecord');
 Route::resource('pengeluaran', 'PengeluaranController')->only(['index', 'store', 'update', 'destroy']);
 Route::delete('pengeluaranItem/{pengeluaranItem}', 'PengeluaranItemController@destroy');
 Route::get('penjualan/{penjualan}/printSlip', 'PenjualanController@printSlip');
+Route::get('penjualan/getLastRecord','PenjualanController@getLastRecord');
 Route::resource('penjualan','PenjualanController')->only(['index', 'store', 'update', 'destroy']);
 Route::resource('pembayaran','PembayaranController')->only(['store']);
 
@@ -64,6 +67,7 @@ Route::resource('pembayaran','PembayaranController')->only(['store']);
 Route::get('inOutStockBb', 'InOutStockBbController@index');
 Route::get('report/bb', 'ReportController@bb');
 Route::get('stockBb/getStock', 'StockBbController@getStock');
+Route::get('stockBb/getStockList', 'StockBbController@getStockList');
 Route::get('stockBb', 'StockBbController@index');
 
 // MASTER DATA

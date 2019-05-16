@@ -23,34 +23,37 @@
         @filter-change="filterChange"
         @sort-change="sortChange">
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
-            <el-table-column 
-            prop="location_id" 
-            label="Plant - Location" 
-            column-key="location_id" 
+            <el-table-column
+            prop="location_id"
+            label="Plant - Location"
+            column-key="location_id"
             sortable="custom"
             :filters="$store.state.locationList.map(l => {return {text: l.plant + ' - ' + l.name, value: l.id}})">
                 <template slot-scope="scope">
                     {{scope.row.location.plant}} - {{scope.row.location.name}}
                 </template>
             </el-table-column>
-            <el-table-column 
-            prop="kategori_barang_id" 
-            label="Kategori Barang" 
+            <el-table-column
+            prop="kategori_barang_id"
+            label="Kategori Barang"
             sortable="custom"
-            column-key="kategori_barang_id" 
+            column-key="kategori_barang_id"
             :filters="$store.state.kategoriBarangList.map(l => {return {text: l.kode + ' - ' + l.nama, value: l.id}})">
                 <template slot-scope="scope">
                     {{ scope.row.kategori.kode }} - {{ scope.row.kategori.nama }}
                 </template>
             </el-table-column>
-            <el-table-column prop="qty" width="110" label="Jumlah" sortable="custom" align="center" header-align="center"></el-table-column>
-            <el-table-column prop="stock" width="110" label="Stock (kg)" sortable="custom" align="center" header-align="center">
+            <el-table-column prop="qty" min-width="200" label="Jumlah" sortable="custom" align="right" header-align="right">
                 <template slot-scope="scope">
-                    {{ scope.row.stock | formatNumber }}
+                    {{ scope.row.qty | formatNumber }} {{scope.row.unit}}
                 </template>
             </el-table-column>
-            <el-table-column prop="unit" width="70" label="Unit"></el-table-column>
-            <el-table-column prop="stock_bbs.updated_at" width="150" label="Waktu Update" sortable="custom" align="center" header-align="center">
+            <el-table-column prop="stock" min-width="200" label="Berat" sortable="custom" align="right" header-align="right">
+                <template slot-scope="scope">
+                    {{ scope.row.stock | formatNumber }} KG
+                </template>
+            </el-table-column>
+            <el-table-column prop="stock_bbs.updated_at" min-width="150" label="Waktu Update" sortable="custom" align="center" header-align="center">
                 <template slot-scope="scope">
                     {{ scope.row.updated_at | readableDateTime }}
                 </template>

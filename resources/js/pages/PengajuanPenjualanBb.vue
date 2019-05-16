@@ -44,10 +44,10 @@
                 </template>
             </el-table-column>
             <el-table-column prop="no_aju" label="No. Pengajuan" sortable="custom"></el-table-column>
-            
-            <el-table-column 
-            prop="location_id" 
-            label="Plant" 
+
+            <el-table-column
+            prop="location_id"
+            label="Plant"
             column-key="location_id"
             :filters="$store.state.locationList.map(l => { return {value: l.id, text: l.plant + ' - ' + l.name } })"
             sortable="custom">
@@ -57,13 +57,13 @@
             </el-table-column>
 
             <el-table-column prop="user.name" label="Yang Mengajukan"></el-table-column>
-            
-            <el-table-column 
-            prop="approval1_status" 
-            width="130" 
-            align="center" 
-            header-align="center" 
-            label="Approval 1" 
+
+            <el-table-column
+            prop="approval1_status"
+            width="130"
+            align="center"
+            header-align="center"
+            label="Approval 1"
             column-key="approval1_status"
             :filters="approval_statuses.map(s => { return {value: s.value, text: s.label} })"
             sortable="custom">
@@ -74,12 +74,12 @@
                 </template>
             </el-table-column>
 
-            <el-table-column 
-            prop="approval2_status" 
-            width="130" 
-            align="center" 
-            header-align="center" 
-            label="Approval 2" 
+            <el-table-column
+            prop="approval2_status"
+            width="130"
+            align="center"
+            header-align="center"
+            label="Approval 2"
             column-key="approval2_status"
             :filters="approval_statuses.map(s => { return {value: s.value, text: s.label} })"
             sortable="custom">
@@ -89,13 +89,13 @@
                     </el-tag>
                 </template>
             </el-table-column>
-            
-            <el-table-column 
-            prop="status" 
-            width="100" 
-            align="center" 
-            header-align="center" 
-            label="Status" 
+
+            <el-table-column
+            prop="status"
+            width="100"
+            align="center"
+            header-align="center"
+            label="Status"
             column-key="status"
             :filters="statuses.map(s => { return {value: s.value, text: s.label} })"
             sortable="custom">
@@ -155,7 +155,7 @@
                 </el-form-item>
 
                 <el-form-item label="Nomor Pengajuan">
-                    <el-input placeholder="Nomor Pengajuan" v-model="formModel.no_aju"></el-input>
+                    <el-input disabled placeholder="Nomor Pengajuan" v-model="formModel.no_aju"></el-input>
                     <div class="el-form-item__error" v-if="formErrors.no_aju">{{formErrors.no_aju[0]}}</div>
                 </el-form-item>
 
@@ -170,7 +170,7 @@
                     </el-select>
                     <div class="el-form-item__error" v-if="formErrors.location_id">{{formErrors.location_id[0]}}</div>
                 </el-form-item>
-                
+
                 <table class="table table-sm table-bordered">
                     <thead>
                         <tr>
@@ -245,6 +245,7 @@ export default {
     },
     data: function() {
         return {
+            number: '0001',
             user: USER,
             loading: false,
             showForm: false,
@@ -342,7 +343,7 @@ export default {
 
             let selectedKategori = this.$store.state.kategoriBarangList.find(k => k.id == event.target.value)
             this.formModel.items_bb[index].eun = selectedKategori.unit;
-            
+
             let params = {
                 location_id: this.formModel.location_id,
                 kategori_barang_id: event.target.value
@@ -357,7 +358,7 @@ export default {
                     this.formModel.items_bb[index].stock_berat = r.data.stock
                     this.$forceUpdate()
                 }
-                
+
                 else {
                     this.$message({
                         message: 'Tidak ada stock untuk kategori barang terkait',
@@ -513,6 +514,7 @@ export default {
             this.error = {}
             this.formErrors = {}
             this.formModel = {
+                no_aju: this.number + '/' + moment().format('MM') + '/' + moment().format('YYYY') + '/AJU',
                 tanggal: moment().format('YYYY-MM-DD'),
                 status: 0,
                 jenis: 'BB',
@@ -527,7 +529,22 @@ export default {
                 }]
             }
 
-            this.showForm = true
+            axios.get(BASE_URL + '/pengajuanPenjualan/getLastRecord', {
+                params: { tahun: moment().format('YYYY')}
+            }).then(r => {
+                if (r.data) {
+                    let int_number = parseInt(r.data.no_aju.slice(0, 4)) + 1;
+                    this.number = int_number.toString().padStart(4, '0');
+                    this.formModel.no_aju = this.number + '/' + moment().format('MM') + '/' + moment().format('YYYY') + '/AJU'
+                    this.showForm = true
+                }
+            }).catch(e => {
+                this.$message({
+                    message: 'Failed to fetch last record' + e,
+                    type: 'error',
+                    showClose: true
+                });
+            })
         },
         editData(data) {
             this.formTitle = 'EDIT PENGAJUAN PENJUALAN BARANG BEKAS'

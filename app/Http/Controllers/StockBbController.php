@@ -37,4 +37,11 @@ class StockBbController extends Controller
             ->where( 'kategori_barang_id', $request->kategori_barang_id)
             ->first();
     }
+
+    public function getStockList(Request $request)
+    {
+        return StockBb::when($request->location_id, function($q) use ($request) {
+            return $q->where('location_id', $request->location_id);
+        })->get();
+    }
 }

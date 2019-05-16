@@ -14,7 +14,7 @@ class PenjualanController extends Controller
     {
         $this->middleware('auth');
     }
-    
+
     public function index(Request $request)
     {
         $sort = $request->sort ? $request->sort : 'tanggal';
@@ -86,5 +86,11 @@ class PenjualanController extends Controller
     public function printSlip(Penjualan $penjualan)
     {
         return view('penjualan.print_slip', ['penjualan' => $penjualan]);
+    }
+
+    public function getLastRecord(Request $request)
+    {
+        return Penjualan::whereRaw('YEAR(tanggal) = ? ', [$request->tahun])
+            ->orderBy('id', 'DESC')->first();
     }
 }

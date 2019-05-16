@@ -45,11 +45,11 @@
             </el-table-column>
             <el-table-column min-width="150px" prop="no_sj" label="No. Surat Jalan" sortable="custom"></el-table-column>
             <el-table-column min-width="150px" prop="no_aju" label="No. Pengajuan" sortable="custom"></el-table-column>
-            
-            <el-table-column 
-            prop="plant" 
-            label="Plant" 
-            sortable="custom" 
+
+            <el-table-column
+            prop="plant"
+            label="Plant"
+            sortable="custom"
             column-key="location_id"
             :filters="$store.state.locationList.map(l => { return {value: l.id, text: l.plant + ' - ' + l.name } })"
             width="120">
@@ -58,10 +58,10 @@
                 </template>
             </el-table-column>
 
-            <el-table-column 
-            prop="pembeli_id" 
-            label="Pembeli" 
-            sortable="custom" 
+            <el-table-column
+            prop="pembeli_id"
+            label="Pembeli"
+            sortable="custom"
             column-key="pembeli_id"
             :filters="$store.state.pembeliList.map(l => { return {value: l.id, text: l.nama } })"
             min-width="200">
@@ -100,12 +100,12 @@
                 </template>
             </el-table-column>
 
-            <el-table-column 
-            prop="status" 
-            width="100" 
-            align="center" 
-            header-align="center" 
-            label="Status" 
+            <el-table-column
+            prop="status"
+            width="100"
+            align="center"
+            header-align="center"
+            label="Status"
             column-key="status"
             :filters="statuses.map(s => { return {value: s.value, text: s.label} })"
             sortable="custom">
@@ -114,12 +114,12 @@
                 </template>
             </el-table-column>
 
-            <el-table-column 
-            prop="status_pembayaran" 
-            width="170" 
-            align="center" 
-            header-align="center" 
-            label="Status Pembayaran" 
+            <el-table-column
+            prop="status_pembayaran"
+            width="170"
+            align="center"
+            header-align="center"
+            label="Status Pembayaran"
             column-key="status_pembayaran"
             :filters="statuses_pembayaran.map(s => { return {value: s.value, text: s.label} })"
             sortable="custom">
@@ -162,16 +162,16 @@
         </el-row>
 
         <!-- FORM PEMBAYARAN -->
-        <el-dialog 
-        center 
-        :visible.sync="showFormPembayaran" 
+        <el-dialog
+        center
+        :visible.sync="showFormPembayaran"
         :title="!!formModelPembayaran.id ? 'Input Pembayaran' : 'Edit Pembayaran'"
-        v-loading="loading" 
+        v-loading="loading"
         width="900px"
         :close-on-click-modal="false">
-            <FormPembayaran 
-            @close-form="showFormPembayaran = false" 
-            @reload-data="requestData" 
+            <FormPembayaran
+            @close-form="showFormPembayaran = false"
+            @reload-data="requestData"
             :penjualan="formModelPembayaran" />
         </el-dialog>
 
@@ -192,7 +192,7 @@
                         </el-form-item>
 
                         <el-form-item label="Nomor Surat Jalan">
-                            <el-input placeholder="Nomor Surat Jalan" v-model="formModel.no_sj"></el-input>
+                            <el-input disabled placeholder="Nomor Surat Jalan" v-model="formModel.no_sj"></el-input>
                             <div class="el-form-item__error" v-if="formErrors.no_sj">{{formErrors.no_sj[0]}}</div>
                         </el-form-item>
 
@@ -481,6 +481,7 @@ export default {
             this.error = {}
             this.formErrors = {}
             this.formModel = {
+                no_sj: this.number + '/' + moment().format('MM') + '/' + moment().format('YYYY') + '/BB',
                 jenis: 'BB',
                 tanggal: moment().format('YYYY-MM-DD'),
                 top_date: moment().add(30, 'days').format('YYYY-MM-DD'),
@@ -488,7 +489,22 @@ export default {
                 items_bb: []
             }
 
-            this.showForm = true
+            axios.get(BASE_URL + '/penjualan/getLastRecord', {
+                params: { tahun: moment().format('YYYY')}
+            }).then(r => {
+                if (r.data) {
+                    let int_number = parseInt(r.data.no_sj.slice(0, 4)) + 1;
+                    this.number = int_number.toString().padStart(4, '0');
+                    this.formModel.no_sj = this.number + '/' + moment().format('MM') + '/' + moment().format('YYYY') + '/BB'
+                    this.showForm = true
+                }
+            }).catch(e => {
+                this.$message({
+                    message: 'Failed to fetch last record',
+                    type: 'error',
+                    showClose: true
+                });
+            })
         },
         editData: function(data) {
             this.formTitle = 'EDIT PENJUALAN BARANG BEKAS'

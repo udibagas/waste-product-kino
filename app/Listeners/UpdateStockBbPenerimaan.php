@@ -29,9 +29,12 @@ class UpdateStockBbPenerimaan
      */
     public function handle(PenerimaanSubmitted $event)
     {
-        Pengeluaran::where('no_sj', $event->penerimaan->no_sj_keluar)->update(['status' => 2]);
+        Pengeluaran::where('no_sj', $event->penerimaan->no_sj_keluar)->update([
+            'status' => 2,
+            'penerima' => $event->penerimaan->penerima
+        ]);
 
-        foreach ($event->penerimaan->items as $item) 
+        foreach ($event->penerimaan->items as $item)
         {
             InOutStockBb::create([
                 'tanggal' => $event->penerimaan->tanggal,
@@ -41,9 +44,9 @@ class UpdateStockBbPenerimaan
                 'kategori_barang_id' => $item->kategori_barang_id,
                 'eun' => $item->eun,
                 'stock_out' => 0,
-                'stock_in' => $item->timbangan_manual_terima, 
+                'stock_in' => $item->timbangan_manual_terima,
                 'qty_out' => 0,
-                'qty_in' => $item->qty_terima, 
+                'qty_in' => $item->qty_terima,
                 'no_sj' => $event->penerimaan->no_sj_keluar
             ]);
 

@@ -104,7 +104,7 @@
                         </el-form-item>
 
                         <el-form-item label="Nomor Pengajuan">
-                            <el-input placeholder="Nomor Pengajuan" v-model="formModel.no_aju"></el-input>
+                            <el-input disabled placeholder="Nomor Pengajuan" v-model="formModel.no_aju"></el-input>
                             <div class="el-form-item__error" v-if="formErrors.no_aju">{{formErrors.no_aju[0]}}</div>
                         </el-form-item>
 
@@ -159,7 +159,7 @@
                 </el-row>
 
                 <p> <el-button type="primary" @click="searchMaterial" icon="el-icon-search">SEARCH MATERIAL</el-button> </p>
-                
+
                 <table class="table table-sm table-striped table-hover">
                     <thead>
                         <tr>
@@ -200,11 +200,11 @@
         </el-dialog>
 
         <!-- DIALOG UNTUK SEARCH MATERIAL -->
-        <el-dialog center 
-        :visible.sync="showMaterialList" 
-        title="Select Material" 
-        width="900px" 
-        v-loading="loading" 
+        <el-dialog center
+        :visible.sync="showMaterialList"
+        title="Select Material"
+        width="900px"
+        v-loading="loading"
         :close-on-click-modal="false">
             <el-input prefix-icon="el-icon-search" v-model="materialKeyword" placeholder="Search Material"></el-input>
             <br><br>
@@ -282,6 +282,7 @@ export default {
     },
     data: function() {
         return {
+            number: '0001',
             loading: false,
             showForm: false,
             showMaterialList: false,
@@ -468,13 +469,29 @@ export default {
             this.error = {}
             this.formErrors = {}
             this.formModel = {
+                no_aju: this.number + '/' + moment().format('MM') + '/' + moment().format('YYYY') + '/AJU',
                 jenis: 'WP',
                 tanggal: moment().format('YYYY-MM-DD'),
                 status: 0,
                 items_wp: []
             }
 
-            this.showForm = true
+            axios.get(BASE_URL + '/pengajuanPenjualan/getLastRecord', {
+                params: { tahun: moment().format('YYYY')}
+            }).then(r => {
+                if (r.data) {
+                    let int_number = parseInt(r.data.no_aju.slice(0, 4)) + 1;
+                    this.number = int_number.toString().padStart(4, '0');
+                    this.formModel.no_aju = this.number + '/' + moment().format('MM') + '/' + moment().format('YYYY') + '/AJU'
+                    this.showForm = true
+                }
+            }).catch(e => {
+                this.$message({
+                    message: 'Failed to fetch last record' + e,
+                    type: 'error',
+                    showClose: true
+                });
+            })
         },
         editData: function(data) {
             this.formTitle = 'EDIT PENGAJUAN PENJUALAN WASTE PRODUCT'

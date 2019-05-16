@@ -54,7 +54,7 @@ class PengeluaranController extends Controller
     {
         $pengeluaran->update($request->all());
 
-        foreach ($request->items as $i) 
+        foreach ($request->items as $i)
         {
             if (isset($i['id'])) {
                 PengeluaranItem::find($i['id'])->update($i);
@@ -83,7 +83,7 @@ class PengeluaranController extends Controller
 
     /**
      * List pengeluaran yang sudah disbmit untuk dropdown di penerimaan
-     * 
+     *
      */
     public function getList(Request $request)
     {
@@ -91,5 +91,11 @@ class PengeluaranController extends Controller
             ->when($request->user()->role == \App\User::ROLE_USER, function($q) use ($request) {
                 return $q->where('lokasi_terima_id', $request->user()->location_id);
             })->get();
+    }
+
+    public function getLastRecord(Request $request)
+    {
+        return Pengeluaran::whereRaw('YEAR(tanggal) = ? ', [$request->tahun])
+            ->orderBy('id', 'DESC')->first();
     }
 }
