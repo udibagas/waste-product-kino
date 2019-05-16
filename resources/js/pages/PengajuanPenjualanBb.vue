@@ -536,8 +536,8 @@ export default {
                     let int_number = parseInt(r.data.no_aju.slice(0, 4)) + 1;
                     this.number = int_number.toString().padStart(4, '0');
                     this.formModel.no_aju = this.number + '/' + moment().format('MM') + '/' + moment().format('YYYY') + '/AJU'
-                    this.showForm = true
                 }
+                this.showForm = true
             }).catch(e => {
                 this.$message({
                     message: 'Failed to fetch last record' + e,
