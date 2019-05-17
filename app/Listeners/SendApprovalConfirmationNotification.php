@@ -30,7 +30,6 @@ class SendApprovalConfirmationNotification
     {
         Mail::to($event->pengajuanPenjualan->user)
             ->cc('bagas@lamsolusi.com')
-            ->subject('[WP APP] Approval Confirmation')
             ->queue(new ApprovalConfirmation($event->pengajuanPenjualan));
     }
 }

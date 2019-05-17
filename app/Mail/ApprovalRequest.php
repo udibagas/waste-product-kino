@@ -13,6 +13,8 @@ class ApprovalRequest extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $subject = '[WP APP] Approval Request';
+
     public $pengajuanPenjualan;
 
     public $level;

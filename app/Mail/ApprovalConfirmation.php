@@ -14,6 +14,8 @@ class ApprovalConfirmation extends Mailable
 
     public $pengajuanPenjualan;
 
+    public $subject = '[WP APP] Approval Confirmation';
+
     /**
      * Create a new message instance.
      *

@@ -12,6 +12,8 @@ class ReceiptNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $subject = '[WP APP] Receipt Notification';
+
     public $penerimaan;
 
     /**
