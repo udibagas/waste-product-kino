@@ -171,6 +171,8 @@
                     <div class="el-form-item__error" v-if="formErrors.location_id">{{formErrors.location_id[0]}}</div>
                 </el-form-item>
 
+                <p> <el-button type="primary" @click="searchCategory" icon="el-icon-search">SEARCH CATEGORY</el-button> </p>
+
                 <table class="table table-sm table-bordered">
                     <thead>
                         <tr>
@@ -181,7 +183,6 @@
                             <th colspan="2" class="text-center">Selisih</th>
                             <th rowspan="2" class="text-center">Eun</th>
                             <th rowspan="2" class="text-center">
-                                <a href="#" @click="addItem" class="icon-bg"><i class="el-icon-circle-plus-outline"></i></a>
                             </th>
                         </tr>
                         <tr>
@@ -196,14 +197,7 @@
                     <tbody>
                         <tr v-for="(item, index) in formModel.items_bb" :key="index">
                             <td>{{index+1}}.</td>
-                            <td>
-                                <select name="kat" placeholder="Kategori" :disabled="!!item.id" v-model="item.kategori_barang_id" class="my-input" @change="updateStockInfo($event, index)">
-                                    <option value="">-- Pilih Kategori --</option>
-                                    <option v-for="(k, i) in $store.state.kategoriBarangList.filter(k => k.status == 2 && k.jenis == 'BB')" :key="i" :value="k.id">
-                                        {{k.kode}} - {{k.nama}}
-                                    </option>
-                                </select>
-                            </td>
+                            <td>{{item.kategori.kode}} - {{item.kategori.nama}}</td>
                             <td class="text-center">{{item.stock_qty | formatNumber}}</td>
                             <td class="text-center">{{item.stock_berat | formatNumber}}</td>
                             <td><input type="number" v-model="item.jumlah" class="my-input" placeholder="Qty"></td>
@@ -225,6 +219,55 @@
                 <el-button type="info" @click="showForm = false" icon="el-icon-error">CANCEL</el-button>
             </span>
         </el-dialog>
+
+        <!-- DIALOG UNTUK SEARCH CATEGORY -->
+        <el-dialog center
+        :visible.sync="showCategoryList"
+        title="Select Category"
+        width="900px"
+        v-loading="loading"
+        :close-on-click-modal="false">
+            <el-input prefix-icon="el-icon-search" v-model="categoryKeyword" placeholder="Search Category"></el-input>
+            <br><br>
+            <table class="table table-sm table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Kategori</th>
+                            <th class="text-right">Jumlah</th>
+                            <th class="text-right">Berat</th>
+                            <th style="width:80px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(m, i) in filteredCategory.slice((categoryPage - 1) * 10, categoryPage * 10)" :key="i">
+                            <td>{{(i + 1) + ((categoryPage - 1) * 10)}}.</td>
+                            <td>{{ m.kategori.kode }} - {{ m.kategori.nama }}</td>
+                            <td class="text-right">{{ m.qty | formatNumber }} {{m.unit}}</td>
+                            <td class="text-right">{{ m.stock | formatNumber }} KG</td>
+                            <td class="text-center"><input type="checkbox" :value="m" v-model="selectedCategory"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <el-row>
+                    <el-col :span="12">
+                        <el-pagination @current-change="(p) => categoryPage = p"
+                            :page-size="10"
+                            background
+                            layout="prev, pager, next"
+                            :total="filteredCategory.length">
+                        </el-pagination>
+                    </el-col>
+                    <el-col :span="12" class="text-right">
+                        <strong>Total: {{filteredCategory.length | formatNumber}} items</strong>
+                    </el-col>
+                </el-row>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="selectCategory" icon="el-icon-success">DONE</el-button>
+                <el-button type="info" @click="showCategoryList = false" icon="el-icon-error">CANCEL</el-button>
+            </span>
+        </el-dialog>
     </el-card>
 </template>
 
@@ -235,17 +278,38 @@ import ApprovalHistory from '../components/ApprovalHistory'
 
 export default {
     components: { PengajuanPenjualanItemBb, ApprovalHistory },
+    computed: {
+        filteredCategory() {
+            let keyword = this.categoryKeyword.toLowerCase();
+            return this.stock
+                .filter(m => m.kategori.nama.toLowerCase().includes(keyword) || m.kategori.kode.toLowerCase().includes(keyword))
+        }
+    },
     watch: {
         keyword: function(v, o) {
             this.requestData()
         },
         pageSize: function(v, o) {
             this.requestData()
-        }
+        },
+        'formModel.location_id'(v, o) {
+            if (v) {
+                this.formModel.lokasi_asal = this.$store.state.locationList.find(l => l.id == v).name;
+                let params = { location_id: v }
+                axios.get(BASE_URL + '/stockBb/getStockList', { params: params }).then(r => {
+                    this.stock = r.data
+                }).catch(e => console.log(e))
+            }
+        },
     },
     data: function() {
         return {
             number: '0001',
+            stock: [],
+            showCategoryList: false,
+            categoryKeyword: '',
+            categoryPage: 1,
+            selectedCategory: [],
             user: USER,
             loading: false,
             showForm: false,
@@ -254,14 +318,7 @@ export default {
             error: {},
             formModel: {
                 jenis: 'BB',
-                items_bb: [{
-                    kategori_barang_id: '',
-                    jumlah: 0,
-                    stock_qty: 0,
-                    stock_berat: 0,
-                    eun: '',
-                    timbangan_manual: ''
-                }]
+                items_bb: []
             },
             keyword: '',
             page: 1,
@@ -285,6 +342,31 @@ export default {
         }
     },
     methods: {
+        searchCategory() {
+            if (!this.formModel.location_id) {
+                this.$message({ message: 'Mohon pilih plant', showClose: true, type: 'error', duration: 10000 });
+                return
+            }
+
+            this.showCategoryList = true
+        },
+        selectCategory() {
+            this.showCategoryList = false
+            this.selectedCategory.forEach(c => {
+                let exists = this.formModel.items_bb.find(i => i.kategori_barang_id == c.kategori_barang_id)
+                if (!exists) {
+                    this.formModel.items_bb.push({
+                    kategori: c.kategori,
+                    kategori_barang_id: c.kategori_barang_id,
+                    stock_qty: c.qty,
+                    stock_berat: c.stock,
+                    eun: c.kategori.unit,
+                    jumlah: 0,
+                    timbangan_manual: 0
+                })
+                }
+            })
+        },
         approve(data, status) {
             // kalau reject harus pake note
             if (status == 2) {
@@ -329,49 +411,6 @@ export default {
                 });
             })
         },
-        updateStockInfo(event, index) {
-            if (!this.formModel.location_id) {
-                this.$message({
-                    message: 'Mohon pilih plant terlebih dahulu',
-                    type: 'warning',
-                    showClose: true
-                })
-
-                this.formModel.items_bb[index].kategori_barang_id = ''
-                return
-            }
-
-            let selectedKategori = this.$store.state.kategoriBarangList.find(k => k.id == event.target.value)
-            this.formModel.items_bb[index].eun = selectedKategori.unit;
-
-            let params = {
-                location_id: this.formModel.location_id,
-                kategori_barang_id: event.target.value
-            }
-
-            this.formModel.items_bb[index].stock_qty = 0
-            this.formModel.items_bb[index].stock_berat = 0
-
-            axios.get(BASE_URL + '/stockBb/getStock', { params: params }).then(r => {
-                if (!!r.data && r.data.stock > 0) {
-                    this.formModel.items_bb[index].stock_qty = r.data.qty
-                    this.formModel.items_bb[index].stock_berat = r.data.stock
-                    this.$forceUpdate()
-                }
-
-                else {
-                    this.$message({
-                        message: 'Tidak ada stock untuk kategori barang terkait',
-                        type: 'warning',
-                        showClose: true
-                    })
-
-                    this.formModel.items_bb[index].kategori_barang_id = ''
-                }
-            }).catch(e => {
-                console.log(e);
-            });
-        },
         sortChange: function(column) {
             if (this.sort !== column.prop || this.order !== column.order) {
                 this.sort = column.prop;
@@ -387,18 +426,6 @@ export default {
         goToPage: function(p) {
             this.page = p;
             this.requestData();
-        },
-        addItem() {
-            if (this.formModel.jenis == 'BB') {
-                this.formModel.items_bb.push({
-                    kategori_barang_id: '',
-                    jumlah: 0,
-                    stock_qty: 0,
-                    stock_berat: 0,
-                    eun: '',
-                    timbangan_manual: ''
-                })
-            }
         },
         deleteItem(index) {
             let items = this.formModel.items_bb
@@ -519,14 +546,7 @@ export default {
                 status: 0,
                 jenis: 'BB',
                 location_id: this.user.role == 0 ? this.user.location_id : '',
-                items_bb: [{
-                    kategori_barang_id: '',
-                    jumlah: '',
-                    stock_qty: 0,
-                    stock_berat: 0,
-                    eun: '',
-                    timbangan_manual: ''
-                }]
+                items_bb: []
             }
 
             axios.get(BASE_URL + '/pengajuanPenjualan/getLastRecord', {

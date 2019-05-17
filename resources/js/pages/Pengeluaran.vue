@@ -331,21 +331,20 @@ export default {
         },
         selectCategory() {
             this.showCategoryList = false
-            this.formModel.items = this.selectedCategory.map(c => {
-                return {
-                    kategori_barang_id: c.kategori_barang_id,
-                    kategori: c.kategori,
-                    eun: c.kategori.unit,
-                    stock_jumlah: c.qty,
-                    stock_berat: c.stock,
-                    qty: 0,
-                    timbangan_manual: 0
+            this.selectedCategory.forEach(c => {
+                let exists = this.formModel.items.find(i => i.kategori_barang_id == c.kategori_barang_id)
+                if (!exists) {
+                    this.formModel.items.push({
+                        kategori_barang_id: c.kategori_barang_id,
+                        kategori: c.kategori,
+                        eun: c.kategori.unit,
+                        stock_jumlah: c.qty,
+                        stock_berat: c.stock,
+                        qty: 0,
+                        timbangan_manual: 0
+                    })
                 }
             })
-        },
-        updateEun(event, index) {
-            let selectedKategori = this.$store.state.kategoriBarangList.find(k => k.id == event.target.value)
-            this.formModel.items[index].eun = selectedKategori.unit;
         },
         sortChange: function(column) {
             if (this.sort !== column.prop || this.order !== column.order) {
