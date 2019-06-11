@@ -63,6 +63,8 @@ class PengajuanPenjualanController extends Controller
             $input['period_to'] = date('Y-m-d');
         }
 
+        $input['mvt_type'] = implode(',', $request->mvt_type);
+
         $pengajuanPenjualan = PengajuanPenjualan::create($input);
 
         if ($request->jenis == 'BB') {
@@ -82,7 +84,9 @@ class PengajuanPenjualanController extends Controller
 
     public function update(PengajuanPenjualanRequest $request, PengajuanPenjualan $pengajuanPenjualan)
     {
-        $pengajuanPenjualan->update($request->all());
+        $input = $request->all();
+        $input['mvt_type'] = implode(',', $request->mvt_type);
+        $pengajuanPenjualan->update($input);
 
         if ($pengajuanPenjualan->jenis == 'BB') {
             foreach ($request->items_bb as $i) {

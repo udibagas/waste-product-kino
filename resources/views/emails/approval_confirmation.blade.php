@@ -51,10 +51,10 @@
 @endforeach
 @endcomponent
 
-@component('mail::button', ['url' => config('app.url') . '/app/pengajuanPenjualan/'])
+@component('mail::button', ['url' => config('app.url') . '/app/pengajuanPenjualan/', 'color' => 'success'])
 KLIK DI SINI UNTUK PROSES LEBIH LANJUT
 @endcomponent
 
 Terimakasih,<br>
 {{ config('app.name') }}
-@endcomponent 
+@endcomponent

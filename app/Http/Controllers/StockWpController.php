@@ -36,15 +36,15 @@ class StockWpController extends Controller
 
     public function store(Request $request)
     {
-        try 
+        try
         {
             DB::beginTransaction();
-            foreach ($request->rows as $i => $row) 
+            foreach ($request->rows as $i => $row)
             {
                 $stock = StockWp::where('plant', $row['plant'])
                     ->where('material', $row['material'])
                     ->first();
-                
+
                 // cari konversi
                 $konversi = KonversiBerat::where('material_id', $row['material'])->first();
 
@@ -57,7 +57,7 @@ class StockWpController extends Controller
                     DB::table('stock_wps')->where('id', $stock->id)->update($row);
                 } else {
                     $row['quantity'] = $row['quantity'] == null ? 0 : $row['quantity'];
-                    
+
                     if ($konversi) {
                         $row['stock'] = $row['quantity'] * $konversi->berat;
                     }
@@ -77,8 +77,8 @@ class StockWpController extends Controller
     public function getSlocList()
     {
         $data = DB::select("SELECT DISTINCT(sloc) FROM stock_wps");
-        return array_map(function($d) { 
-            return $d->sloc; 
+        return array_map(function($d) {
+            return $d->sloc;
         }, $data);
     }
 
@@ -92,12 +92,13 @@ class StockWpController extends Controller
 
     public function getList(Request $request)
     {
-        return StockWp::when($request->plant, function ($q) use ($request) {
+        return StockWp::where('stock', '>', 0)
+        ->when($request->plant, function ($q) use ($request) {
             return $q->where('plant', $request->plant);
         })->when($request->mvt_type, function ($q) use ($request) {
             return $q->whereIn('mvt', $request->mvt_type);
         })->when($request->sloc, function ($q) use ($request) {
             return $q->where('sloc', $request->sloc);
-        })->orderBy('material', 'asc')->get(); 
+        })->orderBy('material', 'asc')->get();
     }
 }

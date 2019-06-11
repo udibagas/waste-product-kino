@@ -40,7 +40,8 @@ class StockBbController extends Controller
 
     public function getStockList(Request $request)
     {
-        return StockBb::when($request->location_id, function($q) use ($request) {
+        return StockBb::where('stock', '>', 0)
+        ->when($request->location_id, function($q) use ($request) {
             return $q->where('location_id', $request->location_id);
         })->get();
     }

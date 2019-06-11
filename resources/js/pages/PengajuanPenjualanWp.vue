@@ -277,7 +277,7 @@ export default {
         filteredMaterial() {
             let keyword = this.materialKeyword.toLowerCase();
             return this.materials
-                .filter(m => m.material.toLowerCase().includes(keyword) || m.material_description.toLowerCase().includes(keyword))
+                .filter(m => m.stock > 0 && (m.material.toLowerCase().includes(keyword) || m.material_description.toLowerCase().includes(keyword)))
         }
     },
     data: function() {
@@ -337,6 +337,7 @@ export default {
             this.showMaterialList = false
             this.formModel.items_wp = this.selectedMaterial.map(m => {
                 m.diajukan = (m.stock / 1000).toFixed(4);
+                m.price_per_unit = 0;
                 return m
             })
         },

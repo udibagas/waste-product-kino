@@ -390,7 +390,7 @@ export default {
                 return
             }
 
-            let invalid = this.formModel.items.filter(i => !i.kategori_barang_id || !i.qty || !i.timbangan_manual).length
+            let invalid = this.formModel.items.filter(i => !i.qty || !i.timbangan_manual).length
 
             if (invalid) {
                 this.$message({ message: 'Mohon lengkapi data barang.', showClose: true, type: 'error' });
@@ -581,6 +581,11 @@ export default {
     padding: 5px;
     background-color: #eee;
     /* background-color: transparent; */
+}
+
+input[type=checkbox] {
+    width: 15px;
+    height: 15px;
 }
 
 .my-input:hover, .my-input:focus {

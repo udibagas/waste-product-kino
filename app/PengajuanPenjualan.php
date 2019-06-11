@@ -23,7 +23,7 @@ class PengajuanPenjualan extends Model
     const STATUS_APPROVAL_REJECTED = 2;
 
     protected $fillable = [
-        'tanggal', 'no_aju', 'plant', 'period_from', 'period_to',
+        'tanggal', 'no_aju', 'period_from', 'period_to',
         'jenis', 'mvt_type', 'sloc', 'user_id', 'location_id', 'status',
         'approval1_status', 'approval1_time', 'approval1_by',
         'approval2_status', 'approval2_time', 'approval2_by'
