@@ -36,7 +36,7 @@
                     {{ scope.row.tanggal | readableDate }}
                 </template>
             </el-table-column>
-            <el-table-column prop="no_sj" label="No. Surat Jalan" sortable="custom"></el-table-column>
+            <el-table-column prop="no_sj" label="No. Surat Jalan" min-width="100" sortable="custom"></el-table-column>
 
             <el-table-column
             prop="lokasi_asal"
@@ -148,7 +148,7 @@
                         <el-form-item label="Lokasi Terima">
                             <el-select v-model="formModel.lokasi_terima_id" style="width:100%" placeholder="Lokasi Terima">
                                 <el-option
-                                v-for="item in $store.state.locationList"
+                                v-for="item in $store.state.locationList.filter(l => !l.is_dummy)"
                                 :key="item.id"
                                 :label="item.plant + ' - ' + item.name"
                                 :value="item.id">
@@ -493,6 +493,10 @@ export default {
         editData: function(data) {
             this.formTitle = 'EDIT PENGELUARAN BARANG BEKAS'
             this.formModel = JSON.parse(JSON.stringify(data));
+            this.formModel.items = this.formModel.items.map(i => {
+                i.kategori = {};
+                return i;
+            });
             this.error = {}
             this.formErrors = {}
 
@@ -504,14 +508,20 @@ export default {
             axios.get(BASE_URL + '/stockBb/getStockList').then(r => {
                 this.formModel.items.forEach(i => {
                     let stock = r.data.find(d => d.kategori_barang_id == i.kategori_barang_id && d.location_id == this.formModel.lokasi_asal_id)
-                    i.stock_jumlah = stock.qty
-                    i.stock_berat = stock.stock
-                    i.kategori = stock.kategori
+                    if (stock) {
+                        i.stock_jumlah = stock.qty
+                        i.stock_berat = stock.stock
+                        i.kategori = stock.kategori
+                    } else {
+                        i.stock_jumlah = 0
+                        i.stock_berat = 0
+                        i.kategori = this.$store.state.kategoriBarangList.find(k => k.id == i.kategori_barang_id)
+                    }
                 })
                 this.showForm = true
             }).catch(e => {
                 this.$message({
-                    message: 'Failed to get stock data' + e,
+                    message: 'Failed to get stock data.' + e,
                     type: 'error',
                     showClose: true
                 });

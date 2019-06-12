@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\StockBb;
+use App\Location;
+use App\KategoriBarang;
 
 class StockBbController extends Controller
 {
@@ -20,6 +22,7 @@ class StockBbController extends Controller
         return StockBb::selectRaw('stock_bbs.*')
             ->join('kategori_barangs', 'kategori_barangs.id', '=', 'stock_bbs.kategori_barang_id')
             ->join('locations', 'locations.id', '=', 'stock_bbs.location_id')
+            ->where('locations.is_dummy', 0)
             ->when($request->location_id, function($q) use ($request) {
                 return $q->whereIn('location_id', $request->location_id);
             })->when($request->kategori_barang_id, function($q) use ($request) {
@@ -40,6 +43,25 @@ class StockBbController extends Controller
 
     public function getStockList(Request $request)
     {
+        // kalau lokasi adalah dummy tampilkan semua kategory
+        if ($request->location_id) {
+            $location = Location::find($request->location_id);
+            if ($location->is_dummy) {
+                $data = KategoriBarang::all()->toArray();
+
+                return array_map(function($e) use ($request) {
+                    $newData = new \stdClass();
+                    $newData->kategori = $e;
+                    $newData->kategori_barang_id = $e['id'];
+                    $newData->stock = 0;
+                    $newData->qty = 0;
+                    $newData->unit = $e['unit'];
+                    $newData->location_id = $request->location_id;
+                    return $newData;
+                }, $data);
+            }
+        }
+
         return StockBb::where('stock', '>', 0)
         ->when($request->location_id, function($q) use ($request) {
             return $q->where('location_id', $request->location_id);

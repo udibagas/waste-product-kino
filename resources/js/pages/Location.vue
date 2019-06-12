@@ -28,6 +28,11 @@
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
             <el-table-column prop="plant" label="Plant" sortable="custom"></el-table-column>
             <el-table-column prop="name" label="Name" sortable="custom"></el-table-column>
+            <el-table-column prop="is_dummy" label="Is Dummy" sortable="custom" min-width="100" align="center" header-align="center">
+                <template slot-scope="scope">
+                    {{scope.row.is_dummy ? 'Yes' : 'No'}}
+                </template>
+            </el-table-column>
 
             <el-table-column fixed="right" width="40px">
                 <template slot-scope="scope">
@@ -76,6 +81,14 @@
                 <el-form-item label="Name">
                     <el-input placeholder="Name" v-model="formModel.name"></el-input>
                     <div class="el-form-item__error" v-if="formErrors.name">{{formErrors.name[0]}}</div>
+                </el-form-item>
+
+                <el-form-item label="Is Dummy">
+                    <el-select placeholder="Is Dummy" v-model="formModel.is_dummy" style="width:100%;">
+                        <el-option :value="0" label="No"></el-option>
+                        <el-option :value="1" label="Yes"></el-option>
+                    </el-select>
+                    <div class="el-form-item__error" v-if="formErrors.is_dummy">{{formErrors.is_dummy[0]}}</div>
                 </el-form-item>
             </el-form>
 

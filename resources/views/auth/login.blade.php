@@ -91,6 +91,7 @@
         <input type="email" id="inputEmail" name="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" placeholder="Email address" required autofocus>
         <label for="inputPassword" class="sr-only">Password</label>
         <input type="password" name="password" id="inputPassword" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" placeholder="Password" required>
+        <input type="hidden" name="remember" value="1">
         <!-- <div class="checkbox mb-3">
             <label>
                 <input type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}> Remember me
@@ -101,4 +102,4 @@
     </form>
 </body>
 
-</html> 
+</html>
