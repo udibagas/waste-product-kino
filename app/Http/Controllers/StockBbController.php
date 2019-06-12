@@ -47,7 +47,7 @@ class StockBbController extends Controller
         if ($request->location_id) {
             $location = Location::find($request->location_id);
             if ($location->is_dummy) {
-                $data = KategoriBarang::all()->toArray();
+                $data = KategoriBarang::where('jenis', 'BB')->get()->toArray();
 
                 return array_map(function($e) use ($request) {
                     $newData = new \stdClass();
