@@ -38,32 +38,32 @@
             </el-table-column>
             <el-table-column prop="no_sj_keluar" label="No. Surat Jalan" sortable="custom"></el-table-column>
 
-            <el-table-column 
-            prop="lokasi_asal" 
-            label="Lokasi Asal" 
+            <el-table-column
+            prop="lokasi_asal"
+            label="Lokasi Asal"
             sortable="custom"
             column-key="lokasi_asal_id"
             :filters="$store.state.locationList.map(l => { return {value: l.id, text: l.plant + ' - ' + l.name } })" >
             </el-table-column>
-            
-            <el-table-column 
-            prop="lokasi_terima" 
-            label="Lokasi Terima" 
+
+            <el-table-column
+            prop="lokasi_terima"
+            label="Lokasi Terima"
             sortable="custom"
             column-key="lokasi_terima_id"
             :filters="$store.state.locationList.map(l => { return {value: l.id, text: l.plant + ' - ' + l.name } })" >
             </el-table-column>
-            
+
             <el-table-column prop="penerima" label="Penerima" sortable="custom"></el-table-column>
 
             <el-table-column prop="keterangan" label="Keterangan" sortable="custom"></el-table-column>
-            
-            <el-table-column 
-            prop="status" 
-            width="100" 
-            align="center" 
-            header-align="center" 
-            label="Status" 
+
+            <el-table-column
+            prop="status"
+            width="100"
+            align="center"
+            header-align="center"
+            label="Status"
             column-key="status"
             :filters="statuses.map(s => { return {value: s.value, text: s.label} })"
             sortable="custom">
@@ -71,7 +71,7 @@
                     <el-tag size="small" :type="statuses[scope.row.status].type">{{statuses[scope.row.status].label}}</el-tag>
                 </template>
             </el-table-column>
-            
+
             <el-table-column fixed="right" width="40px">
                 <template slot-scope="scope">
                     <el-dropdown v-if="scope.row.status == 0">
@@ -153,7 +153,7 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
-                
+
                 <table class="table table-sm table-bordered" v-if="formModel.items.length > 0">
                     <thead>
                         <tr>
@@ -223,7 +223,6 @@ export default {
                 this.formModel.lokasi_terima = pengeluaran.lokasi_terima
                 this.formModel.lokasi_asal_id = pengeluaran.lokasi_asal_id
                 this.formModel.lokasi_terima_id = pengeluaran.lokasi_terima_id
-                this.formModel.penerima = pengeluaran.penerima
                 this.formModel.items = pengeluaran.items.map(i => {
                     return {
                         kategori_barang_id: i.kategori_barang_id,
@@ -279,7 +278,7 @@ export default {
         save() {
             // validasi item
             let invalid = this.formModel.items.filter(i => !i.qty_terima || !i.timbangan_manual_terima).length
-            
+
             if (invalid) {
                 this.$message({ message: 'Mohon lengkapi data barang.', showClose: true, type: 'error' });
                 return
@@ -352,7 +351,7 @@ export default {
             this.formTitle = 'INPUT PENERIMAAN BARANG BEKAS'
             this.error = {}
             this.formErrors = {}
-            
+
             this.formModel = {
                 tanggal: moment().format('YYYY-MM-DD'),
                 status: 0,
