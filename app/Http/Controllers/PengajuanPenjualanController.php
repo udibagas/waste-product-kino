@@ -63,7 +63,11 @@ class PengajuanPenjualanController extends Controller
             $input['period_to'] = date('Y-m-d');
         }
 
-        $input['mvt_type'] = implode(',', $request->mvt_type);
+        if (is_array($request->mvt_type)) {
+            $input['mvt_type'] = implode(',', $request->mvt_type);
+        } else {
+            $input['mvt_type'] = '';
+        }
 
         $pengajuanPenjualan = PengajuanPenjualan::create($input);
 
@@ -71,8 +75,24 @@ class PengajuanPenjualanController extends Controller
             $pengajuanPenjualan->itemsBb()->createMany($request->items_bb);
         }
 
-        if ($request->jenis == 'WP') {
-            $pengajuanPenjualan->itemsWp()->createMany($request->items_wp);
+        if ($request->jenis == 'WP')
+        {
+            $items = array_map(function($i) {
+                return [
+                    'material_id' => $i['material'],
+                    'material_description' => $i['material_description'],
+                    'divisi' => '-',
+                    'unit' => $i['bun'],
+                    'qty_reject' => 0,
+                    'price_per_unit' => $i['price_per_unit'],
+                    'value' => (int) ((float) $i['diajukan'] * (int) $i['price_per_unit']),
+                    'berat' => (float) $i['diajukan'],
+                    'stock' => (float) $i['stock'],
+
+                ];
+            }, $request->items_wp);
+
+            $pengajuanPenjualan->itemsWp()->createMany($items);
         }
 
         if ($request->status == PengajuanPenjualan::STATUS_SUBMITTED) {
@@ -85,7 +105,11 @@ class PengajuanPenjualanController extends Controller
     public function update(PengajuanPenjualanRequest $request, PengajuanPenjualan $pengajuanPenjualan)
     {
         $input = $request->all();
-        $input['mvt_type'] = implode(',', $request->mvt_type);
+
+        if ($request->mvt_type) {
+            $input['mvt_type'] = implode(',', $request->mvt_type);
+        }
+
         $pengajuanPenjualan->update($input);
 
         if ($pengajuanPenjualan->jenis == 'BB') {
@@ -103,7 +127,17 @@ class PengajuanPenjualanController extends Controller
                 if (isset($i['id'])) {
                     PengajuanPenjualanItemWp::find($i['id'])->update($i);
                 } else {
-                    $pengajuanPenjualan->itemsWp()->create($i);
+                    $pengajuanPenjualan->itemsWp()->create([
+                        'material_id' => $i['material'],
+                        'material_description' => $i['material_description'],
+                        'divisi' => '-',
+                        'unit' => '-',
+                        'qty_reject' => 0,
+                        'price_per_unit' => $i['price_per_unit'],
+                        'value' => (int) ((float) $i['diajukan'] * (int) $i['price_per_unit']),
+                        'berat' => (float) $i['diajukan'],
+                        'stock' => (float) $i['stock'],
+                    ]);
                 }
             }
         }
