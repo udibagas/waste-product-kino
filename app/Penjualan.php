@@ -29,12 +29,16 @@ class Penjualan extends Model
         'location_id' => 'integer',
     ];
 
-    protected $with = ['itemsBb', 'location', 'pembeli', 'pembayaran'];
+    protected $with = ['itemsBb', 'itemsWp', 'location', 'pembeli', 'pembayaran'];
 
     protected $appends = ['terbayar'];
 
     public function itemsBb() {
         return $this->hasMany(PenjualanItemBb::class);
+    }
+
+    public function itemsWp() {
+        return $this->hasMany(PenjualanItemWp::class);
     }
 
     public function user() {
