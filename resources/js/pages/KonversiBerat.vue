@@ -24,11 +24,11 @@
         v-loading="loading"
         style="border-top:1px solid #eee;"
         @sort-change="sortChange">
-            <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
+            <el-table-column type="index" min-width="50" :index="paginatedData.from"> </el-table-column>
             <el-table-column prop="kategori_jual" label="Kategori Jual" sortable="custom"></el-table-column>
             <el-table-column prop="finished_good" label="Finished Goods" sortable="custom"></el-table-column>
-            <el-table-column prop="material_id" label="Material ID" width="170" sortable="custom"></el-table-column>
-            <el-table-column prop="material_description" width="350" label="Material Description" sortable="custom"></el-table-column>
+            <el-table-column prop="material_id" label="Material ID" min-width="170" sortable="custom"></el-table-column>
+            <el-table-column prop="material_description" min-width="350" label="Material Description" sortable="custom"></el-table-column>
             <el-table-column prop="berat" label="Berat Rata - Rata (gr)" align="center" header-align="center" sortable="custom"></el-table-column>
             <el-table-column prop="keterangan" label="Keterangan" sortable="custom"></el-table-column>
         </el-table>
@@ -49,11 +49,11 @@
             </el-col>
         </el-row>
 
-        <el-dialog 
-        :visible.sync="uploadFormDialog" 
-        title="Upload Data Konversi Berat" 
-        width="700px" 
-        v-loading="loading" 
+        <el-dialog
+        :visible.sync="uploadFormDialog"
+        title="Upload Data Konversi Berat"
+        width="700px"
+        v-loading="loading"
         :close-on-click-modal="false">
 
             Select File : <input type="file" id="file-upload">
@@ -158,7 +158,7 @@ export default {
                             keterangan: r[5]
                         }
                     });
-                
+
                 _this.logs.push('Filtering data...<br>')
                 dataToImport.splice(0, 1)
                 let uniqueMaterial = [... new Set(dataToImport.map(d => d.material_id))]

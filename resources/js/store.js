@@ -19,7 +19,8 @@ export default new Vuex.Store({
         pembeliList: [],
         pengajuanPenjualanList: [],
         slocList: [],
-        mvtList: []
+        mvtList: [],
+        matList: []
     },
     mutations: {
         getKategoriBarangList(state) {
@@ -74,6 +75,12 @@ export default new Vuex.Store({
             axios
                 .get(BASE_URL + "/getMvtList")
                 .then(r => (state.mvtList = r.data))
+                .catch(e => console.log(e));
+        },
+        getMatList(state) {
+            axios
+                .get(BASE_URL + "/getMatList")
+                .then(r => (state.matList = r.data))
                 .catch(e => console.log(e));
         }
     }

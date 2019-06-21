@@ -28,7 +28,7 @@
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
             <el-table-column type="expand" width="20px">
                 <template slot-scope="scope">
-                    <PengajuanPenjualanDetailBb :data="scope.row" />
+                    <PengajuanPenjualanDetailWp :data="scope.row" />
                 </template>
             </el-table-column>
             <el-table-column prop="tanggal" width="100" label="Tanggal" sortable="custom">
@@ -37,9 +37,14 @@
                 </template>
             </el-table-column>
             <el-table-column prop="no_aju" label="No. Pengajuan" sortable="custom"></el-table-column>
-            <el-table-column prop="plant" label="Plant" sortable="custom" width="120">
+            <el-table-column
+            prop="location_id"
+            label="Plant"
+            column-key="location_id"
+            :filters="$store.state.locationList.map(l => { return {value: l.id, text: l.plant + ' - ' + l.name } })"
+            sortable="custom">
                 <template slot-scope="scope">
-                    {{scope.row.plant}} - {{scope.row.location.name}}
+                    {{scope.row.location.plant}} - {{scope.row.location.name}}
                 </template>
             </el-table-column>
             <el-table-column prop="period_from" label="Periode" sortable="custom" width="200">
@@ -47,10 +52,53 @@
                     {{scope.row.period_from | readableDate}} - {{scope.row.period_to | readableDate}}
                 </template>
             </el-table-column>
-            <el-table-column prop="jenis" label="Jenis" width="90" align="center" header-align="center" sortable="custom"></el-table-column>
+            <!-- <el-table-column prop="jenis" label="Jenis" width="90" align="center" header-align="center" sortable="custom"></el-table-column> -->
             <el-table-column prop="mvt_type" label="MVT Type" sortable="custom"></el-table-column>
             <el-table-column prop="sloc" label="Sloc" sortable="custom"></el-table-column>
-            <el-table-column prop="status" width="100" align="center" header-align="center" label="Status" sortable="custom">
+
+            <el-table-column prop="user.name" label="Yang Mengajukan"></el-table-column>
+
+            <el-table-column
+            prop="approval1_status"
+            width="130"
+            align="center"
+            header-align="center"
+            label="Approval 1"
+            column-key="approval1_status"
+            :filters="approval_statuses.map(s => { return {value: s.value, text: s.label} })"
+            sortable="custom">
+                <template slot-scope="scope">
+                    <el-tag size="small" :type="approval_statuses[scope.row.approval1_status].type">
+                        {{approval_statuses[scope.row.approval1_status].label}}
+                    </el-tag>
+                </template>
+            </el-table-column>
+
+            <el-table-column
+            prop="approval2_status"
+            width="130"
+            align="center"
+            header-align="center"
+            label="Approval 2"
+            column-key="approval2_status"
+            :filters="approval_statuses.map(s => { return {value: s.value, text: s.label} })"
+            sortable="custom">
+                <template slot-scope="scope">
+                    <el-tag size="small" :type="approval_statuses[scope.row.approval2_status].type">
+                        {{approval_statuses[scope.row.approval2_status].label}}
+                    </el-tag>
+                </template>
+            </el-table-column>
+
+            <el-table-column
+            prop="status"
+            width="100"
+            align="center"
+            header-align="center"
+            label="Status"
+            column-key="status"
+            :filters="statuses.map(s => { return {value: s.value, text: s.label} })"
+            sortable="custom">
                 <template slot-scope="scope">
                     <el-tag size="small" :type="statuses[scope.row.status].type">{{statuses[scope.row.status].label}}</el-tag>
                 </template>
@@ -58,13 +106,19 @@
 
             <el-table-column fixed="right" width="40px">
                 <template slot-scope="scope">
-                    <el-dropdown v-if="scope.row.status === 0">
+                    <el-dropdown v-if="scope.row.approval2_status != 1">
                         <span class="el-dropdown-link">
                             <i class="el-icon-more"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
-                            <el-dropdown-item @click.native.prevent="deleteData(scope.row.id)"><i class="el-icon-delete"></i> Hapus</el-dropdown-item>
+                            <!-- bisa diedit kalau status draft atau rejected -->
+                            <el-dropdown-item v-if="scope.row.status == 0 || scope.row.status == 3" @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
+                            <!-- bisa dihapus kalau status draft -->
+                            <el-dropdown-item v-if="scope.row.status == 0" @click.native.prevent="deleteData(scope.row.id)"><i class="el-icon-delete"></i> Hapus</el-dropdown-item>
+                            <!-- bisa diapprove kalau status submitted -->
+                            <el-dropdown-item v-if="scope.row.status == 1" @click.native.prevent="approve(scope.row, 1)"><i class="el-icon-check"></i> Approve</el-dropdown-item>
+                            <!-- bisa di reject kalau status submitted -->
+                            <el-dropdown-item v-if="scope.row.status == 1" @click.native.prevent="approve(scope.row, 2)"><i class="el-icon-close"></i> Reject</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </template>
@@ -121,7 +175,7 @@
 
                     <el-col :span="12">
                         <el-form-item label="Plant">
-                            <el-select v-model="formModel.location_id" style="width:100%" placeholder="Plant">
+                            <el-select :disabled="!!formModel.id" v-model="formModel.location_id" style="width:100%" placeholder="Plant">
                                 <el-option
                                 v-for="item in $store.state.locationList"
                                 :key="item.id"
@@ -132,8 +186,20 @@
                             <div class="el-form-item__error" v-if="formErrors.location_id">{{formErrors.location_id[0]}}</div>
                         </el-form-item>
 
+                        <el-form-item label="Sloc">
+                            <el-select :disabled="!!formModel.id" v-model="formModel.sloc" filterable style="width:100%" placeholder="Sloc">
+                                <el-option
+                                v-for="(item, id) in $store.state.slocList"
+                                :key="id"
+                                :label="item"
+                                :value="item">
+                                </el-option>
+                            </el-select>
+                            <div class="el-form-item__error" v-if="formErrors.sloc">{{formErrors.sloc[0]}}</div>
+                        </el-form-item>
+
                         <el-form-item label="MVT Type">
-                            <el-select v-model="formModel.mvt_type" filterable default-first-option style="width:100%" placeholder="MVT Type" multiple>
+                            <el-select :disabled="!!formModel.id" v-model="formModel.mvt_type" filterable default-first-option style="width:100%" placeholder="MVT Type" multiple>
                                 <el-option
                                 v-for="(item, id) in $store.state.mvtList"
                                 :key="id"
@@ -144,17 +210,6 @@
                             <div class="el-form-item__error" v-if="formErrors.mvt_type">{{formErrors.mvt_type[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Sloc">
-                            <el-select v-model="formModel.sloc" filterable style="width:100%" placeholder="Sloc">
-                                <el-option
-                                v-for="(item, id) in $store.state.slocList"
-                                :key="id"
-                                :label="item"
-                                :value="item">
-                                </el-option>
-                            </el-select>
-                            <div class="el-form-item__error" v-if="formErrors.sloc">{{formErrors.sloc[0]}}</div>
-                        </el-form-item>
                     </el-col>
                 </el-row>
 
@@ -271,6 +326,20 @@ export default {
             if (v) {
                 this.formModel.plant = this.$store.state.locationList.find(l => l.id == v).plant;
             }
+
+            if (v != o && !this.formModel.id) {
+                this.formModel.items_wp = []
+            }
+        },
+        'formModel.sloc'(v, o) {
+            if (v != o && !this.formModel.id) {
+                this.formModel.items_wp = []
+            }
+        },
+        'formModel.mvt_type'(v, o) {
+            if (v != o && !this.formModel.id) {
+                this.formModel.items_wp = []
+            }
         }
     },
     computed: {
@@ -305,6 +374,11 @@ export default {
                 {type: 'warning', label: 'Submitted'},
                 {type: 'success', label: 'Approved'},
             ],
+            approval_statuses: [
+                {type: 'info', label: 'Pending', value: 0},
+                {type: 'success', label: 'Approved', value: 1},
+                {type: 'danger', label: 'Rejected', value: 2},
+            ],
             materials: [],
             selectedMaterial: [],
             materialKeyword: '',
@@ -313,7 +387,7 @@ export default {
     },
     methods: {
         searchMaterial() {
-            if (!this.formModel.plant) {
+            if (!this.formModel.location_id) {
                 this.$message({ message: 'Mohon pilih Plant', showClose: true, type: 'error' });
                 return
             }
@@ -335,10 +409,61 @@ export default {
         },
         selectMaterial() {
             this.showMaterialList = false
-            this.formModel.items_wp = this.selectedMaterial.map(m => {
-                m.diajukan = (m.stock / 1000).toFixed(4);
-                m.price_per_unit = 0;
-                return m
+            this.selectedMaterial.forEach(m => {
+                let exists = this.formModel.items_wp.find(i => i.material == m.material)
+                if (!exists) {
+                    this.formModel.items_wp.push({
+                        diajukan: (m.stock / 1000).toFixed(4),
+                        price_per_unit: 0,
+                        material: m.material,
+                        material_description: m.material_description,
+                        stock: m.stock
+                    })
+                }
+            })
+        },
+        approve(data, status) {
+            // kalau reject harus pake note
+            if (status == 2) {
+                this.$prompt('Mohon masukkan note').then(({value}) => {
+                    this.doApprove(data, status, value)
+                }).catch((e) => console.log(e))
+            } else if (status == 1) {
+                this.$confirm('Anda yakin?', 'Warning', {
+                    type: 'warning',
+                    confirmButtonText: 'Ya',
+                    cancelButtonText: 'Tidak'
+                }).then(() => {
+                    this.doApprove(data, status, '')
+                }).catch(e => console.log(e));
+            }
+        },
+        doApprove(data, status, note) {
+            if (data.approval1_status == 0 || data.approval1_status == 2) {
+                var approval_data = { level: 1, status: status, note: note }
+            }
+
+            else if (data.approval2_status == 0 || data.approval2_status == 2) {
+                var approval_data = { level: 2, status: status, note: note }
+            }
+
+            else {
+                return;
+            }
+
+            axios.put(BASE_URL + '/pengajuanPenjualan/' + data.id + '/approve', approval_data).then(r => {
+                this.requestData();
+                this.$message({
+                    message: 'Approval berhasil.',
+                    type: 'success',
+                    showClose: true
+                });
+            }).catch(e => {
+                this.$message({
+                    message: 'Approval gagal. ' + e.response.data.message,
+                    type: 'error',
+                    showClose: true
+                });
             })
         },
         sortChange: function(column) {
@@ -359,26 +484,26 @@ export default {
         },
         deleteItem(index) {
             let items = this.formModel.items_wp
-            items.splice(index, 1)
 
-            // if (!items[index].id) {
-            //     items.splice(index, 1)
-            //     return
-            // }
+            if (!items[index].id) {
+                items.splice(index, 1)
+                return
+            }
 
-            // this.$confirm('Anda yakin akan menghapus item ini?', 'Warning', {
-            //     type: 'warning',
-            //     confirmButtonText: 'Ya',
-            //     cancelButtonText: 'Tidak'
-            // }).then(() => {
-            //     axios.delete(BASE_URL + url + items[index].id).then(r => {
-            //         this.$message({ message: 'Item berhasil dihapus', showClose: true, type: 'success' });
-            //         items.splice(index, 1);
-            //     }).catch(e => {
-            //         this.$message({ message: 'Item gagal dihapus', showClose: true, type: 'error' });
-            //         console.log(e);
-            //     })
-            // }).catch(() => {})
+            this.$confirm('Anda yakin akan menghapus item ini?', 'Warning', {
+                type: 'warning',
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Tidak'
+            }).then(() => {
+                axios.delete(BASE_URL + '/pengajuanPenjualanItemWp/' + items[index].id).then(r => {
+                    this.$message({ message: 'Item berhasil dihapus', showClose: true, type: 'success' });
+                    items.splice(index, 1);
+                    this.requestData()
+                }).catch(e => {
+                    this.$message({ message: 'Item gagal dihapus', showClose: true, type: 'error' });
+                    console.log(e);
+                })
+            }).catch(e => console.log(e))
         },
         save() {
             let invalid = this.formModel.items_wp.filter(i => i.diajukan > i.stock / 1000)
@@ -497,6 +622,18 @@ export default {
         editData: function(data) {
             this.formTitle = 'EDIT PENGAJUAN PENJUALAN WASTE PRODUCT'
             this.formModel = JSON.parse(JSON.stringify(data));
+            this.formModel.mvt_type = data.mvt_type.split(',')
+            this.formModel.items_wp = data.items_wp.map(i => {
+                return {
+                    id: i.id,
+                    material: i.material_id,
+                    material_description: i.material_description,
+                    diajukan: i.berat,
+                    stock: i.stock,
+                    price_per_unit: i.price_per_unit,
+                    bun: i.unit
+                }
+            })
             this.error = {}
             this.formErrors = {}
             this.showForm = true

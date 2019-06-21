@@ -258,40 +258,25 @@
                 </el-row>
 
                 <div class="table-responsive">
-                    <table class="table table-sm table-bordered" v-if="formModel.items_wp.length > 0">
+                    <table class="table table-sm table-striped table-hover" v-if="formModel.items_wp.length > 0">
                         <thead>
                             <tr>
-                                <th rowspan="2" class="text-center">#</th>
-                                <th rowspan="2" class="text-center">Kategori</th>
-                                <th colspan="2" class="text-center">Stock</th>
-                                <th colspan="4" class="text-center">Pengajuan</th>
-                                <th colspan="3" class="text-center">Aktual</th>
-                            </tr>
-                            <tr>
+                                <th>#</th>
+                                <th>Material ID</th>
+                                <th>Material Name</th>
                                 <th class="text-center">Berat (kg)</th>
-                                <th class="text-center">Qty</th>
-                                <th class="text-center">Timbangan Manual (kg)</th>
-                                <th class="text-center">Qty</th>
-                                <th class="text-center">Harga/Kg Sistem (Rp)</th>
-                                <th class="text-center">Value Jual Sistem (Rp)</th>
-                                <th class="text-center">Jembatan Timbang (kg)</th>
-                                <th class="text-center">Harga/Kg Aktual (Rp)</th>
-                                <th class="text-center">Value Jual Aktual (Rp)</th>
+                                <th>Price/Unit (Rp)</th>
+                                <th>Value</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(item, index) in formModel.items_wp" :key="index">
-                                <td class="text-center">{{index+1}}</td>
-                                <td class="text-center">{{item.kategori.kode}} - {{item.kategori.nama}}</td>
-                                <td class="text-center">{{item.stock_berat | formatNumber}}</td>
-                                <td class="text-center">{{item.stock_qty | formatNumber}}</td>
-                                <td class="text-center">{{item.timbangan_manual | formatNumber}}</td>
-                                <td class="text-center">{{item.qty | formatNumber}}</td>
-                                <td class="text-center">{{item.kategori.harga | formatNumber}}</td>
-                                <td class="text-center">{{item.kategori.harga * item.timbangan_manual | formatNumber}}</td>
-                                <td class="text-center"><input type="text" v-model="item.jembatan_timbang" class="my-input" placeholder="Jembatan Timbang"></td>
-                                <td class="text-center"><input type="text" v-model="item.price_per_kg" class="my-input" placeholder="Harga per Kg"></td>
-                                <td class="text-center">Rp {{item.jembatan_timbang * item.price_per_kg | formatNumber}}</td>
+                            <tr v-for="(m, i) in formModel.items_wp" :key="i">
+                                <td>{{i + 1}}.</td>
+                                <td>{{m.material_id}}</td>
+                                <td>{{m.material_description}}</td>
+                                <td>{{m.berat}}</td>
+                                <td>{{m.price_per_unit}}</td>
+                                <td class="text-right">Rp {{ m.value | formatNumber }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -341,19 +326,7 @@ export default {
             let pengajuan = this.$store.state.pengajuanPenjualanList.find(p => p.no_aju == v)
 
             if (!!pengajuan) {
-                this.formModel.items_wp = pengajuan.items_wp.map(i => {
-                    return {
-                        stock_berat: i.stock_berat,
-                        stock_qty: i.stock_qty,
-                        kategori_barang_id: i.kategori_barang_id,
-                        qty: i.jumlah,
-                        jembatan_timbang: i.timbangan_manual,
-                        timbangan_manual: i.timbangan_manual,
-                        kategori: i.kategori,
-                        price_per_kg: i.kategori.harga,
-                        value: i.kategori.harga * i.timbangan_manual
-                    }
-                })
+                this.formModel.items_wp = pengajuan.items_wp
             }
 
         }
@@ -476,7 +449,7 @@ export default {
             })
         },
         addData: function() {
-            this.formTitle = 'INPUT PENJUALAN BARANG BEKAS'
+            this.formTitle = 'INPUT PENJUALAN WASTE PRODUCT'
             this.error = {}
             this.formErrors = {}
             this.formModel = {
@@ -506,7 +479,7 @@ export default {
             })
         },
         editData: function(data) {
-            this.formTitle = 'EDIT PENJUALAN BARANG BEKAS'
+            this.formTitle = 'EDIT PENJUALAN WASTE PRODUCT'
             this.formModel = JSON.parse(JSON.stringify(data));
             this.error = {}
             this.formErrors = {}
@@ -541,6 +514,7 @@ export default {
             let params = {
                 page: this.page,
                 keyword: this.keyword,
+                jenis: 'WP',
                 pageSize: this.pageSize,
                 sort: this.sort,
                 order: this.order,
@@ -562,7 +536,6 @@ export default {
     },
     created: function() {
         this.requestData();
-        this.$store.commit('getKategoriBarangList');
         this.$store.commit('getLocationList');
         this.$store.commit('getPembeliList');
         this.$store.commit('getPengajuanPenjualanList', 'WP');

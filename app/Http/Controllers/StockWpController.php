@@ -26,6 +26,14 @@ class StockWpController extends Controller
                 ->orWhere('sloc', 'LIKE', '%' . $request->keyword . '%')
                 ->orWhere('mvt', 'LIKE', '%' . $request->keyword . '%')
                 ->orWhere('mat_doc', 'LIKE', '%' . $request->keyword . '%');
+        })->when($request->plant, function($q) use ($request) {
+            return $q->whereIn('plant', $request->plant);
+        })->when($request->sloc, function($q) use ($request) {
+            return $q->whereIn('sloc', $request->sloc);
+        })->when($request->mvt, function($q) use ($request) {
+            return $q->whereIn('mvt', $request->mvt);
+        })->when($request->mat, function($q) use ($request) {
+            return $q->whereIn('mat', $request->mat);
         })->orderBy($sort, $order)->paginate($request->pageSize);
     }
 
@@ -87,6 +95,14 @@ class StockWpController extends Controller
         $data = DB::select("SELECT DISTINCT(mvt) FROM stock_wps");
         return array_map(function ($d) {
             return $d->mvt;
+        }, $data);
+    }
+
+    public function getMatList()
+    {
+        $data = DB::select("SELECT DISTINCT(mat) FROM stock_wps");
+        return array_map(function ($d) {
+            return $d->mat;
         }, $data);
     }
 

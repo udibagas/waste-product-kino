@@ -1,3 +1,14 @@
+- Tombol payment masih ada meski status = draft
+- pastikan sudah ngurangi stok
+
+
+
+- Import MB51
+    - yg perlu diambil datanya hanya yg jumlahnya minus
+    - mvt 312 reset 311 dengan jumlah yg sama beda tanda (+) dan (-)
+    - yg PM aja yg diimport
+
+
 Masukan:
 - export excel di semua menu
 
@@ -5,7 +16,7 @@ PENGELUARAN
 - DONE
 
 PENERIMAAN BB
-- dropdown sj di penerimaan cek lagi. 
+- dropdown sj di penerimaan cek lagi.
     - exclude kalau sudah di proses meski cuma draft
 
 PENGAJUAN PENJUALAN BB
@@ -28,13 +39,15 @@ REPORT
 - belum semua
 
 IN OUT STOCK BB
-- filter lokasi
+- DONE
 --------------
 
 WP
 
 STOCK
-    - sembunyikan qty
+
+PENGAJUAN PENJUALAN
+    - ubah skema item: material_id, stock, diajukan, harga per kg, value
 
 Install php sql server
 https://github.com/Microsoft/msphpsql/releases/download/v5.6.1/Windows-7.3.zip
@@ -42,7 +55,9 @@ https://github.com/Microsoft/msphpsql/releases/download/v5.6.1/Windows-7.3.zip
 Install php untuk iis
 https://docs.microsoft.com/en-us/iis/application-frameworks/scenario-build-a-php-website-on-iis/configuring-step-1-install-iis-and-php
 
+allow verb
+
+https://support.deskpro.com/en/kb/articles/configuring-http-verbs-on-windows-iis
+
 - Laporan:
     - Laporan Stock Out alias laporan penjualan
-    
-

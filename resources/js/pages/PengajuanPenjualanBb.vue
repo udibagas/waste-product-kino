@@ -462,13 +462,13 @@ export default {
             }
 
             // pengajuan melebihi stock
-            let invalid_qty = this.formModel.items_bb.filter(i => i.jumlah > i.stock_qty).length
+            let invalid_qty = this.formModel.items_bb.filter(i => parseInt(i.jumlah) > parseInt(i.stock_qty)).length
             if (invalid_qty) {
                 this.$message({ message: 'Jumlah pengajuan melebihi stock', showClose: true, type: 'error' });
                 return
             }
 
-            let invalid_berat = this.formModel.items_bb.filter(i => i.timbangan_manual > i.stock_berat).length
+            let invalid_berat = this.formModel.items_bb.filter(i => parseFloat(i.timbangan_manual) > parseFloat(i.stock_berat)).length
             if (invalid_berat) {
                 this.$message({ message: 'Timbangan pengajuan melebihi stock', showClose: true, type: 'error' });
                 return

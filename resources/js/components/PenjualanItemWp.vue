@@ -1,13 +1,11 @@
 <template>
-    <table class="table table-sm table-bordered">
+    <table class="table table-sm table-bordered" style="width: 800px">
         <thead>
             <tr>
                 <th>#</th>
                 <th class="text-center">Material</th>
                 <th class="text-center">Material Description</th>
-                <th class="text-center">Stock (kg)</th>
-                <th class="text-center">Diajukan (kg)</th>
-                <th class="text-center">Selisih (kg)</th>
+                <th class="text-center">Berat (kg)</th>
                 <th class="text-center">Price Per Unit (Rp)</th>
                 <th class="text-center">Value (Rp)</th>
             </tr>
@@ -17,9 +15,7 @@
                 <td>{{index+1}}.</td>
                 <td>{{item.material_id}}</td>
                 <td>{{item.material_description}}</td>
-                <td class="text-right">{{(item.stock/1000).toFixed(4) | formatNumber}} kg</td>
                 <td class="text-right">{{item.berat | formatNumber}} kg</td>
-                <td class="text-right">{{((item.stock/1000) - item.berat).toFixed(4) | formatNumber}} kg</td>
                 <td class="text-right">Rp {{item.price_per_unit | formatNumber}}</td>
                 <td class="text-right">Rp {{item.value | formatNumber}}</td>
             </tr>

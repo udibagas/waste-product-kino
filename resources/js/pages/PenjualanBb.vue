@@ -542,6 +542,7 @@ export default {
             let params = {
                 page: this.page,
                 keyword: this.keyword,
+                jenis: 'BB',
                 pageSize: this.pageSize,
                 sort: this.sort,
                 order: this.order,

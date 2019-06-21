@@ -8,6 +8,7 @@ import Pembeli from './pages/Pembeli'
 import Penerimaan from './pages/Penerimaan'
 import Pengeluaran from './pages/Pengeluaran'
 import PenjualanBb from './pages/PenjualanBb'
+import PenjualanWp from './pages/PenjualanWp'
 import PengajuanPenjualanBb from './pages/PengajuanPenjualanBb'
 import PengajuanPenjualanWp from './pages/PengajuanPenjualanWp'
 import InOutStockBb from './pages/InOutStockBb'
@@ -57,6 +58,11 @@ const routes = [
         name: 'penjualanBb',
         path: '/penjualanBb',
         component: PenjualanBb
+    },
+    {
+        name: 'penjualanWp',
+        path: '/penjualanWp',
+        component: PenjualanWp
     },
     {
         name: 'pengajuanPenjualanBb',

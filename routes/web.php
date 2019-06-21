@@ -46,6 +46,7 @@ Route::get('user/getList', 'UserController@getList');
 Route::get('stockWp/getList', 'StockWpController@getList');
 Route::get('getSlocList', 'StockWpController@getSlocList');
 Route::get('getMvtList', 'StockWpController@getMvtList');
+Route::get('getMatList', 'StockWpController@getMatList');
 
 // TRANSACTION
 Route::resource('penerimaan', 'PenerimaanController')->only(['index', 'store', 'update', 'destroy']);
@@ -53,6 +54,7 @@ Route::get('pengajuanPenjualan/{pengajuanPenjualan}/approvalForm', 'PengajuanPen
 Route::get('pengajuanPenjualan/{pengajuanPenjualan}/getApprovalHistory', 'PengajuanPenjualanController@getApprovalHistory');
 Route::put('pengajuanPenjualan/{pengajuanPenjualan}/approve', 'PengajuanPenjualanController@approve');
 Route::delete('pengajuanPenjualanItemBb/{pengajuanPenjualanItemBb}', 'PengajuanPenjualanItemBbController@destroy');
+Route::delete('pengajuanPenjualanItemWp/{pengajuanPenjualanItemWp}', 'PengajuanPenjualanItemWpController@destroy');
 Route::get('pengajuanPenjualan/getLastRecord', 'PengajuanPenjualanController@getLastRecord');
 Route::resource('pengajuanPenjualan', 'PengajuanPenjualanController')->only(['index', 'edit', 'show', 'store', 'update', 'destroy']);
 Route::get('pengeluaran/getLastRecord', 'PengeluaranController@getLastRecord');

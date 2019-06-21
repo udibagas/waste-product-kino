@@ -23,40 +23,50 @@
         :default-sort = "{prop: 'plant', order: 'ascending'}"
         v-loading="loading"
         style="border-top:1px solid #eee;"
+        @filter-change="filterChange"
         @sort-change="sortChange">
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
-            
-            <el-table-column 
-            prop="plant" 
-            label="Plant" 
-            width="90" 
+
+            <el-table-column
+            prop="plant"
+            label="Plant"
+            min-width="90"
             column-key="plant"
             :filters="$store.state.locationList.map(l => { return {value: l.plant, text: l.plant + ' - ' + l.name } })"
             sortable="custom">
             </el-table-column>
-            
-            <el-table-column 
-            prop="sloc" 
-            label="Sloc" 
-            width="90" 
+
+            <el-table-column
+            prop="sloc"
+            label="Sloc"
+            min-width="90"
             column-key="sloc"
             :filters="$store.state.slocList.map(l => { return {value: l, text: l } })"
             sortable="custom">
             </el-table-column>
-            
-            <el-table-column 
-            prop="mvt" 
-            label="Mvt" 
-            width="90" 
+
+            <el-table-column
+            prop="mvt"
+            label="Mvt"
+            min-width="90"
             column-key="mvt"
             :filters="$store.state.mvtList.map(l => { return {value: l, text: l } })"
             sortable="custom">
             </el-table-column>
-            
+
             <el-table-column prop="posting_date" label="Posting Date" width="120" sortable="custom"></el-table-column>
             <el-table-column prop="mat_doc" label="Mat. Doc" width="100" sortable="custom"></el-table-column>
             <el-table-column prop="material" label="Material" width="170" sortable="custom"></el-table-column>
             <el-table-column prop="material_description" min-width="350" label="Material Description" sortable="custom"></el-table-column>
+            <el-table-column
+            prop="mat"
+            label="Mat"
+            min-width="90"
+            column-key="mat"
+            :filters="$store.state.matList.map(l => { return {value: l, text: l } })"
+            sortable="custom">
+            </el-table-column>
+
             <el-table-column prop="doc_date" label="Doc. Date" width="110" sortable="custom"></el-table-column>
             <el-table-column prop="entry_date" label="Entry Date" width="110" sortable="custom"></el-table-column>
             <el-table-column prop="time" label="Time" width="75" sortable="custom"></el-table-column>
@@ -89,11 +99,11 @@
             </el-col>
         </el-row>
 
-        <el-dialog 
-        :visible.sync="uploadFormDialog" 
-        title="Upload MB51" 
-        width="700px" 
-        v-loading="loading" 
+        <el-dialog
+        :visible.sync="uploadFormDialog"
+        title="Upload MB51"
+        width="700px"
+        v-loading="loading"
         :close-on-click-modal="false">
 
             Select File : <input type="file" id="file-upload">
@@ -127,7 +137,8 @@ export default {
             paginatedData: {},
             uploadFormDialog: false,
             logs: ['Please select file...<br>'],
-            plants: []
+            plants: [],
+            filters: {},
         }
     },
     methods: {
@@ -164,6 +175,9 @@ export default {
                 this.logs.push('<br>')
                 this.logs.push(r.data);
                 this.requestData()
+                this.$store.commit('getSlocList')
+                this.$store.commit('getMvtList')
+                this.$store.commit('getMatList')
             }).catch(e => {
                 this.logs.push('<br>')
                 if (e.response.data) {
@@ -206,29 +220,50 @@ export default {
                     return {
                         plant: r[0],
                         sloc: r[1],
-                        mvt: r[2],
-                        posting_date: r[3],
-                        mat_doc: r[4],
-                        material: r[5],
-                        material_description: r[6],
-                        doc_date: r[7],
-                        entry_date: r[8],
-                        time: _this.excelTimeToStr(r[9]),
-                        bun: r[10],
-                        quantity: r[11]
+                        mvt: r[3],
+                        posting_date: r[4],
+                        mat_doc: r[5],
+                        material: r[6],
+                        mat: r[7],
+                        material_description: r[8],
+                        batch: r[9],
+                        doc_date: r[14],
+                        entry_date: r[15],
+                        time: _this.excelTimeToStr(r[16]),
+                        bun: r[17],
+                        quantity: r[18]
                     }
                 })
 
+                // MVT 311 dan 312 digunakan untuk reverse (menetralkan stock). Jadi Mvt 312 berfungsi membatalkan transaksi Mvt 311
+                // looping buat cari 311 (yang dibatalkan)
+                dataToImport.filter(d => d.mvt == 312).forEach(d312 => {
+                    // cari data dengan mvt 311, material & quantity sama
+                    let mvt_311 = dataToImport.findIndex(d311 => d311.mvt == 311 && d311.material == d312.material && d311.quantity == -d312.quantity)
+                    // console.log({id : mvt_311})
+                    if (mvt_311 > -1) {
+                        // keluarkan dari dataToImport
+                        dataToImport.splice(mvt_311, 1)
+                    }
+                })
+
+                // hapus mvt 312 (pembatal mvt 311)
+                dataToImport = dataToImport.filter(d => d.mvt != 312 && (d.mat == 'PM' || d.mat == 'FG'))
+                // buang header
                 dataToImport.splice(0, 1)
+                // hapus yang ga ada di plant
                 dataToImport = dataToImport.filter(d => _this.plants.indexOf(d.plant) >= 0);
                 _this.logs.push('Found ' + (dataToImport.length) + ' valid rows <br>')
                 _this.logs.push('Importing data. This may take long moment. Don\'t close this window. Please wait ... <br>')
-                
-                // buang headernya
                 _this.save(dataToImport);
             };
 
             reader.readAsArrayBuffer(oFile);
+        },
+        filterChange: function(f) {
+            let column = Object.keys(f)[0];
+            this.filters[column] = Object.values(f[column]);
+            this.refreshData();
         },
         sortChange: function(column) {
             if (this.sort !== column.prop || this.order !== column.order) {
@@ -256,7 +291,7 @@ export default {
             }
             this.loading = true;
 
-            axios.get(BASE_URL + '/stockWp', { params: params }).then(r => {
+            axios.get(BASE_URL + '/stockWp', { params: Object.assign(params, this.filters) }).then(r => {
                 this.loading = false;
                 this.paginatedData = r.data
             }).catch(e => {
@@ -273,6 +308,7 @@ export default {
         this.getPlant();
         this.$store.commit('getSlocList')
         this.$store.commit('getMvtList')
+        this.$store.commit('getMatList')
         this.$store.commit('getLocationList')
         let _this = this
         $('body').on('change', '#file-upload', function(ev) {
