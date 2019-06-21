@@ -11,16 +11,20 @@ class InOutStockBbController extends Controller
     {
         $this->middleware('auth');
     }
-    
+
     public function index(Request $request)
     {
         $sort = $request->sort ? $request->sort : 'tanggal';
         $order = $request->order == 'ascending' ? 'asc' : 'desc';
 
-        return InOutStockBb::when($request->keyword, function ($q) use ($request) {
+        return InOutStockBb::selectRaw('in_out_stock_bbs.*')
+        ->join('locations', 'locations.id', '=', 'location_id')
+        ->join('kategori_barangs', 'kategori_barangs.id', '=', 'kategori_barang_id')
+        ->when($request->keyword, function ($q) use ($request) {
             return $q->where('no_sj', 'LIKE', '%' . $request->keyword . '%')
-                ->orWhere('plant', 'LIKE', '%' . $request->keyword . '%')
-                ->orWhere('lokasi', 'LIKE', '%' . $request->keyword . '%');
+                ->orWhere('locations.name', 'LIKE', '%' . $request->keyword . '%')
+                ->orWhere('kategori_barangs.nama', 'LIKE', '%' . $request->keyword . '%')
+                ->orWhere('kategori_barangs.kode', 'LIKE', '%' . $request->keyword . '%');
         })->when($request->location_id, function ($q) use ($request) {
             return $q->whereIn('location_id', $request->location_id);
         })->when($request->lokasi_asal, function ($q) use ($request) {
