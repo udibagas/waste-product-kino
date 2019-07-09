@@ -22,7 +22,8 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name', 'email', 'password', 'status', 'role',
-        'department', 'location_id', 'no_karyawan', 'api_token'
+        'department', 'location_id', 'no_karyawan', 'api_token',
+        'allow_approve_kategori'
     ];
 
     /**
@@ -41,18 +42,19 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'location_id' => 'integer'
+        'location_id' => 'integer',
+        'role' => 'integer',
+        'status' => 'integer',
+        'allow_approve_kategori' => 'boolean'
     ];
 
     protected $with = ['location', 'rights'];
 
-    public function location()
-    {
+    public function location() {
         return $this->belongsTo(Location::class);
     }
 
-    public function rights()
-    {
+    public function rights() {
         return $this->hasMany(UserRight::class);
     }
 }

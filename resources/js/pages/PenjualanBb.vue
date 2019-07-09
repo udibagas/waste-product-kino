@@ -368,6 +368,7 @@ export default {
             formErrors: {},
             error: {},
             formModel: { jenis: 'BB', items_bb: [] },
+            number: '0001',
             formModelPembayaran: {},
             keyword: '',
             page: 1,

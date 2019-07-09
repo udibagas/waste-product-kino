@@ -52,6 +52,12 @@
                 </template>
             </el-table-column>
 
+            <el-table-column prop="allow_approve_kategori" label="Allow Approve Category" min-width="200" align="center" header-align="center">
+                <template slot-scope="scope">
+                    <el-tag size="small" :type="scope.row.allow_approve_kategori ? 'success' : 'danger'">{{scope.row.allow_approve_kategori ? 'Yes' : 'No'}}</el-tag>
+                </template>
+            </el-table-column>
+
             <el-table-column fixed="right" width="40px">
                 <template slot-scope="scope">
                     <el-dropdown>
@@ -71,7 +77,7 @@
 
         <el-row>
             <el-col :span="12">
-                <el-pagination @current-change="goToPage"
+                <el-pagination @current-change="(p) => { page = p; requestData(); }"
                     :page-size="pageSize"
                     background
                     layout="prev, pager, next"
@@ -112,7 +118,7 @@
                             <el-input type="password" placeholder="Password" v-model="formModel.password"></el-input>
                             <div class="el-form-item__error" v-if="formErrors.password">{{formErrors.password[0]}}</div>
                         </el-form-item>
-                        
+
                         <el-form-item label="Konfirmasi Password">
                             <el-input type="password" placeholder="Konfirmasi Password" v-model="formModel.password_confirmation"></el-input>
                         </el-form-item>
@@ -136,18 +142,18 @@
                         </el-form-item>
 
                         <el-form-item label="Role">
-                            <el-select placeholder="Role" v-model="formModel.role" style="width:100%;">
-                                <el-option :value="0" label="User"></el-option>
-                                <el-option :value="1" label="Admin"></el-option>
-                            </el-select>
+                            <el-radio v-model="formModel.role" :label="0">User</el-radio>
+                            <el-radio v-model="formModel.role" :label="1">Admin</el-radio>
                             <div class="el-form-item__error" v-if="formErrors.role">{{formErrors.role[0]}}</div>
                         </el-form-item>
 
+                        <el-form-item v-show="formModel.role == 0" label="Allow Approve Category">
+                            <el-checkbox v-model="formModel.allow_approve_kategori">Yes</el-checkbox>
+                        </el-form-item>
+
                         <el-form-item label="Status">
-                            <el-select placeholder="Status" v-model="formModel.status" style="width:100%;">
-                                <el-option :value="0" label="Inactive"></el-option>
-                                <el-option :value="1" label="Active"></el-option>
-                            </el-select>
+                            <el-radio v-model="formModel.status" :label="0">Inactive</el-radio>
+                            <el-radio v-model="formModel.status" :label="1">Active</el-radio>
                             <div class="el-form-item__error" v-if="formErrors.status">{{formErrors.status[0]}}</div>
                         </el-form-item>
                     </el-col>
@@ -157,14 +163,14 @@
             <div v-show="formModel.role == 0">
                 <h3>Hak Akses</h3>
                 <hr>
-                <el-tree 
-                :data="$store.state.menuList" 
-                :props="{ children: 'children', label: 'label' }" 
+                <el-tree
+                :data="$store.state.menuList"
+                :props="{ children: 'children', label: 'label' }"
                 show-checkbox
                 default-expand-all
                 node-key="id"
                 ref="tree"
-                @check="handleCheck"></el-tree>
+                @check="(node, checked) => { rights = checked.checkedKeys }"></el-tree>
             </div>
 
             <span slot="footer" class="dialog-footer">
@@ -205,9 +211,6 @@ export default {
         }
     },
     methods: {
-        handleCheck(node, checked) {
-            this.rights = checked.checkedKeys
-        },
         sortChange: function(column) {
             if (this.sort !== column.prop || this.order !== column.order) {
                 this.sort = column.prop;
@@ -219,10 +222,6 @@ export default {
             let column = Object.keys(f)[0];
             this.filters[column] = Object.values(f[column]);
             this.refreshData();
-        },
-        goToPage: function(p) {
-            this.page = p;
-            this.requestData();
         },
         save() {
             this.formModel.rights = this.rights.map(r => {
@@ -290,6 +289,9 @@ export default {
             this.error = {}
             this.formErrors = {}
             this.formModel = {
+                role: 0,
+                status: 1,
+                allow_approve_kategori: false,
                 rights: []
             }
             this.showForm = true

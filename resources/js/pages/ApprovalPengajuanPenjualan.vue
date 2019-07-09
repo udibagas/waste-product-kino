@@ -2,7 +2,7 @@
     <el-card>
         <h4>Approval Pengajuan Penjualan</h4>
         <hr>
-        <div class="panel" v-loading="submitting">
+        <div class="panel" v-if="!!data.id" v-loading="submitting">
             <table>
                 <tbody>
                     <tr><th class="label">No. Pengajuan</th><td>: {{data.no_aju}}</td></tr>
@@ -93,7 +93,7 @@ export default {
             }).catch(() => {})
         }
     },
-    mounted() {
+    created() {
         this.requestData()
     }
 }

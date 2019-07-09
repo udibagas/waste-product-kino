@@ -50,8 +50,8 @@
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
                             <el-dropdown-item @click.native.prevent="deleteData(scope.row.id)"><i class="el-icon-delete"></i> Hapus</el-dropdown-item>
-                            <el-dropdown-item v-if="scope.row.status != 2" @click.native.prevent="approve(scope.row, 2)"><i class="el-icon-check"></i> Approve</el-dropdown-item>
-                            <el-dropdown-item v-if="scope.row.status != 3" @click.native.prevent="approve(scope.row, 3)"><i class="el-icon-close"></i> Reject</el-dropdown-item>
+                            <el-dropdown-item v-if="scope.row.status != 2 && (user.allow_approve_kategori || user.role == 1)" @click.native.prevent="approve(scope.row, 2)"><i class="el-icon-check"></i> Approve</el-dropdown-item>
+                            <el-dropdown-item v-if="scope.row.status != 3 && (user.allow_approve_kategori || user.role == 1)" @click.native.prevent="approve(scope.row, 3)"><i class="el-icon-close"></i> Reject</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </template>
@@ -131,6 +131,7 @@ export default {
     },
     data: function() {
         return {
+            user: USER,
             statuses: [
                 {type: 'info', label: 'Draft'},
                 {type: 'warning', label: 'Updated'},

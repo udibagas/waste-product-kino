@@ -347,6 +347,7 @@ export default {
             let keyword = this.materialKeyword.toLowerCase();
             return this.materials
                 .filter(m => m.stock > 0 && (m.material.toLowerCase().includes(keyword) || m.material_description.toLowerCase().includes(keyword)))
+                .filter(m => this.formModel.items_wp.findIndex(i => i.material == m.material) == -1)
         }
     },
     data: function() {
@@ -373,6 +374,8 @@ export default {
                 {type: 'info', label: 'Draft'},
                 {type: 'warning', label: 'Submitted'},
                 {type: 'success', label: 'Approved'},
+                {type: 'danger', label: 'Rejected', value: 3},
+                {type: '', label: 'Processed', value: 4},
             ],
             approval_statuses: [
                 {type: 'info', label: 'Pending', value: 0},

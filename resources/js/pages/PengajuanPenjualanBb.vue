@@ -283,6 +283,7 @@ export default {
             let keyword = this.categoryKeyword.toLowerCase();
             return this.stock
                 .filter(m => m.stock > 0 && (m.kategori.nama.toLowerCase().includes(keyword) || m.kategori.kode.toLowerCase().includes(keyword)))
+                .filter(m => this.formModel.items_bb.findIndex(i => i.kategori_barang_id == m.kategori_barang_id) == -1)
         }
     },
     watch: {
