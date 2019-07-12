@@ -3,7 +3,7 @@
 <br>
 
 <p>
-    Pengajuan penjualan Anda dengan detail sebagai berikut telah disetujui:
+    Pengajuan penjualan Anda dengan detail sebagai berikut tidak disetujui:
 </p>
 
 @component('mail::panel')
@@ -48,12 +48,12 @@
 |Kategori | Jumlah | Berat |
 | :--- | ---: | ---: |
 @foreach ($pengajuanPenjualan->itemsBb as $item)
-| {{$item->kategori->jenis}} : {{$item->kategori->kode}} - {{$item->kategori->nama}} | {{$item->jumlah}} {{$item->eun}} | {{$item->timbangan_manual}} KG |
+| {{$item->kategori->jenis}} : {{$item->kategori->kode}} - {{$item->kategori->nama}} | {{number_format($item->jumlah)}} {{$item->eun}} | {{number_format($item->timbangan_manual)}} KG |
 @endforeach
 @endcomponent
 
 @component('mail::button', ['url' => config('app.url') . '/app/pengajuanPenjualanBb/', 'color' => 'success'])
-KLIK DI SINI UNTUK PROSES LEBIH LANJUT
+KLIK DI SINI UNTUK MELAKUKAN PENGAJUAN KEMBALI
 @endcomponent
 @endif
 
@@ -67,7 +67,7 @@ KLIK DI SINI UNTUK PROSES LEBIH LANJUT
 @endcomponent
 
 @component('mail::button', ['url' => config('app.url') . '/app/pengajuanPenjualanWp/', 'color' => 'success'])
-KLIK DI SINI UNTUK PROSES LEBIH LANJUT
+KLIK DI SINI UNTUK MELAKUKAN PENGAJUAN KEMBALI
 @endcomponent
 @endif
 

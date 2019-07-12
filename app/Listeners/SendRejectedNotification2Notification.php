@@ -5,6 +5,8 @@ namespace App\Listeners;
 use App\Events\PengajuanPenjualanRejected2;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\RejectionNotification;
 
 class SendRejectedNotification2Notification
 {
@@ -26,6 +28,8 @@ class SendRejectedNotification2Notification
      */
     public function handle(PengajuanPenjualanRejected2 $event)
     {
-        //
+        Mail::to($event->pengajuanPenjualan->user->email)
+            ->cc('bagas@lamsolusi.com')
+            ->queue(new RejectionNotification($event->pengajuanPenjualan));
     }
 }

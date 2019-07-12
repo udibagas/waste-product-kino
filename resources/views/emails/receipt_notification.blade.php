@@ -1,5 +1,5 @@
 @component('mail::message')
-Dear, {{ $penerimaan->pengeluaran->user->name }},
+Dear {{ $penerimaan->pengeluaran->user->name }},
 
 Pengeluaran barang bekas dengan nomor {{ $penerimaan->no_sj_keluar }} telah diterima dengan detail sebagai berikut:
 
@@ -39,7 +39,7 @@ Pengeluaran barang bekas dengan nomor {{ $penerimaan->no_sj_keluar }} telah dite
 |Kategori | Jumlah Kirim | Jumlah Terima | Selisih Jumlah | Timbangan Kirim | Timbangan Terima | Selisih Timbangan | Keterangan |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 @foreach ($penerimaan->items as $i)
-| {{$i->barang->jenis}} : {{$i->barang->kode}} - {{$i->barang->nama}} | {{$i->qty_kirim}} | {{$i->qty_terima}} | {{$i->qty_terima - $i->qty_kirim}} | {{$i->timbangan_manual_kirim}} kg | {{$i->timbangan_manual_terima}} kg | {{$i->timbangan_manual_terima - $i->timbangan_manual_kirim}} kg | {{$i->keterangan}} |
+| {{$i->barang->jenis}} : {{$i->barang->kode}} - {{$i->barang->nama}} | {{number_format($i->qty_kirim)}} | {{number_format($i->qty_terima)}} | {{number_format($i->qty_terima - $i->qty_kirim)}} | {{number_format($i->timbangan_manual_kirim)}} kg | {{number_format($i->timbangan_manual_terima)}} kg | {{number_format($i->timbangan_manual_terima - $i->timbangan_manual_kirim)}} kg | {{$i->keterangan}} |
 @endforeach
 @endcomponent
 

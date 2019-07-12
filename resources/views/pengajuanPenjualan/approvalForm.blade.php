@@ -55,11 +55,11 @@
                                     <th>Approval 1</th>
                                     <td>:
                                         @if ($data->approval1_status == 0)
-                                        <span class="badge badge-default">Pending</span>
+                                        <span>Pending</span>
                                         @elseif ($data->approval1_status == 1)
-                                        <span class="badge badge-success">Approved</span>
+                                        <span>Approved</span>
                                         @elseif ($data->approval1_status == 2)
-                                        <span class="badge badge-danger">Rejected</span>
+                                        <span>Rejected</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -67,11 +67,11 @@
                                     <th>Approval 2</th>
                                     <td>:
                                         @if ($data->approval2_status == 0)
-                                        <span class="badge badge-default">Pending</span>
+                                        <span>Pending</span>
                                         @elseif ($data->approval2_status == 1)
-                                        <span class="badge badge-success">Approved</span>
+                                        <span>Approved</span>
                                         @elseif ($data->approval2_status == 2)
-                                        <span class="badge badge-danger">Rejected</span>
+                                        <span>Rejected</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -79,6 +79,7 @@
                         </table>
                     </div>
 
+                    @if ($data->jenis == "BB")
                     <div class="table-responsive">
                         <table class="table table-sm table-bordered">
                             <thead>
@@ -112,6 +113,34 @@
                             </tbody>
                         </table>
                     </div>
+                    @endif
+
+                    @if ($data->jenis == "WP")
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th class="text-center">Material</th>
+                                <th class="text-center">Material Description</th>
+                                <th class="text-center">Berat</th>
+                                <th class="text-center">Price Per Unit</th>
+                                <th class="text-center">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($data->itemsWp as $index => $item)
+                            <tr>
+                                <td>{{$index+1}}.</td>
+                                <td>{{$item->material_id}}</td>
+                                <td>{{$item->material_description}}</td>
+                                <td class="text-right">{{number_format($item->berat, 4)}} KG</td>
+                                <td class="text-right">Rp {{number_format($item->price_per_unit, 0)}}</td>
+                                <td class="text-right">Rp {{number_format($item->value, 0)}}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    @endif
 
                     <div v-show="!approval_success">
                         <textarea rows="3" v-model="note" class="form-control" placeholder="Note"></textarea>
@@ -144,17 +173,13 @@
                     if (!confirm('Anda yakin?')) return;
 
                     let data = {
-                        level: {
-                            {
-                                request('level')
-                            }
-                        },
+                        level: {{ request('level') }},
                         status: status,
                         note: this.note
                     }
                     axios.put('{{ url("/pengajuanPenjualan/".$data->id."/approve") }}', data).then(r => {
-                        alert('Approval berhasil');
                         this.approval_success = true
+                        alert('Approval berhasil');
                     }).catch(e => {
                         alert('Approval gagal. ' + e.response.data.message);
                     })

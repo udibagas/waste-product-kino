@@ -48,17 +48,34 @@
 </table>
 @endcomponent
 
+
+@if ($pengajuanPenjualan->jenis == 'BB')
 @component('mail::table')
-|Kategori | Jumlah | Timbangan (kg) | Unit |
-| :--- | :---: | :---: | :---: |
+|Kategori | Jumlah | Berat |
+| :--- | ---: | ---: |
 @foreach ($pengajuanPenjualan->itemsBb as $item)
-| {{$item->kategori->jenis}} : {{$item->kategori->kode}} - {{$item->kategori->nama}} | {{$item->jumlah}} | {{$item->timbangan_manual}} | {{$item->eun}} |
+| {{$item->kategori->jenis}} : {{$item->kategori->kode}} - {{$item->kategori->nama}} | {{$item->jumlah}} {{$item->eun}} | {{$item->timbangan_manual}} KG |
 @endforeach
 @endcomponent
 
 @component('mail::button', ['url' => config('app.url') . '/pengajuanPenjualan/'. $pengajuanPenjualan->id . '/approvalForm?level=' .$level . '&api_token=' . $user->api_token, 'color' => 'success'])
 KLIK DI SINI UNTUK APPROVAL
 @endcomponent
+@endif
+
+@if ($pengajuanPenjualan->jenis == 'WP')
+@component('mail::table')
+|Material ID | Material Description | Berat | Price per Unit | Value
+| :--- | :--- | ---: | ---: | ---: |
+@foreach ($pengajuanPenjualan->itemsWp as $item)
+| {{$item->material_id}} | {{$item->material_description}} | {{number_format($item->berat)}} KG | Rp {{number_format($item->price_per_unit, 0)}} | Rp {{number_format($item->value, 0)}} |
+@endforeach
+@endcomponent
+
+@component('mail::button', ['url' => config('app.url') . '/pengajuanPenjualan/'. $pengajuanPenjualan->id . '/approvalForm?level=' .$level . '&api_token=' . $user->api_token, 'color' => 'success'])
+KLIK DI SINI UNTUK APPROVAL
+@endcomponent
+@endif
 
 Terimakasih,<br>
 {{ config('app.name') }}

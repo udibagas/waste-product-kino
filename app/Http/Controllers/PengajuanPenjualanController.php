@@ -82,7 +82,7 @@ class PengajuanPenjualanController extends Controller
                     'material_id' => $i['material'],
                     'material_description' => $i['material_description'],
                     'divisi' => '-',
-                    'unit' => $i['bun'],
+                    'unit' => '-',
                     'qty_reject' => 0,
                     'price_per_unit' => $i['price_per_unit'],
                     'value' => (int) ((float) $i['diajukan'] * (int) $i['price_per_unit']),
