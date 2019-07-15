@@ -9,8 +9,9 @@ use App\InOutStockBb;
 use App\StockBb;
 use DB;
 use App\PengajuanPenjualan;
+use App\StockWp;
 
-class UpdateStockBbPenjualan
+class UpdateStockPenjualan
 {
     /**
      * Create the event listener.
@@ -37,7 +38,7 @@ class UpdateStockBbPenjualan
 
         if ($event->penjualan->jenis == 'BB')
         {
-            foreach ($event->penjualan->itemsBb as $item) 
+            foreach ($event->penjualan->itemsBb as $item)
             {
                 InOutStockBb::create([
                     'tanggal' => $event->penjualan->tanggal,
@@ -74,12 +75,18 @@ class UpdateStockBbPenjualan
             }
         }
 
-        // if ($event->penjualan->jenis == 'WP')
-        // {
-        //     foreach($event->penjualan->itemsWp as $item)
-        //     {
+        if ($event->penjualan->jenis == 'WP')
+        {
+            foreach($event->penjualan->itemsWp as $item)
+            {
+                $stock = StockWp::where('plant', $event->penjualan->location->plant)
+                    ->where('material', $item->material_id)->first();
 
-        //     }
-        // }
+                if ($stock) {
+                    $stock->stock = $stock->stock - $item->berat;
+                    $stock->save();
+                }
+            }
+        }
     }
 }

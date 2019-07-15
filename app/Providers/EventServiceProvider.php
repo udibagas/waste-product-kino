@@ -26,7 +26,7 @@ class EventServiceProvider extends ServiceProvider
             'App\Listeners\SendReceivedConfirmationNotification'
         ],
         'App\Events\PenjualanSubmitted' => [
-            'App\Listeners\UpdateStockBbPenjualan'
+            'App\Listeners\UpdateStockPenjualan'
         ],
         'App\Events\PengajuanPenjualanSubmitted' => [
             'App\Listeners\SendApprovalRequest1Notification'

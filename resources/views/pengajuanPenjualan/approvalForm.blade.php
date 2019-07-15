@@ -142,7 +142,7 @@
                     </table>
                     @endif
 
-                    <div v-show="!approval_success">
+                    <div v-show="!approval_success && !busy">
                         <textarea rows="3" v-model="note" class="form-control" placeholder="Note"></textarea>
                         <br>
                         <button @click.prevent="approve(1)" class="btn btn-success btn-lg">APPROVE</button>
@@ -151,6 +151,10 @@
 
                     <div v-if="approval_success">
                         <h3 class="text-center">Approval berhasil.</h3>
+                    </div>
+
+                    <div v-if="busy">
+                        <h3 class="text-center">Mohon Tunggu...</h3>
                     </div>
                 </div>
             </div>
@@ -161,7 +165,8 @@
             el: '#app',
             data: {
                 note: '',
-                approval_success: false
+                approval_success: false,
+                busy: false
             },
             methods: {
                 approve(status) {
@@ -177,11 +182,14 @@
                         status: status,
                         note: this.note
                     }
+                    this.busy = true
                     axios.put('{{ url("/pengajuanPenjualan/".$data->id."/approve") }}', data).then(r => {
                         this.approval_success = true
-                        alert('Approval berhasil');
+                        // alert('Approval berhasil');
                     }).catch(e => {
                         alert('Approval gagal. ' + e.response.data.message);
+                    }).finally(() => {
+                        this.busy = false
                     })
                 }
             }
