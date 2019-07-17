@@ -27,6 +27,7 @@ class Penjualan extends Model
         'pembeli_id' => 'integer',
         'user_id' => 'integer',
         'location_id' => 'integer',
+        'status' => 'integer'
     ];
 
     protected $with = ['itemsBb', 'itemsWp', 'location', 'pembeli', 'pembayaran'];
