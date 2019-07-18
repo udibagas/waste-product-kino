@@ -1,6 +1,13 @@
 <template>
-    <el-dialog v-loading="loading" title="MY PROFILE" :visible.sync="visible" center>
-        <el-form label-width="170px">
+    <el-dialog
+    v-loading="loading"
+    title="MY PROFILE"
+    :visible.sync="visible"
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
+    width="800px"
+    :show-close="false" center>
+        <el-form label-width="150px">
             <el-row :gutter="15">
                 <el-col :span="12">
                     <el-form-item label="Name" :class="formErrors.name ? 'is-error' : ''">
@@ -56,7 +63,7 @@
 
         <span slot="footer">
             <el-button type="primary" @click="save" icon="el-icon-success">SAVE</el-button>
-            <el-button type="primary" @click="$emit('close-profile')" icon="el-icon-success">SAVE</el-button>
+            <el-button type="info" @click="$emit('close-profile-dialog')" icon="el-icon-error">CLOSE</el-button>
         </span>
     </el-dialog>
 </template>
@@ -80,35 +87,36 @@ export default {
             }).then(() => {
                 this.loading = true
                 axios.put('/user/' + this.formModel.id, this.formModel).then(r => {
-                    this.loading = false
                     this.$message({
                         message: 'Data berhasil diupdate',
                         type: 'success',
                         showClose: true
                     })
+                    this.$emit('close-profile-dialog')
                     this.getData()
                 }).catch(e => {
-                    this.loading = false
                     this.$message({
                         message: 'Data gagal diupdate. ' + e.response.data.message,
                         type: 'error',
                         showClose: true
                     })
+                }).finally(() => {
+                    this.loading = false
                 })
             }).catch(e => console.log(e))
         },
         getData() {
             this.loading = true
             axios.get('/user/' + USER.id).then(r => {
-                this.loading = false
                 this.formModel = r.data
             }).catch(e => {
-                this.loading = false
                 this.$message({
                     message: 'Gagal mengambil data. ' + e.response.data.message,
                     type: 'error',
                     showClose: true
                 })
+            }).finally(() => {
+                this.loading = false
             })
         }
     },

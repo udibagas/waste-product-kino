@@ -54,6 +54,7 @@
                 <el-collapse-transition>
                     <router-view></router-view>
                 </el-collapse-transition>
+                <Profile :visible="showProfileDialog" @close-profile-dialog="showProfileDialog = false" />
             </el-main>
         </el-container>
     </el-container>
@@ -117,15 +118,18 @@ library.add(
     faBalanceScale
 )
 
+import Profile from './pages/Profile'
+
 export default {
     name: 'App',
-    components: { FontAwesomeIcon },
+    components: { FontAwesomeIcon, Profile },
     data() {
         return {
             collapse: true,
             user: USER,
             baseURL: BASE_URL,
-            menus: []
+            menus: [],
+            showProfileDialog: false
         }
     },
     methods: {
@@ -135,7 +139,7 @@ export default {
             }
 
             if(command === 'profile') {
-                this.$router.push('/profile')
+                this.showProfileDialog = true
             }
         },
         getMenu() {
@@ -145,7 +149,7 @@ export default {
         }
 
     },
-    created() {
+    mounted() {
         this.getMenu()
     }
 }
