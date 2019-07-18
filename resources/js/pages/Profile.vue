@@ -1,30 +1,28 @@
 <template>
-    <el-card v-loading="loading">
-        <h4>MY PROFILE</h4>
-        <hr>
+    <el-dialog v-loading="loading" title="MY PROFILE" :visible.sync="visible" center>
         <el-form label-width="170px">
             <el-row :gutter="15">
                 <el-col :span="12">
-                    <el-form-item label="Name">
+                    <el-form-item label="Name" :class="formErrors.name ? 'is-error' : ''">
                         <el-input placeholder="Username" v-model="formModel.name"></el-input>
                         <div class="el-form-item__error" v-if="formErrors.name">{{formErrors.name[0]}}</div>
                     </el-form-item>
 
-                    <el-form-item label="Email">
+                    <el-form-item label="Email" :class="formErrors.email ? 'is-error' : ''">
                         <el-input placeholder="Email" v-model="formModel.email"></el-input>
                         <div class="el-form-item__error" v-if="formErrors.email">{{formErrors.email[0]}}</div>
                     </el-form-item>
 
-                    <el-form-item label="No. Karyawan">
+                    <el-form-item label="No. Karyawan" :class="formErrors.no_karyawan ? 'is-error' : ''">
                         <el-input placeholder="No. Karyawan" v-model="formModel.no_karyawan"></el-input>
                         <div class="el-form-item__error" v-if="formErrors.no_karyawan">{{formErrors.no_karyawan[0]}}</div>
                     </el-form-item>
 
-                    <el-form-item label="Password">
+                    <el-form-item label="Password" :class="formErrors.password ? 'is-error' : ''">
                         <el-input type="password" placeholder="Password" v-model="formModel.password"></el-input>
                         <div class="el-form-item__error" v-if="formErrors.password">{{formErrors.password[0]}}</div>
                     </el-form-item>
-                    
+
                     <el-form-item label="Konfirmasi Password">
                         <el-input type="password" placeholder="Konfirmasi Password" v-model="formModel.password_confirmation"></el-input>
                     </el-form-item>
@@ -34,7 +32,7 @@
                     <el-form-item label="Role">
                         <el-input disabled v-model="formModel.role"></el-input>
                     </el-form-item>
-                    
+
                     <el-form-item label="Plant" v-if="formModel.location">
                         <el-input disabled placeholder="Plant" v-model="formModel.location.plant"></el-input>
                     </el-form-item>
@@ -54,16 +52,18 @@
                     </el-form-item>
                 </el-col>
             </el-row>
-            <hr>
-            <el-form-item>
-                <el-button type="primary" @click="save" icon="el-icon-success">SAVE</el-button>
-            </el-form-item>
         </el-form>
-    </el-card>
+
+        <span slot="footer">
+            <el-button type="primary" @click="save" icon="el-icon-success">SAVE</el-button>
+            <el-button type="primary" @click="$emit('close-profile')" icon="el-icon-success">SAVE</el-button>
+        </span>
+    </el-dialog>
 </template>
 
 <script>
 export default {
+    props: ['visible'],
     data() {
         return {
             formModel: USER,
@@ -79,7 +79,7 @@ export default {
                 cancelButtonText: 'Tidak'
             }).then(() => {
                 this.loading = true
-                axios.put(BASE_URL + '/user/' + this.formModel.id, this.formModel).then(r => {
+                axios.put('/user/' + this.formModel.id, this.formModel).then(r => {
                     this.loading = false
                     this.$message({
                         message: 'Data berhasil diupdate',
@@ -99,7 +99,7 @@ export default {
         },
         getData() {
             this.loading = true
-            axios.get(BASE_URL + '/user/' + USER.id).then(r => {
+            axios.get('/user/' + USER.id).then(r => {
                 this.loading = false
                 this.formModel = r.data
             }).catch(e => {
@@ -112,7 +112,7 @@ export default {
             })
         }
     },
-    created() {
+    mounted() {
         this.getData()
     }
 }

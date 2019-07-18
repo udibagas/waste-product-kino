@@ -221,7 +221,7 @@ export default {
         },
         store: function() {
             this.loading = true;
-            axios.post(BASE_URL + '/user', this.formModel)
+            axios.post('/user', this.formModel)
                 .then(r => {
                     this.loading = false;
                     this.showForm = false;
@@ -246,7 +246,7 @@ export default {
         },
         update: function() {
             this.loading = true;
-            axios.put(BASE_URL + '/user/' + this.formModel.id, this.formModel)
+            axios.put('/user/' + this.formModel.id, this.formModel)
                 .then(r => {
                     this.loading = false;
                     this.showForm = false
@@ -303,7 +303,7 @@ export default {
                 confirmButtonText: 'Ya',
                 cancelButtonText: 'Tidak'
             }).then(() => {
-                axios.delete(BASE_URL + '/user/' + id).then(r => {
+                axios.delete('/user/' + id).then(r => {
                     this.requestData();
                     this.$message({
                         message: 'User BERHASIL dihapus.',
@@ -327,7 +327,7 @@ export default {
             }
             this.loading = true;
 
-            axios.get(BASE_URL + '/user', {params: Object.assign(params, this.filters)}).then(r => {
+            axios.get('/user', {params: Object.assign(params, this.filters)}).then(r => {
                 this.loading = false;
                 this.paginatedData = r.data
             }).catch(e => {

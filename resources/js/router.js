@@ -15,10 +15,10 @@ import InOutStockBb from './pages/InOutStockBb'
 import StockBb from './pages/StockBb'
 import StockWp from './pages/StockWp'
 import ReportBb from './pages/ReportBb'
+import ReportWp from './pages/ReportWp'
 import KategoriBarang from './pages/KategoriBarang'
 import KonversiBerat from './pages/KonversiBerat'
 import ApprovalPengajuanPenjualan from './pages/ApprovalPengajuanPenjualan'
-import Profile from './pages/Profile'
 import { Message } from 'element-ui';
 
 Vue.use(VueRouter);
@@ -48,11 +48,6 @@ const routes = [
         name: 'penerimaan',
         path: '/penerimaan',
         component: Penerimaan
-    },
-    {
-        name: 'profile',
-        path: '/profile',
-        component: Profile
     },
     {
         name: 'penjualanBb',
@@ -100,6 +95,11 @@ const routes = [
         component: ReportBb
     },
     {
+        name: 'reportWp',
+        path: '/reportWp',
+        component: ReportWp
+    },
+    {
         name: 'skemaApprovalPenjualan',
         path: '/skemaApprovalPenjualan',
         component: SkemaApprovalPenjualan
@@ -134,7 +134,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
     let params = { route: to.path }
-    axios.get(BASE_URL + '/checkAuth', { params: params }).then(r => {
+    axios.get('/checkAuth', { params: params }).then(r => {
         next()
     }).catch(e => {
         Message({

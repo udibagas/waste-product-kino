@@ -51,7 +51,7 @@ export default {
     },
     methods: {
         requestData() {
-            axios.get(BASE_URL + '/pengajuanPenjualan/' + this.id).then(r => {
+            axios.get('/pengajuanPenjualan/' + this.id).then(r => {
                 this.data = r.data
             }).catch(e => {
                 this.$message({
@@ -73,7 +73,7 @@ export default {
                     level: this.params.level
                 }
 
-                axios.put(BASE_URL + '/pengajuanPenjualan/' + this.id + '/approve', data).then(r => {
+                axios.put('/pengajuanPenjualan/' + this.id + '/approve', data).then(r => {
                     this.submitting = false
                     this.submitted = true
                     this.requestData()

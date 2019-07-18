@@ -32,9 +32,10 @@
                     {{ scope.row.tanggal | readableDate }}
                 </template>
             </el-table-column>
-            <el-table-column prop="no_sj_keluar" label="No. Surat Jalan" sortable="custom"></el-table-column>
+            <el-table-column prop="no_sj_keluar" min-width="120" label="No. Surat Jalan" sortable="custom"></el-table-column>
 
             <el-table-column
+            min-width="120"
             prop="lokasi_asal"
             label="Lokasi Asal"
             sortable="custom"
@@ -43,6 +44,7 @@
             </el-table-column>
 
             <el-table-column
+            min-width="120"
             prop="lokasi_terima"
             label="Lokasi Terima"
             sortable="custom"
@@ -50,9 +52,9 @@
             :filters="$store.state.locationList.map(l => { return {value: l.id, text: l.plant + ' - ' + l.name } })" >
             </el-table-column>
 
-            <el-table-column prop="penerima" label="Penerima" sortable="custom"></el-table-column>
+            <el-table-column prop="penerima" min-width="150" label="Penerima" sortable="custom"></el-table-column>
 
-            <el-table-column prop="keterangan" label="Keterangan" sortable="custom"></el-table-column>
+            <el-table-column prop="keterangan" min-width="100" label="Keterangan" sortable="custom"></el-table-column>
 
             <el-table-column
             prop="status"
@@ -300,7 +302,7 @@ export default {
         },
         store: function() {
             this.loading = true;
-            axios.post(BASE_URL + '/penerimaan', this.formModel).then(r => {
+            axios.post('/penerimaan', this.formModel).then(r => {
                 this.loading = false;
                 this.showForm = false;
                 this.$message({
@@ -323,7 +325,7 @@ export default {
         },
         update: function() {
             this.loading = true;
-            axios.put(BASE_URL + '/penerimaan/' + this.formModel.id, this.formModel).then(r => {
+            axios.put('/penerimaan/' + this.formModel.id, this.formModel).then(r => {
                 this.loading = false;
                 this.showForm = false
                 this.$message({
@@ -370,7 +372,7 @@ export default {
                 confirmButtonText: 'Ya',
                 cancelButtonText: 'Tidak'
             }).then(() => {
-                axios.delete(BASE_URL + '/penerimaan/' + id).then(r => {
+                axios.delete('/penerimaan/' + id).then(r => {
                     this.requestData();
                     this.$message({
                         message: 'Data BERHASIL dihapus.',
@@ -394,7 +396,7 @@ export default {
             }
             this.loading = true;
 
-            axios.get(BASE_URL + '/penerimaan', {params: Object.assign(params, this.filters)})
+            axios.get('/penerimaan', {params: Object.assign(params, this.filters)})
                 .then(r => {
                     this.loading = false;
                     this.paginatedData = r.data

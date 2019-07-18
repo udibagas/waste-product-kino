@@ -156,7 +156,7 @@ export default {
         },
         store: function() {
             this.loading = true;
-            axios.post(BASE_URL + '/skemaApprovalPenjualan', this.formModel)
+            axios.post('/skemaApprovalPenjualan', this.formModel)
                 .then(r => {
                     this.loading = false;
                     this.showForm = false;
@@ -181,7 +181,7 @@ export default {
         },
         update: function() {
             this.loading = true;
-            axios.put(BASE_URL + '/skemaApprovalPenjualan/' + this.formModel.id, this.formModel)
+            axios.put('/skemaApprovalPenjualan/' + this.formModel.id, this.formModel)
                 .then(r => {
                     this.loading = false;
                     this.showForm = false
@@ -224,7 +224,7 @@ export default {
                 confirmButtonText: 'Ya',
                 cancelButtonText: 'Tidak'
             }).then(() => {
-                axios.delete(BASE_URL + '/skemaApprovalPenjualan/' + id).then(r => { this.requestData();
+                axios.delete('/skemaApprovalPenjualan/' + id).then(r => { this.requestData();
                     this.$message({
                         message: 'Data BERHASIL dihapus.',
                         type: 'success'
@@ -247,7 +247,7 @@ export default {
             }
             this.loading = true;
 
-            axios.get(BASE_URL + '/skemaApprovalPenjualan', {params: Object.assign(params, this.filters)})
+            axios.get('/skemaApprovalPenjualan', {params: Object.assign(params, this.filters)})
                 .then(r => {
                     this.loading = false;
                     this.paginatedData = r.data

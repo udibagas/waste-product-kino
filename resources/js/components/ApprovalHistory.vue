@@ -40,7 +40,7 @@ export default {
     },
     methods: {
         getApprovalHistory() {
-            axios.get(BASE_URL + '/pengajuanPenjualan/' + this.pengajuan + '/getApprovalHistory').then(r => {
+            axios.get('/pengajuanPenjualan/' + this.pengajuan + '/getApprovalHistory').then(r => {
                 this.approval_histories = r.data
             }).then(e => console.log(e))
         }

@@ -267,7 +267,7 @@ export default {
             if (v) {
                 this.formModel.lokasi_asal = this.$store.state.locationList.find(l => l.id == v).name;
                 let params = { location_id: v }
-                axios.get(BASE_URL + '/stockBb/getStockList', { params: params }).then(r => {
+                axios.get('/stockBb/getStockList', { params: params }).then(r => {
                     this.stock = r.data
                 }).catch(e => console.log(e))
             }
@@ -356,7 +356,7 @@ export default {
                 confirmButtonText: 'Ya',
                 cancelButtonText: 'Tidak'
             }).then(() => {
-                axios.delete(BASE_URL + '/pengeluaranItem/' + this.formModel.items[index].id)
+                axios.delete('/pengeluaranItem/' + this.formModel.items[index].id)
                 .then(r => {
                     this.$message({ message: 'Item berhasil dihapus', showClose: true, type: 'success' });
                     this.formModel.items.splice(index, 1);
@@ -415,7 +415,7 @@ export default {
         },
         store: function() {
             this.loading = true;
-            axios.post(BASE_URL + '/pengeluaran', this.formModel)
+            axios.post('/pengeluaran', this.formModel)
                 .then(r => {
                     this.loading = false;
                     this.showForm = false;
@@ -440,7 +440,7 @@ export default {
         },
         update: function() {
             this.loading = true;
-            axios.put(BASE_URL + '/pengeluaran/' + this.formModel.id, this.formModel).then(r => {
+            axios.put('/pengeluaran/' + this.formModel.id, this.formModel).then(r => {
                 this.loading = false;
                 this.showForm = false
                 this.$message({
@@ -473,7 +473,7 @@ export default {
                 items: []
             }
 
-            axios.get(BASE_URL + '/pengeluaran/getLastRecord', {
+            axios.get('/pengeluaran/getLastRecord', {
                 params: { tahun: moment().format('YYYY')}
             }).then(r => {
                 if (r.data) {
@@ -501,11 +501,11 @@ export default {
             this.formErrors = {}
 
             let params = { location_id: this.formModel.lokasi_asal_id }
-            axios.get(BASE_URL + '/stockBb/getStockList', { params: params }).then(r => {
+            axios.get('/stockBb/getStockList', { params: params }).then(r => {
                 this.stock = r.data
             }).catch(e => console.log(e))
 
-            axios.get(BASE_URL + '/stockBb/getStockList').then(r => {
+            axios.get('/stockBb/getStockList').then(r => {
                 this.formModel.items.forEach(i => {
                     let stock = r.data.find(d => d.kategori_barang_id == i.kategori_barang_id && d.location_id == this.formModel.lokasi_asal_id)
                     if (stock) {
@@ -533,7 +533,7 @@ export default {
                 confirmButtonText: 'Ya',
                 cancelButtonText: 'Tidak'
             }).then(() => {
-                axios.delete(BASE_URL + '/pengeluaran/' + id).then(r => {
+                axios.delete('/pengeluaran/' + id).then(r => {
                     this.requestData();
                     this.$message({
                         message: 'Data BERHASIL dihapus.',
@@ -557,7 +557,7 @@ export default {
             }
             this.loading = true;
 
-            axios.get(BASE_URL + '/pengeluaran', {params: Object.assign(params, this.filters)})
+            axios.get('/pengeluaran', {params: Object.assign(params, this.filters)})
                 .then(r => {
                     this.loading = false;
                     this.paginatedData = r.data

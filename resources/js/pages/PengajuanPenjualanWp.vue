@@ -392,7 +392,7 @@ export default {
                 mvt_type: this.formModel.mvt_type,
                 sloc: this.formModel.sloc
             }
-            axios.get(BASE_URL + '/stockWp/getList', { params: params }).then(r => {
+            axios.get('/stockWp/getList', { params: params }).then(r => {
                 this.materials = r.data
                 this.showMaterialList = true
             }).catch(e => console.log(e))
@@ -441,7 +441,7 @@ export default {
                 return;
             }
 
-            axios.put(BASE_URL + '/pengajuanPenjualan/' + data.id + '/approve', approval_data).then(r => {
+            axios.put('/pengajuanPenjualan/' + data.id + '/approve', approval_data).then(r => {
                 this.requestData();
                 this.$message({
                     message: 'Approval berhasil.',
@@ -482,7 +482,7 @@ export default {
                 confirmButtonText: 'Ya',
                 cancelButtonText: 'Tidak'
             }).then(() => {
-                axios.delete(BASE_URL + '/pengajuanPenjualanItemWp/' + items[index].id).then(r => {
+                axios.delete('/pengajuanPenjualanItemWp/' + items[index].id).then(r => {
                     this.$message({ message: 'Item berhasil dihapus', showClose: true, type: 'success' });
                     items.splice(index, 1);
                     this.requestData()
@@ -531,7 +531,7 @@ export default {
         },
         store: function() {
             this.loading = true;
-            axios.post(BASE_URL + '/pengajuanPenjualan', this.formModel).then(r => {
+            axios.post('/pengajuanPenjualan', this.formModel).then(r => {
                 this.loading = false;
                 this.showForm = false;
                 this.$message({
@@ -555,7 +555,7 @@ export default {
         },
         update: function() {
             this.loading = true;
-            axios.put(BASE_URL + '/pengajuanPenjualan/' + this.formModel.id, this.formModel).then(r => {
+            axios.put('/pengajuanPenjualan/' + this.formModel.id, this.formModel).then(r => {
                 this.loading = false;
                 this.showForm = false
                 this.$message({
@@ -589,7 +589,7 @@ export default {
                 items_wp: []
             }
 
-            axios.get(BASE_URL + '/pengajuanPenjualan/getLastRecord', {
+            axios.get('/pengajuanPenjualan/getLastRecord', {
                 params: { tahun: moment().format('YYYY')}
             }).then(r => {
                 if (r.data) {
@@ -631,7 +631,7 @@ export default {
                 confirmButtonText: 'Ya',
                 cancelButtonText: 'Tidak'
             }).then(() => {
-                axios.delete(BASE_URL + '/pengajuanPenjualan/' + id).then(r => {
+                axios.delete('/pengajuanPenjualan/' + id).then(r => {
                     this.requestData();
                     this.$message({
                         message: 'Data BERHASIL dihapus.',
@@ -659,7 +659,7 @@ export default {
 
             this.loading = true;
 
-            axios.get(BASE_URL + '/pengajuanPenjualan', {params: Object.assign(params, this.filters)}).then(r => {
+            axios.get('/pengajuanPenjualan', {params: Object.assign(params, this.filters)}).then(r => {
                 this.loading = false;
                 this.paginatedData = r.data
             }).catch(e => {

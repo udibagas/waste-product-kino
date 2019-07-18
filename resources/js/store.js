@@ -25,61 +25,61 @@ export default new Vuex.Store({
     mutations: {
         getKategoriBarangList(state) {
             axios
-                .get(BASE_URL + "/kategoriBarang/getList")
+                .get("/kategoriBarang/getList")
                 .then(r => (state.kategoriBarangList = r.data))
                 .catch(e => console.log(e));
         },
         getPengeluaranList(state) {
             axios
-                .get(BASE_URL + "/pengeluaran/getList")
+                .get("/pengeluaran/getList")
                 .then(r => (state.pengeluaranList = r.data))
                 .catch(e => console.log(e));
         },
         getLocationList(state) {
             axios
-                .get(BASE_URL + "/location/getList")
+                .get("/location/getList")
                 .then(r => (state.locationList = r.data))
                 .catch(e => console.log(e));
         },
         getUserList(state) {
             axios
-                .get(BASE_URL + "/user/getList")
+                .get("/user/getList")
                 .then(r => (state.userList = r.data))
                 .catch(e => console.log(e));
         },
         getPembeliList(state) {
             axios
-                .get(BASE_URL + "/pembeli/getList")
+                .get("/pembeli/getList")
                 .then(r => (state.pembeliList = r.data))
                 .catch(e => console.log(e));
         },
         getPengajuanPenjualanList(state, jenis) {
             axios
-                .get(BASE_URL + "/pengajuanPenjualan/getList", { params: { jenis: jenis }})
+                .get("/pengajuanPenjualan/getList", { params: { jenis: jenis }})
                 .then(r => (state.pengajuanPenjualanList = r.data))
                 .catch(e => console.log(e));
         },
         getMenuList(state) {
             axios
-                .get(BASE_URL + "/navigation")
+                .get("/navigation")
                 .then(r => (state.menuList = r.data))
                 .catch(e => console.log(e));
         },
         getSlocList(state) {
             axios
-                .get(BASE_URL + "/getSlocList")
+                .get("/getSlocList")
                 .then(r => (state.slocList = r.data))
                 .catch(e => console.log(e));
         },
         getMvtList(state) {
             axios
-                .get(BASE_URL + "/getMvtList")
+                .get("/getMvtList")
                 .then(r => (state.mvtList = r.data))
                 .catch(e => console.log(e));
         },
         getMatList(state) {
             axios
-                .get(BASE_URL + "/getMatList")
+                .get("/getMatList")
                 .then(r => (state.matList = r.data))
                 .catch(e => console.log(e));
         }

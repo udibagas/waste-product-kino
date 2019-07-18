@@ -348,7 +348,7 @@ export default {
     },
     methods: {
         printSlipJual(id) {
-            window.open(BASE_URL + '/penjualan/' + id + '/printSlip', '_blank')
+            window.open('/penjualan/' + id + '/printSlip', '_blank')
         },
         inputPembayaran(data) {
             this.formModelPembayaran = data
@@ -387,7 +387,7 @@ export default {
         },
         store: function() {
             this.loading = true;
-            axios.post(BASE_URL + '/penjualan', this.formModel).then(r => {
+            axios.post('/penjualan', this.formModel).then(r => {
                 this.loading = false;
                 this.showForm = false;
                 this.$message({
@@ -410,7 +410,7 @@ export default {
         },
         update: function() {
             this.loading = true;
-            axios.put(BASE_URL + '/penjualan/' + this.formModel.id, this.formModel).then(r => {
+            axios.put('/penjualan/' + this.formModel.id, this.formModel).then(r => {
                 this.loading = false;
                 this.showForm = false
                 this.$message({
@@ -444,7 +444,7 @@ export default {
                 items_wp: []
             }
 
-            axios.get(BASE_URL + '/penjualan/getLastRecord', {
+            axios.get('/penjualan/getLastRecord', {
                 params: { tahun: moment().format('YYYY')}
             }).then(r => {
                 if (r.data) {
@@ -474,7 +474,7 @@ export default {
                 confirmButtonText: 'Ya',
                 cancelButtonText: 'Tidak'
             }).then(() => {
-                axios.delete(BASE_URL + '/penjualan/' + id).then(r => {
+                axios.delete('/penjualan/' + id).then(r => {
                     this.requestData();
                     this.$message({
                         message: 'Data BERHASIL dihapus.',
@@ -500,7 +500,7 @@ export default {
 
             this.loading = true;
 
-            axios.get(BASE_URL + '/penjualan', {params: Object.assign(params, this.filters)}).then(r => {
+            axios.get('/penjualan', {params: Object.assign(params, this.filters)}).then(r => {
                 this.loading = false;
                 this.paginatedData = r.data
             }).catch(e => {

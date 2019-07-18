@@ -145,7 +145,7 @@ export default {
             }
             this.loading = true;
 
-            axios.get(BASE_URL + '/inOutStockBb', {params: Object.assign(params, this.filters)})
+            axios.get('/inOutStockBb', {params: Object.assign(params, this.filters)})
                 .then(r => {
                     this.loading = false;
                     this.paginatedData = r.data

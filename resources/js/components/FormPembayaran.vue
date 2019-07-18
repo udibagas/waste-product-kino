@@ -96,7 +96,7 @@ export default {
             }
             this.$confirm('Anda yakin?', 'Confirm').then(() => {
                 this.formModel.penjualan_id = this.penjualan.id
-                axios.post(BASE_URL + '/pembayaran', this.formModel).then(r => {
+                axios.post('/pembayaran', this.formModel).then(r => {
                     this.formModel.value = ''
                     this.$emit('close-form');
                     this.$emit('reload-data');

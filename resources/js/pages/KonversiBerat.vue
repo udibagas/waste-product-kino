@@ -96,7 +96,7 @@ export default {
                 elem.scrollTop = elem.scrollHeight;
             }, 1000)
 
-            axios.post(BASE_URL + '/konversiBerat', { rows: data }).then(r => {
+            axios.post('/konversiBerat', { rows: data }).then(r => {
                 this.logs.push('<br>')
                 this.logs.push(r.data);
                 this.requestData()
@@ -180,7 +180,7 @@ export default {
             }
             this.loading = true;
 
-            axios.get(BASE_URL + '/konversiBerat', { params: params }).then(r => {
+            axios.get('/konversiBerat', { params: params }).then(r => {
                 this.loading = false;
                 this.paginatedData = r.data
             }).catch(e => {

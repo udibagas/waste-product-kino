@@ -111,7 +111,7 @@ export default {
             }
             this.loading = true;
 
-            axios.get(BASE_URL + '/stockBb', {params: Object.assign(params, this.filters)}).then(r => {
+            axios.get('/stockBb', {params: Object.assign(params, this.filters)}).then(r => {
                 this.loading = false;
                 this.paginatedData = r.data
             }).catch(e => {

@@ -5,7 +5,7 @@
 
         <el-form :inline="true" class="form-right">
             <el-form-item>
-                <el-select v-model="location_id" style="width:100%" placeholder="Lokasi">
+                <el-select @change="requestData" v-model="location_id" style="width:100%" placeholder="Lokasi">
                     <el-option
                     v-for="item in $store.state.locationList"
                     :key="item.id"
@@ -16,6 +16,7 @@
             </el-form-item>
             <el-form-item>
                 <el-date-picker
+                @change="requestData"
                 v-model="dateRange"
                 value-format="yyyy-MM-dd"
                 type="daterange"
@@ -65,15 +66,7 @@ import moment from 'moment'
 import exportFromJSON from 'export-from-json'
 
 export default {
-    watch: {
-        dateRange(v, o) {
-            this.requestData()
-        },
-        location_id(v, o) {
-            this.requestData()
-        }
-    },
-    data: function() {
+    data() {
         return {
             loading: false,
             report: [],
@@ -114,7 +107,7 @@ export default {
 
             return kategori.unit
         },
-        requestData: function() {
+        requestData() {
             let params = {
                 start: this.dateRange[0],
                 end: this.dateRange[1],
@@ -123,21 +116,20 @@ export default {
 
             this.loading = true;
 
-            axios.get(BASE_URL + '/report/bb', {params: params})
-                .then(r => {
-                    this.loading = false;
+            axios.get('/report/bb', {params: params}).then(r => {
                     this.report = r.data
-                })
-                .catch(e => {
-                    this.loading = false;
-                    this.$message({
-                        message: e.response.data.message || e.response.message,
-                        type: 'error'
-                    });
-                })
+            }).catch(e => {
+                this.$message({
+                    message: e.response.data.message || e.response.message,
+                    type: 'error',
+                    showClose: true
+                });
+            }).finally(() => {
+                this.loading = false
+            })
         }
     },
-    created: function() {
+    mounted() {
         this.requestData();
         this.$store.commit('getLocationList')
         this.$store.commit('getKategoriBarangList')

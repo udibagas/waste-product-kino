@@ -171,7 +171,7 @@ export default {
         },
         store: function() {
             this.loading = true;
-            axios.post(BASE_URL + '/kategoriBarang', this.formModel)
+            axios.post('/kategoriBarang', this.formModel)
                 .then(r => {
                     this.loading = false;
                     this.showForm = false;
@@ -196,7 +196,7 @@ export default {
         },
         update: function() {
             this.loading = true;
-            axios.put(BASE_URL + '/kategoriBarang/' + this.formModel.id, this.formModel)
+            axios.put('/kategoriBarang/' + this.formModel.id, this.formModel)
                 .then(r => {
                     this.loading = false;
                     this.showForm = false
@@ -239,7 +239,7 @@ export default {
                 confirmButtonText: 'Ya',
                 cancelButtonText: 'Tidak'
             }).then(() => {
-                axios.delete(BASE_URL + '/kategoriBarang/' + id).then(r => {
+                axios.delete('/kategoriBarang/' + id).then(r => {
                     this.requestData();
                     this.$message({
                         message: 'User BERHASIL dihapus.',
@@ -263,7 +263,7 @@ export default {
             }
             this.loading = true;
 
-            axios.get(BASE_URL + '/kategoriBarang', {params: Object.assign(params, this.filters)})
+            axios.get('/kategoriBarang', {params: Object.assign(params, this.filters)})
                 .then(r => {
                     this.loading = false;
                     this.paginatedData = r.data

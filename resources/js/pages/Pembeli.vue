@@ -142,7 +142,7 @@ export default {
         },
         store: function() {
             this.loading = true;
-            axios.post(BASE_URL + '/pembeli', this.formModel)
+            axios.post('/pembeli', this.formModel)
                 .then(r => {
                     this.loading = false;
                     this.showForm = false;
@@ -167,7 +167,7 @@ export default {
         },
         update: function() {
             this.loading = true;
-            axios.put(BASE_URL + '/pembeli/' + this.formModel.id, this.formModel)
+            axios.put('/pembeli/' + this.formModel.id, this.formModel)
                 .then(r => {
                     this.loading = false;
                     this.showForm = false
@@ -207,7 +207,7 @@ export default {
         deleteData: function(id) {
             this.$confirm('Anda yakin akan menghapus user ini?')
                 .then(() => {
-                    axios.delete(BASE_URL + '/pembeli/' + id)
+                    axios.delete('/pembeli/' + id)
                         .then(r => {
                             this.requestData();
                             this.$message({
@@ -236,7 +236,7 @@ export default {
             }
             this.loading = true;
 
-            axios.get(BASE_URL + '/pembeli', {params: Object.assign(params, this.filters)})
+            axios.get('/pembeli', {params: Object.assign(params, this.filters)})
                 .then(r => {
                     this.loading = false;
                     this.paginatedData = r.data

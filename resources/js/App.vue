@@ -24,7 +24,7 @@
                 </el-col>
             </el-row>
         </el-header>
-        
+
         <el-container>
             <el-aside width="auto">
                 <el-menu
@@ -44,7 +44,7 @@
                             <span>{{m.label}}</span>
                         </template>
                         <el-menu-item v-for="(sm, ii) in m.children" :index="(i).toString() + '-' + ++ii" :key="ii" @click="$router.push(sm.url)">
-                            <font-awesome-icon :icon="sm.icon" style="margin-right:5px;"></font-awesome-icon> 
+                            <font-awesome-icon :icon="sm.icon" style="margin-right:5px;"></font-awesome-icon>
                             <span slot="title">{{sm.label}}</span>
                         </el-menu-item>
                     </el-submenu>
@@ -61,20 +61,20 @@
 
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { 
-    faHome, 
-    faUserLock, 
-    faChevronRight, 
-    faChevronLeft, 
-    faBoxes, 
-    faDatabase, 
-    faUsers, 
-    faTags, 
-    faMarker, 
-    faCogs, 
-    faRecycle, 
-    faBars, 
-    faProjectDiagram, 
+import {
+    faHome,
+    faUserLock,
+    faChevronRight,
+    faChevronLeft,
+    faBoxes,
+    faDatabase,
+    faUsers,
+    faTags,
+    faMarker,
+    faCogs,
+    faRecycle,
+    faBars,
+    faProjectDiagram,
     faBuilding,
 faCity,
 faSlidersH,
@@ -139,7 +139,7 @@ export default {
             }
         },
         getMenu() {
-            axios.get(BASE_URL + '/navigation')
+            axios.get('/navigation')
                 .then(r => this.menus = r.data)
                 .catch(e => console.log(e))
         }
