@@ -6,6 +6,7 @@
         <el-form :inline="true" class="form-right" @submit.native.prevent="() => { return }">
             <el-form-item>
                 <el-date-picker
+                @change="requestData"
                 v-model="dateRange"
                 value-format="yyyy-MM-dd"
                 type="daterange"
@@ -142,24 +143,24 @@ export default {
                 pageSize: this.pageSize,
                 sort: this.sort,
                 order: this.order,
+                range: this.dateRange
             }
-            this.loading = true;
 
-            axios.get('/inOutStockBb', {params: Object.assign(params, this.filters)})
-                .then(r => {
-                    this.loading = false;
-                    this.paginatedData = r.data
-                })
-                .catch(e => {
-                    this.loading = false;
-                    this.$message({
-                        message: e.response.data.message || e.response.message,
-                        type: 'error'
-                    });
-                })
+            this.loading = true;
+            axios.get('/inOutStockBb', {params: Object.assign(params, this.filters)}).then(r => {
+                this.paginatedData = r.data
+            }).catch(e => {
+                this.$message({
+                    message: e.response.data.message || e.response.message,
+                    type: 'error',
+                    showClose: true
+                });
+            }).finally(() => {
+                this.loading = false
+            })
         }
     },
-    created: function() {
+    mounted: function() {
         this.requestData();
         this.$store.commit('getLocationList')
         this.$store.commit('getKategoriBarangList')
