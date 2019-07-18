@@ -18,14 +18,16 @@ class ReportController extends Controller
             return [];
         }
 
-        return DB::select( "SELECT 
-                kategori_barang_id AS kategori_id, 
-                SUM(stock_in) AS stock_in, 
-                SUM(stock_out) AS stock_out 
-            FROM in_out_stock_bbs 
+        return DB::select( "SELECT
+                kategori_barang_id AS kategori_id,
+                SUM(qty_in) AS qty_in,
+                SUM(qty_out) AS qty_out,
+                SUM(stock_in) AS stock_in,
+                SUM(stock_out) AS stock_out
+            FROM in_out_stock_bbs
             WHERE tanggal BETWEEN :start AND :end
                 AND location_id = :location_id
-            GROUP BY(kategori_barang_id)", 
+            GROUP BY(kategori_barang_id)",
             [
                 ':start' => $request->start,
                 ':end' => $request->end,

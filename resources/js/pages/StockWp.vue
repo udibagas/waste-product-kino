@@ -53,7 +53,7 @@
             <el-table-column prop="posting_date" label="Posting Date" width="120" sortable="custom"></el-table-column>
             <el-table-column prop="mat_doc" label="Mat. Doc" width="100" sortable="custom"></el-table-column>
             <el-table-column prop="material" label="Material" width="170" sortable="custom"></el-table-column>
-            <el-table-column prop="material_description" min-width="350" label="Material Description" sortable="custom"></el-table-column>
+            <el-table-column prop="material_description" show-overflow-tooltip min-width="350" label="Material Description" sortable="custom"></el-table-column>
             <el-table-column
             prop="mat"
             label="Mat"

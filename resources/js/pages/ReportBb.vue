@@ -32,30 +32,45 @@
 
         <el-table :data="report" stripe v-loading="loading" style="border-top:1px solid #eee;" height="calc(100vh - 275px)">
             <el-table-column type="index" width="50"> </el-table-column>
-            <el-table-column label="Kategori Barang">
+            <el-table-column label="Kategori Barang" min-width="150px">
                 <template slot-scope="scope">
                     {{ getKategori(scope.row.kategori_id) }}
                 </template>
             </el-table-column>
-            <el-table-column prop="stock_in" width="110" label="Stock In" align="center" header-align="center">
-                <template slot-scope="scope">
-                    {{ scope.row.stock_in | formatNumber }}
-                </template>
+            <el-table-column label="Qty (pcs)" header-align="center">
+                <el-table-column prop="qty_in" min-width="100" label="IN" align="center" header-align="center">
+                    <template slot-scope="scope">
+                        {{ scope.row.qty_in | formatNumber }}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="qty_out" min-width="100" label="OUT" align="center" header-align="center">
+                    <template slot-scope="scope">
+                        {{ scope.row.qty_out | formatNumber }}
+                    </template>
+                </el-table-column>
+                <el-table-column min-width="100" label="Selisih" align="center" header-align="center">
+                    <template slot-scope="scope">
+                        {{ (scope.row.qty_in - scope.row.qty_out).toFixed(4) | formatNumber }}
+                    </template>
+                </el-table-column>
             </el-table-column>
-            <el-table-column prop="stock_out" width="110" label="Stock Out" align="center" header-align="center">
-                <template slot-scope="scope">
-                    {{ scope.row.stock_out | formatNumber }}
-                </template>
-            </el-table-column>
-            <el-table-column width="100" label="Unit" align="center" header-align="center">
-                <template slot-scope="scope">
-                    {{ getUnit(scope.row.kategori_id) }}
-                </template>
-            </el-table-column>
-            <el-table-column width="110" label="Selisih" align="center" header-align="center">
-                <template slot-scope="scope">
-                    {{ (scope.row.stock_in - scope.row.stock_out).toFixed(4) | formatNumber }}
-                </template>
+
+            <el-table-column label="Berat (kg)" header-align="center">
+                <el-table-column prop="stock_in" min-width="100" label="IN" align="center" header-align="center">
+                    <template slot-scope="scope">
+                        {{ scope.row.stock_in | formatNumber }}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="stock_out" min-width="100" label="OUT" align="center" header-align="center">
+                    <template slot-scope="scope">
+                        {{ scope.row.stock_out | formatNumber }}
+                    </template>
+                </el-table-column>
+                <el-table-column min-width="100" label="Selisih" align="center" header-align="center">
+                    <template slot-scope="scope">
+                        {{ (scope.row.stock_in - scope.row.stock_out).toFixed(4) | formatNumber }}
+                    </template>
+                </el-table-column>
             </el-table-column>
         </el-table>
     </el-card>
@@ -82,10 +97,12 @@ export default {
             let data = this.report.map(r => {
                 return {
                     "Kategori Barang": this.getKategori(r.kategori_id),
-                    "Stock In": r.stock_in,
-                    "Stock Out": r.stock_out,
-                    "Unit": this.getKategori(r.kategori_id),
-                    "Selisih": r.stock_in - r.stock_out
+                    "Qty In": r.qty_in,
+                    "Qty Out": r.qty_out,
+                    "Qty Selisih": r.qty_in - r.qty_out,
+                    "Berat In": r.stock_in,
+                    "Berat Out": r.stock_out,
+                    "Berat Selisih": r.stock_in - r.stock_out,
                 }
             })
 
