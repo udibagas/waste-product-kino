@@ -3,23 +3,19 @@
         <h4>PENGAJUAN PENJUALAN WASTE PRODUCT</h4>
         <hr>
 
-        <el-form :inline="true" class="form-right">
+        <el-form :inline="true" class="form-right" @submit.native.prevent="() => { return }">
             <el-form-item>
                 <el-button @click="addData" type="primary"><i class="el-icon-plus"></i> INPUT PENGAJUAN PENJUALAN WASTE PRODUCT</el-button>
             </el-form-item>
-            <el-form-item>
-                <el-select class="pager-options" v-model="pageSize" placeholder="Page Size">
-                    <el-option v-for="item in $store.state.pagerOptions" :key="item.value" :label="item.label" :value="item.value"> </el-option>
-                </el-select>
-            </el-form-item>
             <el-form-item style="margin-right:0;">
-                <el-input placeholder="Search" prefix-icon="el-icon-search" v-model="keyword">
-                    <el-button @click="refreshData" slot="append" icon="el-icon-refresh"></el-button>
+                <el-input placeholder="Search" prefix-icon="el-icon-search" v-model="keyword" @change="requestData" clearable>
+                    <el-button @click="() => { page = 1; keyword = ''; requestData(); }" slot="append" icon="el-icon-refresh"></el-button>
                 </el-input>
             </el-form-item>
         </el-form>
 
         <el-table :data="paginatedData.data" stripe
+        height="calc(100vh - 330px)"
         :default-sort = "{prop: 'tanggal', order: 'descending'}"
         v-loading="loading"
         style="border-top:1px solid #eee;"
@@ -31,13 +27,14 @@
                     <PengajuanPenjualanDetailWp :data="scope.row" />
                 </template>
             </el-table-column>
-            <el-table-column prop="tanggal" width="100" label="Tanggal" sortable="custom">
+            <el-table-column prop="tanggal" min-width="100" label="Tanggal" sortable="custom">
                 <template slot-scope="scope">
                     {{ scope.row.tanggal | readableDate }}
                 </template>
             </el-table-column>
-            <el-table-column prop="no_aju" label="No. Pengajuan" sortable="custom"></el-table-column>
+            <el-table-column prop="no_aju" label="No. Pengajuan" sortable="custom" min-width="150"></el-table-column>
             <el-table-column
+            min-width="150"
             prop="location_id"
             label="Plant"
             column-key="location_id"
@@ -47,20 +44,20 @@
                     {{scope.row.location.plant}} - {{scope.row.location.name}}
                 </template>
             </el-table-column>
-            <el-table-column prop="period_from" label="Periode" sortable="custom" width="200">
+            <el-table-column prop="period_from" label="Periode" sortable="custom" min-width="200">
                 <template slot-scope="scope">
                     {{scope.row.period_from | readableDate}} - {{scope.row.period_to | readableDate}}
                 </template>
             </el-table-column>
             <!-- <el-table-column prop="jenis" label="Jenis" width="90" align="center" header-align="center" sortable="custom"></el-table-column> -->
-            <el-table-column prop="mvt_type" label="MVT Type" sortable="custom"></el-table-column>
+            <el-table-column prop="mvt_type" label="MVT Type" sortable="custom" min-width="150"></el-table-column>
             <el-table-column prop="sloc" label="Sloc" sortable="custom"></el-table-column>
 
-            <el-table-column prop="user.name" label="Yang Mengajukan"></el-table-column>
+            <el-table-column prop="user.name" label="Yang Mengajukan" min-width="150"></el-table-column>
 
             <el-table-column
             prop="approval1_status"
-            width="130"
+            min-width="130"
             align="center"
             header-align="center"
             label="Approval 1"
@@ -76,7 +73,7 @@
 
             <el-table-column
             prop="approval2_status"
-            width="130"
+            min-width="130"
             align="center"
             header-align="center"
             label="Approval 2"
@@ -92,7 +89,7 @@
 
             <el-table-column
             prop="status"
-            width="100"
+            min-width="100"
             align="center"
             header-align="center"
             label="Status"
@@ -127,19 +124,15 @@
 
         <br>
 
-        <el-row>
-            <el-col :span="12">
-                <el-pagination @current-change="goToPage"
-                    :page-size="pageSize"
-                    background
-                    layout="prev, pager, next"
-                    :total="paginatedData.total">
-                </el-pagination>
-            </el-col>
-            <el-col :span="12" style="text-align:right">
-                {{ paginatedData.from }} - {{ paginatedData.to }} of {{ paginatedData.total }} items
-            </el-col>
-        </el-row>
+        <el-pagination
+        @current-change="(p) => { page = p; requestData(); }"
+        @size-change="(s) => { pageSize = s; requestData(); }"
+        :page-size="pageSize"
+        background
+        layout="prev, pager, next, sizes, total"
+        :page-sizes="[10,25,50,100]"
+        :total="paginatedData.total">
+        </el-pagination>
 
         <!-- DIALOG UNTUK FORM -->
         <el-dialog center :visible.sync="showForm" :title="formTitle" width="900px" v-loading="loading" :close-on-click-modal="false">
@@ -152,29 +145,29 @@
             <el-form label-width="170px">
                 <el-row :gutter="15">
                     <el-col :span="12">
-                        <el-form-item label="Tanggal">
+                        <el-form-item label="Tanggal" :class="formErrors.tanggal ? 'is-error' : ''">
                             <el-date-picker v-model="formModel.tanggal" type="date" value-format="yyyy-MM-dd" placeholder="Tanggal" style="width:100%;"> </el-date-picker>
                             <div class="el-form-item__error" v-if="formErrors.tanggal">{{formErrors.tanggal[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Nomor Pengajuan">
+                        <el-form-item label="Nomor Pengajuan" :class="formErrors.no_aju ? 'is-error' : ''">
                             <el-input disabled placeholder="Nomor Pengajuan" v-model="formModel.no_aju"></el-input>
                             <div class="el-form-item__error" v-if="formErrors.no_aju">{{formErrors.no_aju[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Period From">
+                        <el-form-item label="Period From" :class="formErrors.period_from ? 'is-error' : ''">
                             <el-date-picker v-model="formModel.period_from" type="date" value-format="yyyy-MM-dd" placeholder="Period From" style="width:100%;"> </el-date-picker>
                             <div class="el-form-item__error" v-if="formErrors.period_from">{{formErrors.period_from[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Period To">
+                        <el-form-item label="Period To" :class="formErrors.period_to ? 'is-error' : ''">
                             <el-date-picker v-model="formModel.period_to" type="date" value-format="yyyy-MM-dd" placeholder="Period To" style="width:100%;"> </el-date-picker>
                             <div class="el-form-item__error" v-if="formErrors.period_to">{{formErrors.period_to[0]}}</div>
                         </el-form-item>
                     </el-col>
 
                     <el-col :span="12">
-                        <el-form-item label="Plant">
+                        <el-form-item label="Plant" :class="formErrors.location_id ? 'is-error' : ''">
                             <el-select :disabled="!!formModel.id" v-model="formModel.location_id" style="width:100%" placeholder="Plant">
                                 <el-option
                                 v-for="item in $store.state.locationList"
@@ -186,7 +179,7 @@
                             <div class="el-form-item__error" v-if="formErrors.location_id">{{formErrors.location_id[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Sloc">
+                        <el-form-item label="Sloc" :class="formErrors.sloc ? 'is-error' : ''">
                             <el-select :disabled="!!formModel.id" v-model="formModel.sloc" filterable style="width:100%" placeholder="Sloc">
                                 <el-option
                                 v-for="(item, id) in $store.state.slocList"
@@ -198,7 +191,7 @@
                             <div class="el-form-item__error" v-if="formErrors.sloc">{{formErrors.sloc[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="MVT Type">
+                        <el-form-item label="MVT Type" :class="formErrors.mvt_type ? 'is-error' : ''">
                             <el-select :disabled="!!formModel.id" v-model="formModel.mvt_type" filterable default-first-option style="width:100%" placeholder="MVT Type" multiple>
                                 <el-option
                                 v-for="(item, id) in $store.state.mvtList"
@@ -316,12 +309,6 @@ import PengajuanPenjualanDetailWp from '../components/PengajuanPenjualanDetailWp
 export default {
     components: { PengajuanPenjualanDetailWp },
     watch: {
-        keyword: function(v, o) {
-            this.requestData()
-        },
-        pageSize: function(v, o) {
-            this.requestData()
-        },
         'formModel.location_id'(v, o) {
             if (v) {
                 this.formModel.plant = this.$store.state.locationList.find(l => l.id == v).plant;
@@ -479,10 +466,7 @@ export default {
         filterChange: function(f) {
             let column = Object.keys(f)[0];
             this.filters[column] = Object.values(f[column]);
-            this.refreshData();
-        },
-        goToPage: function(p) {
-            this.page = p;
+            this.page = 1
             this.requestData();
         },
         deleteItem(index) {
@@ -662,11 +646,6 @@ export default {
                     });
                 })
             }).catch(() => { });
-        },
-        refreshData: function() {
-            this.keyword = '';
-            this.page = 1;
-            this.requestData();
         },
         requestData: function() {
             let params = {

@@ -29,7 +29,7 @@
             </el-form-item>
         </el-form>
 
-        <el-table :data="report" stripe v-loading="loading" style="border-top:1px solid #eee;">
+        <el-table :data="report" stripe v-loading="loading" style="border-top:1px solid #eee;" height="calc(100vh - 275px)">
             <el-table-column type="index" width="50"> </el-table-column>
             <el-table-column label="Kategori Barang">
                 <template slot-scope="scope">
@@ -102,7 +102,7 @@ export default {
             let kategori = this.$store.state.kategoriBarangList.find(k => k.id == id)
             if (!kategori) {
                 return 'Unregistered Kategori : ' + id
-            }    
+            }
 
             return kategori.jenis + ' : ' + kategori.kode + ' - ' + kategori.nama
         },
@@ -110,7 +110,7 @@ export default {
             let kategori = this.$store.state.kategoriBarangList.find(k => k.id == id)
             if (!kategori) {
                 return '-'
-            }    
+            }
 
             return kategori.unit
         },

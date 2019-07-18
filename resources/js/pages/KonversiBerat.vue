@@ -3,51 +3,43 @@
         <h4>KONVERSI BERAT</h4>
         <hr>
 
-        <el-form :inline="true" class="form-right">
+        <el-form :inline="true" class="form-right" @submit.native.prevent="() => { return }">
             <el-form-item>
                 <el-button @click="openForm" type="primary" icon="el-icon-upload">UPLOAD DATA KONVERSI BERAT</el-button>
             </el-form-item>
-            <el-form-item>
-                <el-select class="pager-options" v-model="pageSize" placeholder="Page Size">
-                    <el-option v-for="item in $store.state.pagerOptions" :key="item.value" :label="item.label" :value="item.value"> </el-option>
-                </el-select>
-            </el-form-item>
             <el-form-item style="margin-right:0;">
-                <el-input placeholder="Search" prefix-icon="el-icon-search" v-model="keyword">
-                    <el-button @click="refreshData" slot="append" icon="el-icon-refresh"></el-button>
+                <el-input placeholder="Search" prefix-icon="el-icon-search" v-model="keyword" @change="requestData" clearable>
+                    <el-button @click="() => { page = 1; keyword = ''; requestData(); }" slot="append" icon="el-icon-refresh"></el-button>
                 </el-input>
             </el-form-item>
         </el-form>
 
         <el-table :data="paginatedData.data" stripe
+        height="calc(100vh - 330px)"
         :default-sort = "{prop: 'material_id', order: 'ascending'}"
         v-loading="loading"
         style="border-top:1px solid #eee;"
         @sort-change="sortChange">
             <el-table-column type="index" min-width="50" :index="paginatedData.from"> </el-table-column>
-            <el-table-column prop="kategori_jual" label="Kategori Jual" sortable="custom"></el-table-column>
-            <el-table-column prop="finished_good" label="Finished Goods" sortable="custom"></el-table-column>
+            <el-table-column prop="kategori_jual" label="Kategori Jual" sortable="custom" min-width="120px"></el-table-column>
+            <el-table-column prop="finished_good" label="Finished Goods" sortable="custom" min-width="150px"></el-table-column>
             <el-table-column prop="material_id" label="Material ID" min-width="170" sortable="custom"></el-table-column>
             <el-table-column prop="material_description" min-width="350" label="Material Description" sortable="custom"></el-table-column>
-            <el-table-column prop="berat" label="Berat Rata - Rata (gr)" align="center" header-align="center" sortable="custom"></el-table-column>
-            <el-table-column prop="keterangan" label="Keterangan" sortable="custom"></el-table-column>
+            <el-table-column prop="berat" label="Berat Rata - Rata (gr)" align="center" header-align="center" sortable="custom" min-width="170px"></el-table-column>
+            <el-table-column prop="keterangan" label="Keterangan" sortable="custom" min-width="150px"></el-table-column>
         </el-table>
 
         <br>
 
-        <el-row>
-            <el-col :span="12">
-                <el-pagination @current-change="goToPage"
-                    :page-size="pageSize"
-                    background
-                    layout="prev, pager, next"
-                    :total="paginatedData.total">
-                </el-pagination>
-            </el-col>
-            <el-col :span="12" style="text-align:right">
-                {{ paginatedData.from }} - {{ paginatedData.to }} of {{ paginatedData.total }} items
-            </el-col>
-        </el-row>
+        <el-pagination
+        @current-change="(p) => { page = p; requestData(); }"
+        @size-change="(s) => { pageSize = s; requestData(); }"
+        :page-size="pageSize"
+        background
+        layout="prev, pager, next, sizes, total"
+        :page-sizes="[10,25,50,100]"
+        :total="paginatedData.total">
+        </el-pagination>
 
         <el-dialog
         :visible.sync="uploadFormDialog"
@@ -68,14 +60,6 @@
 import XLSX from 'xlsx'
 
 export default {
-    watch: {
-        keyword: function(v, o) {
-            this.requestData()
-        },
-        pageSize: function(v, o) {
-            this.requestData()
-        }
-    },
     data: function() {
         return {
             loading: false,
@@ -185,15 +169,6 @@ export default {
                 this.order = column.order;
                 this.requestData();
             }
-        },
-        goToPage: function(p) {
-            this.page = p;
-            this.requestData();
-        },
-        refreshData: function() {
-            this.keyword = '';
-            this.page = 1;
-            this.requestData();
         },
         requestData: function() {
             let params = {

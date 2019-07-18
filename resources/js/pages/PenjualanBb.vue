@@ -3,23 +3,19 @@
         <h4>PENJUALAN BARANG BEKAS</h4>
         <hr>
 
-        <el-form :inline="true" class="form-right">
+        <el-form :inline="true" class="form-right" @submit.native.prevent="() => { return }">
             <el-form-item>
                 <el-button @click="addData" type="primary"><i class="el-icon-plus"></i> INPUT PENJUALAN BARANG BEKAS</el-button>
             </el-form-item>
-            <el-form-item>
-                <el-select class="pager-options" v-model="pageSize" placeholder="Page Size">
-                    <el-option v-for="item in $store.state.pagerOptions" :key="item.value" :label="item.label" :value="item.value"> </el-option>
-                </el-select>
-            </el-form-item>
             <el-form-item style="margin-right:0;">
-                <el-input placeholder="Search" prefix-icon="el-icon-search" v-model="keyword">
-                    <el-button @click="refreshData" slot="append" icon="el-icon-refresh"></el-button>
+                <el-input placeholder="Search" prefix-icon="el-icon-search" v-model="keyword" @change="requestData" clearable>
+                    <el-button @click="() => { page = 1; keyword = ''; requestData(); }" slot="append" icon="el-icon-refresh"></el-button>
                 </el-input>
             </el-form-item>
         </el-form>
 
         <el-table :data="paginatedData.data" stripe
+        height="calc(100vh - 330px)"
         :default-sort = "{prop: 'tanggal', order: 'descending'}"
         v-loading="loading"
         style="border-top:1px solid #eee;"
@@ -147,19 +143,15 @@
 
         <br>
 
-        <el-row>
-            <el-col :span="12">
-                <el-pagination @current-change="goToPage"
-                    :page-size="pageSize"
-                    background
-                    layout="prev, pager, next"
-                    :total="paginatedData.total">
-                </el-pagination>
-            </el-col>
-            <el-col :span="12" style="text-align:right">
-                {{ paginatedData.from }} - {{ paginatedData.to }} of {{ paginatedData.total }} items
-            </el-col>
-        </el-row>
+         <el-pagination
+        @current-change="(p) => { page = p; requestData(); }"
+        @size-change="(s) => { pageSize = s; requestData(); }"
+        :page-size="pageSize"
+        background
+        layout="prev, pager, next, sizes, total"
+        :page-sizes="[10,25,50,100]"
+        :total="paginatedData.total">
+        </el-pagination>
 
         <!-- FORM PEMBAYARAN -->
         <el-dialog
@@ -186,17 +178,17 @@
             <el-form label-width="170px">
                 <el-row :gutter="15">
                     <el-col :span="12">
-                        <el-form-item label="Tanggal">
+                        <el-form-item label="Tanggal" :class="formErrors.tanggal ? 'is-error' : ''">
                             <el-date-picker v-model="formModel.tanggal" type="date" value-format="yyyy-MM-dd" placeholder="Tanggal" style="width:100%;"> </el-date-picker>
                             <div class="el-form-item__error" v-if="formErrors.tanggal">{{formErrors.tanggal[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Nomor Surat Jalan">
+                        <el-form-item label="Nomor Surat Jalan" :class="formErrors.no_sj ? 'is-error' : ''">
                             <el-input disabled placeholder="Nomor Surat Jalan" v-model="formModel.no_sj"></el-input>
                             <div class="el-form-item__error" v-if="formErrors.no_sj">{{formErrors.no_sj[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Plant">
+                        <el-form-item label="Plant" :class="formErrors.location_id ? 'is-error' : ''">
                             <el-select :disabled="!!formModel.id" v-model="formModel.location_id" style="width:100%" placeholder="Plant">
                                 <el-option
                                 v-for="item in $store.state.locationList"
@@ -208,7 +200,7 @@
                             <div class="el-form-item__error" v-if="formErrors.location_id">{{formErrors.location_id[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Nomor Pengajuan">
+                        <el-form-item label="Nomor Pengajuan" :class="formErrors.no_aju ? 'is-error' : ''">
                             <el-select :disabled="!!formModel.id" v-model="formModel.no_aju" style="width:100%" placeholder="Nomor Pengajuan">
                                 <el-option
                                 v-for="item in $store.state.pengajuanPenjualanList.filter(p => p.location_id == formModel.location_id)"
@@ -222,7 +214,7 @@
                     </el-col>
 
                     <el-col :span="12">
-                        <el-form-item label="Nama Pembeli">
+                        <el-form-item label="Nama Pembeli" :class="formErrors.pembeli_id ? 'is-error' : ''">
                             <el-select v-model="formModel.pembeli_id" style="width:100%" placeholder="Nama Pembeli">
                                 <el-option
                                 v-for="item in $store.state.pembeliList"
@@ -234,22 +226,22 @@
                             <div class="el-form-item__error" v-if="formErrors.pembeli_id">{{formErrors.pembeli_id[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Kontak Pembeli">
+                        <el-form-item label="Kontak Pembeli" :class="formErrors.kontak_pembeli ? 'is-error' : ''">
                             <el-input disabled placeholder="Kontak Pembeli" v-model="formModel.kontak_pembeli"></el-input>
                             <div class="el-form-item__error" v-if="formErrors.kontak_pembeli">{{formErrors.kontak_pembeli[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="TOP Date">
+                        <el-form-item label="TOP Date" :class="formErrors.top_date ? 'is-error' : ''">
                             <el-date-picker placeholder="TOP Date" v-model="formModel.top_date" value-format="yyyy-MM-dd" style="width:100%;"></el-date-picker>
                             <div class="el-form-item__error" v-if="formErrors.top_date">{{formErrors.top_date[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Jembatan Timbang">
+                        <el-form-item label="Jembatan Timbang" :class="formErrors.jembatan_timbang ? 'is-error' : ''">
                             <el-input type="number" placeholder="Jembatan Timbang" v-model="formModel.jembatan_timbang"></el-input>
                             <div class="el-form-item__error" v-if="formErrors.jembatan_timbang">{{formErrors.jembatan_timbang[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Value Penjualan (Rp)">
+                        <el-form-item label="Value Penjualan (Rp)" :class="formErrors.value ? 'is-error' : ''">
                             <el-input type="number" placeholder="Value Penjualan (Rp)" v-model="formModel.value"></el-input>
                             <div class="el-form-item__error" v-if="formErrors.value">{{formErrors.value[0]}}</div>
                         </el-form-item>
@@ -316,12 +308,6 @@ import FormPembayaran from '../components/FormPembayaran'
 export default {
     components: { PenjualanItemBb, Pembayaran, FormPembayaran },
     watch: {
-        keyword: function(v, o) {
-            this.requestData()
-        },
-        pageSize: function(v, o) {
-            this.requestData()
-        },
         'formModel.pembeli_id'(v, o) {
             let pembeli = this.$store.state.pembeliList.find(p => p.id == v)
             if (!!pembeli) {
@@ -407,10 +393,7 @@ export default {
         filterChange: function(f) {
             let column = Object.keys(f)[0];
             this.filters[column] = Object.values(f[column]);
-            this.refreshData();
-        },
-        goToPage: function(p) {
-            this.page = p;
+            this.page = 1
             this.requestData();
         },
         save() {
@@ -533,11 +516,6 @@ export default {
                     });
                 })
             }).catch(e => console.log(e));
-        },
-        refreshData: function() {
-            this.keyword = '';
-            this.page = 1;
-            this.requestData();
         },
         requestData: function() {
             let params = {

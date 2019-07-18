@@ -50,15 +50,15 @@
             </el-alert>
 
             <el-form label-width="150px">
-                <el-form-item label="Tanggal">
+                <el-form-item label="Tanggal" :class="formErrors.tanggal ? 'is-error' : ''">
                     <el-date-picker v-model="formModel.tanggal" type="date" value-format="yyyy-MM-dd" placeholder="Tanggal" style="width:100%;"> </el-date-picker>
                     <div class="el-form-item__error" v-if="formErrors.tanggal">{{formErrors.tanggal[0]}}</div>
                 </el-form-item>
-                <el-form-item label="Pembayaran (Rp)">
+                <el-form-item label="Pembayaran (Rp)" :class="formErrors.value ? 'is-error' : ''">
                     <el-input type="number" placeholder="Pembayaran (Rp)" v-model="formModel.value"></el-input>
                     <div class="el-form-item__error" v-if="formErrors.value">{{formErrors.value[0]}}</div>
                 </el-form-item>
-                <el-form-item label="Keterangan">
+                <el-form-item label="Keterangan" :class="formErrors.keterangan ? 'is-error' : ''">
                     <el-input v-model="formModel.keterangan" type="textarea" rows="3" placeholder="Keterangan"></el-input>
                     <div class="el-form-item__error" v-if="formErrors.keterangan">{{formErrors.keterangan[0]}}</div>
                 </el-form-item>
@@ -97,6 +97,7 @@ export default {
             this.$confirm('Anda yakin?', 'Confirm').then(() => {
                 this.formModel.penjualan_id = this.penjualan.id
                 axios.post(BASE_URL + '/pembayaran', this.formModel).then(r => {
+                    this.formModel.value = ''
                     this.$emit('close-form');
                     this.$emit('reload-data');
                     this.$message({
@@ -118,7 +119,7 @@ export default {
             }).catch(e => console.log(e))
         }
     }
-    
+
 }
 </script>
 

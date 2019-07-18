@@ -3,12 +3,7 @@
         <h4>IN OUT STOCK BB</h4>
         <hr>
 
-        <el-form :inline="true" class="form-right">
-            <el-form-item>
-                <el-select class="pager-options" v-model="pageSize" placeholder="Page Size">
-                    <el-option v-for="item in $store.state.pagerOptions" :key="item.value" :label="item.label" :value="item.value"> </el-option>
-                </el-select>
-            </el-form-item>
+        <el-form :inline="true" class="form-right" @submit.native.prevent="() => { return }">
             <el-form-item>
                 <el-date-picker
                 v-model="dateRange"
@@ -20,14 +15,15 @@
                 </el-date-picker>
             </el-form-item>
             <el-form-item style="margin-center:0;">
-                <el-input placeholder="Search" prefix-icon="el-icon-search" v-model="keyword">
-                    <el-button @click="refreshData" slot="append" icon="el-icon-refresh"></el-button>
+                <el-input placeholder="Search" prefix-icon="el-icon-search" v-model="keyword" @change="requestData" clearable>
+                    <el-button @click="() => { page = 1; keyword = ''; requestData(); }" slot="append" icon="el-icon-refresh"></el-button>
                 </el-input>
             </el-form-item>
         </el-form>
 
         <el-table :data="paginatedData.data" stripe
         :default-sort = "{prop: 'tanggal', order: 'descending'}"
+        height="calc(100vh - 330px)"
         v-loading="loading"
         style="border-top:1px solid #eee;"
         @filter-change="filterChange"
@@ -93,19 +89,15 @@
 
         <br>
 
-        <el-row>
-            <el-col :span="12">
-                <el-pagination @current-change="goToPage"
-                    :page-size="pageSize"
-                    background
-                    layout="prev, pager, next"
-                    :total="paginatedData.total">
-                </el-pagination>
-            </el-col>
-            <el-col :span="12" style="text-align:center">
-                {{ paginatedData.from }} - {{ paginatedData.to }} of {{ paginatedData.total }} items
-            </el-col>
-        </el-row>
+        <el-pagination
+        @current-change="(p) => { page = p; requestData(); }"
+        @size-change="(s) => { pageSize = s; requestData(); }"
+        :page-size="pageSize"
+        background
+        layout="prev, pager, next, sizes, total"
+        :page-sizes="[10,25,50,100]"
+        :total="paginatedData.total">
+        </el-pagination>
     </el-card>
 </template>
 
@@ -113,14 +105,6 @@
 import moment from 'moment'
 
 export default {
-    watch: {
-        keyword: function(v, o) {
-            this.requestData()
-        },
-        pageSize: function(v, o) {
-            this.requestData()
-        }
-    },
     data: function() {
         return {
             loading: false,
@@ -148,15 +132,7 @@ export default {
         filterChange: function(f) {
             let column = Object.keys(f)[0];
             this.filters[column] = Object.values(f[column]);
-            this.refreshData();
-        },
-        goToPage: function(p) {
-            this.page = p;
-            this.requestData();
-        },
-        refreshData: function() {
-            this.keyword = '';
-            this.page = 1;
+            this.page = 1
             this.requestData();
         },
         requestData: function() {

@@ -3,23 +3,19 @@
         <h4>PENERIMAAN BARANG BEKAS</h4>
         <hr>
 
-        <el-form :inline="true" class="form-right">
+        <el-form :inline="true" class="form-right" @submit.native.prevent="() => { return }">
             <el-form-item>
                 <el-button @click="addData" type="primary"><i class="el-icon-plus"></i> INPUT PENERIMAAN BARANG BEKAS</el-button>
             </el-form-item>
-            <el-form-item>
-                <el-select class="pager-options" v-model="pageSize" placeholder="Page Size">
-                    <el-option v-for="item in $store.state.pagerOptions" :key="item.value" :label="item.label" :value="item.value"> </el-option>
-                </el-select>
-            </el-form-item>
             <el-form-item style="margin-right:0;">
-                <el-input placeholder="Search" prefix-icon="el-icon-search" v-model="keyword">
-                    <el-button @click="refreshData" slot="append" icon="el-icon-refresh"></el-button>
+                <el-input placeholder="Search" prefix-icon="el-icon-search" v-model="keyword" @change="requestData" clearable>
+                    <el-button @click="() => { page = 1; keyword = ''; requestData(); }" slot="append" icon="el-icon-refresh"></el-button>
                 </el-input>
             </el-form-item>
         </el-form>
 
         <el-table :data="paginatedData.data" stripe
+        height="calc(100vh - 330px)"
         :default-sort = "{prop: 'tanggal', order: 'descending'}"
         v-loading="loading"
         style="border-top:1px solid #eee;"
@@ -89,19 +85,15 @@
 
         <br>
 
-        <el-row>
-            <el-col :span="12">
-                <el-pagination @current-change="goToPage"
-                    :page-size="pageSize"
-                    background
-                    layout="prev, pager, next"
-                    :total="paginatedData.total">
-                </el-pagination>
-            </el-col>
-            <el-col :span="12" style="text-align:right">
-                {{ paginatedData.from }} - {{ paginatedData.to }} of {{ paginatedData.total }} items
-            </el-col>
-        </el-row>
+         <el-pagination
+        @current-change="(p) => { page = p; requestData(); }"
+        @size-change="(s) => { pageSize = s; requestData(); }"
+        :page-size="pageSize"
+        background
+        layout="prev, pager, next, sizes, total"
+        :page-sizes="[10,25,50,100]"
+        :total="paginatedData.total">
+        </el-pagination>
 
         <el-dialog center :visible.sync="showForm" :title="formTitle" width="1000px" v-loading="loading" :close-on-click-modal="false">
             <el-alert type="error" title="ERROR"
@@ -114,12 +106,12 @@
 
                 <el-row :gutter="15">
                     <el-col :span="12">
-                        <el-form-item label="Tanggal">
+                        <el-form-item label="Tanggal" :class="formErrors.tanggal ? 'is-error' : ''">
                             <el-date-picker v-model="formModel.tanggal" type="date" value-format="yyyy-MM-dd" placeholder="Tanggal" style="width:100%;"> </el-date-picker>
                             <div class="el-form-item__error" v-if="formErrors.tanggal">{{formErrors.tanggal[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Nomor Surat Jalan Keluar">
+                        <el-form-item label="Nomor Surat Jalan Keluar" :class="formErrors.no_sj_keluar ? 'is-error' : ''">
                             <el-select :disabled="!!formModel.id" v-model="formModel.no_sj_keluar" style="width:100%" filterable default-first-option placeholder="Nomor Surat Jalan Keluar">
                                 <el-option
                                 v-for="item in $store.state.pengeluaranList"
@@ -131,23 +123,23 @@
                             <div class="el-form-item__error" v-if="formErrors.no_sj_keluar">{{formErrors.no_sj_keluar[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Keterangan">
+                        <el-form-item label="Keterangan" :class="formErrors.keterangan ? 'is-error' : ''">
                             <el-input type="textarea" rows="3" placeholder="Keterangan" v-model="formModel.keterangan"></el-input>
                             <div class="el-form-item__error" v-if="formErrors.keterangan">{{formErrors.keterangan[0]}}</div>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="Lokasi Asal">
+                        <el-form-item label="Lokasi Asal" :class="formErrors.lokasi_asal ? 'is-error' : ''">
                             <el-input disabled placeholder="Lokasi Asal" v-model="formModel.lokasi_asal"></el-input>
                             <div class="el-form-item__error" v-if="formErrors.lokasi_asal">{{formErrors.lokasi_asal[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Lokasi Terima">
+                        <el-form-item label="Lokasi Terima" :class="formErrors.lokasi_terima ? 'is-error' : ''">
                             <el-input disabled placeholder="Lokasi Terima" v-model="formModel.lokasi_terima"></el-input>
                             <div class="el-form-item__error" v-if="formErrors.lokasi_terima">{{formErrors.lokasi_terima[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Nama Penerima">
+                        <el-form-item label="Nama Penerima" :class="formErrors.penerima ? 'is-error' : ''">
                             <el-input placeholder="Nama Penerima" v-model="formModel.penerima"></el-input>
                             <div class="el-form-item__error" v-if="formErrors.penerima">{{formErrors.penerima[0]}}</div>
                         </el-form-item>
@@ -206,12 +198,6 @@ import PenerimaanDetail from '../components/PenerimaanDetail'
 export default {
     components: { PenerimaanDetail },
     watch: {
-        keyword: function(v, o) {
-            this.requestData()
-        },
-        pageSize: function(v, o) {
-            this.requestData()
-        },
         'formModel.no_sj_keluar'(v, o) {
             if (!!this.formModel.id) {
                 return
@@ -269,10 +255,7 @@ export default {
         filterChange: function(f) {
             let column = Object.keys(f)[0];
             this.filters[column] = Object.values(f[column]);
-            this.refreshData();
-        },
-        goToPage: function(p) {
-            this.page = p;
+            this.page = 1
             this.requestData();
         },
         save() {
@@ -281,6 +264,20 @@ export default {
 
             if (invalid) {
                 this.$message({ message: 'Mohon lengkapi data barang.', showClose: true, type: 'error' });
+                return
+            }
+
+            let invalid2 = this.formModel.items.filter(i => i.qty_terima > i.qty_kirim).length
+
+            if (invalid2) {
+                this.$message({ message: 'Jumlah terima melebihi jumlah kirim', showClose: true, type: 'error' });
+                return
+            }
+
+            let invalid3 = this.formModel.items.filter(i => i.timbangan_manual_terima > i.timbangan_manual_kirim).length
+
+            if (invalid3) {
+                this.$message({ message: 'Berat terima melebihi berat kirim', showClose: true, type: 'error' });
                 return
             }
 
@@ -386,11 +383,6 @@ export default {
                     });
                 })
             }).catch(() => { });
-        },
-        refreshData: function() {
-            this.keyword = '';
-            this.page = 1;
-            this.requestData();
         },
         requestData: function() {
             let params = {

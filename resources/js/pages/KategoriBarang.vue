@@ -3,23 +3,19 @@
         <h4>KELOLA KATEGORI BARANG</h4>
         <hr>
 
-        <el-form :inline="true" class="form-right">
+        <el-form :inline="true" class="form-right" @submit.native.prevent="() => { return }">
             <el-form-item>
                 <el-button @click="addData" type="primary"><i class="el-icon-plus"></i> TAMBAH KATEGORI BARANG</el-button>
             </el-form-item>
-            <el-form-item>
-                <el-select class="pager-options" v-model="pageSize" placeholder="Page Size">
-                    <el-option v-for="item in $store.state.pagerOptions" :key="item.value" :label="item.label" :value="item.value"> </el-option>
-                </el-select>
-            </el-form-item>
             <el-form-item style="margin-right:0;">
-                <el-input placeholder="Search" prefix-icon="el-icon-search" v-model="keyword">
-                    <el-button @click="refreshData" slot="append" icon="el-icon-refresh"></el-button>
+                <el-input placeholder="Search" prefix-icon="el-icon-search" v-model="keyword" @change="requestData" clearable>
+                    <el-button @click="() => { page = 1; keyword = ''; requestData(); }" slot="append" icon="el-icon-refresh"></el-button>
                 </el-input>
             </el-form-item>
         </el-form>
 
         <el-table :data="paginatedData.data" stripe
+        height="calc(100vh - 330px)"
         :default-sort = "{prop: 'nama', order: 'ascending'}"
         v-loading="loading"
         style="border-top:1px solid #eee;"
@@ -60,19 +56,15 @@
 
         <br>
 
-        <el-row>
-            <el-col :span="12">
-                <el-pagination @current-change="goToPage"
-                    :page-size="pageSize"
-                    background
-                    layout="prev, pager, next"
-                    :total="paginatedData.total">
-                </el-pagination>
-            </el-col>
-            <el-col :span="12" style="text-align:right">
-                {{ paginatedData.from }} - {{ paginatedData.to }} of {{ paginatedData.total }} items
-            </el-col>
-        </el-row>
+        <el-pagination
+        @current-change="(p) => { page = p; requestData(); }"
+        @size-change="(s) => { pageSize = s; requestData(); }"
+        :page-size="pageSize"
+        background
+        layout="prev, pager, next, sizes, total"
+        :page-sizes="[10,25,50,100]"
+        :total="paginatedData.total">
+        </el-pagination>
 
         <el-dialog center :visible.sync="showForm" :title="formTitle" width="600px" v-loading="loading" :close-on-click-modal="false">
             <el-alert type="error" title="ERROR"
@@ -82,7 +74,7 @@
             </el-alert>
 
             <el-form label-width="180px">
-                <el-form-item label="Jenis">
+                <el-form-item label="Jenis" :class="formErrors.jenis ? 'is-error' : ''">
                     <el-select placeholder="Jenis" v-model="formModel.jenis" style="width:100%;">
                         <el-option value="BB" label="BB"></el-option>
                         <el-option value="WP" label="WP"></el-option>
@@ -90,22 +82,22 @@
                     <div class="el-form-item__error" v-if="formErrors.jenis">{{formErrors.jenis[0]}}</div>
                 </el-form-item>
 
-                <el-form-item label="Kode">
+                <el-form-item label="Kode" :class="formErrors.kode ? 'is-error' : ''">
                     <el-input placeholder="Kode" v-model="formModel.kode"></el-input>
                     <div class="el-form-item__error" v-if="formErrors.kode">{{formErrors.kode[0]}}</div>
                 </el-form-item>
 
-                <el-form-item label="Nama">
+                <el-form-item label="Nama" :class="formErrors.nama ? 'is-error' : ''">
                     <el-input placeholder="Nama" v-model="formModel.nama"></el-input>
                     <div class="el-form-item__error" v-if="formErrors.nama">{{formErrors.nama[0]}}</div>
                 </el-form-item>
 
-                <el-form-item label="Unit">
+                <el-form-item label="Unit" :class="formErrors.unit ? 'is-error' : ''">
                     <el-input placeholder="Unit" v-model="formModel.unit"></el-input>
                     <div class="el-form-item__error" v-if="formErrors.unit">{{formErrors.unit[0]}}</div>
                 </el-form-item>
 
-                <el-form-item label="Harga">
+                <el-form-item label="Harga" :class="formErrors.harga ? 'is-error' : ''">
                     <el-input type="number" placeholder="Harga" v-model="formModel.harga"></el-input>
                     <div class="el-form-item__error" v-if="formErrors.harga">{{formErrors.harga[0]}}</div>
                 </el-form-item>
@@ -121,14 +113,6 @@
 
 <script>
 export default {
-    watch: {
-        keyword: function(v, o) {
-            this.requestData()
-        },
-        pageSize: function(v, o) {
-            this.requestData()
-        }
-    },
     data: function() {
         return {
             user: USER,
@@ -164,10 +148,7 @@ export default {
         filterChange: function(f) {
             let column = Object.keys(f)[0];
             this.filters[column] = Object.values(f[column]);
-            this.refreshData();
-        },
-        goToPage: function(p) {
-            this.page = p;
+            this.page = 1
             this.requestData();
         },
         save() {
@@ -271,11 +252,6 @@ export default {
                     });
                 })
             }).catch(() => { });
-        },
-        refreshData: function() {
-            this.keyword = '';
-            this.page = 1;
-            this.requestData();
         },
         requestData: function() {
             let params = {

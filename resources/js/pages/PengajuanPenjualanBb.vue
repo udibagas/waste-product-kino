@@ -3,23 +3,19 @@
         <h4>PENGAJUAN PENJUALAN BARANG BEKAS</h4>
         <hr>
 
-        <el-form :inline="true" class="form-right">
+        <el-form :inline="true" class="form-right" @submit.native.prevent="() => { return }">
             <el-form-item>
                 <el-button @click="addData" type="primary"><i class="el-icon-plus"></i> INPUT PENGAJUAN PENJUALAN BARANG BEKAS</el-button>
             </el-form-item>
-            <el-form-item>
-                <el-select class="pager-options" v-model="pageSize" placeholder="Page Size">
-                    <el-option v-for="item in $store.state.pagerOptions" :key="item.value" :label="item.label" :value="item.value"> </el-option>
-                </el-select>
-            </el-form-item>
             <el-form-item style="margin-right:0;">
-                <el-input placeholder="Search" prefix-icon="el-icon-search" v-model="keyword">
-                    <el-button @click="refreshData" slot="append" icon="el-icon-refresh"></el-button>
+                <el-input placeholder="Search" prefix-icon="el-icon-search" v-model="keyword" @change="requestData" clearable>
+                    <el-button @click="() => { page = 1; keyword = ''; requestData(); }" slot="append" icon="el-icon-refresh"></el-button>
                 </el-input>
             </el-form-item>
         </el-form>
 
         <el-table :data="paginatedData.data" stripe
+        height="calc(100vh - 330px)"
         :default-sort = "{prop: 'tanggal', order: 'descending'}"
         v-loading="loading"
         style="border-top:1px solid #eee;"
@@ -127,19 +123,15 @@
 
         <br>
 
-        <el-row>
-            <el-col :span="12">
-                <el-pagination @current-change="goToPage"
-                    :page-size="pageSize"
-                    background
-                    layout="prev, pager, next"
-                    :total="paginatedData.total">
-                </el-pagination>
-            </el-col>
-            <el-col :span="12" style="text-align:right">
-                {{ paginatedData.from }} - {{ paginatedData.to }} of {{ paginatedData.total }} items
-            </el-col>
-        </el-row>
+        <el-pagination
+        @current-change="(p) => { page = p; requestData(); }"
+        @size-change="(s) => { pageSize = s; requestData(); }"
+        :page-size="pageSize"
+        background
+        layout="prev, pager, next, sizes, total"
+        :page-sizes="[10,25,50,100]"
+        :total="paginatedData.total">
+        </el-pagination>
 
         <el-dialog center :visible.sync="showForm" :title="formTitle" width="900px" v-loading="loading" :close-on-click-modal="false">
             <el-alert type="error" title="ERROR"
@@ -149,17 +141,17 @@
             </el-alert>
 
             <el-form label-width="170px">
-                <el-form-item label="Tanggal">
+                <el-form-item label="Tanggal" :class="formErrors.tanggal ? 'is-error' : ''">
                     <el-date-picker v-model="formModel.tanggal" type="date" value-format="yyyy-MM-dd" placeholder="Tanggal" style="width:100%;"> </el-date-picker>
                     <div class="el-form-item__error" v-if="formErrors.tanggal">{{formErrors.tanggal[0]}}</div>
                 </el-form-item>
 
-                <el-form-item label="Nomor Pengajuan">
+                <el-form-item label="Nomor Pengajuan" :class="formErrors.no_aju ? 'is-error' : ''">
                     <el-input disabled placeholder="Nomor Pengajuan" v-model="formModel.no_aju"></el-input>
                     <div class="el-form-item__error" v-if="formErrors.no_aju">{{formErrors.no_aju[0]}}</div>
                 </el-form-item>
 
-                <el-form-item label="Plant">
+                <el-form-item label="Plant" :class="formErrors.location_id ? 'is-error' : ''">
                     <el-select :disabled="user.role == 0" v-model="formModel.location_id" style="width:100%" placeholder="Plant">
                         <el-option
                         v-for="item in $store.state.locationList"
@@ -287,12 +279,6 @@ export default {
         }
     },
     watch: {
-        keyword: function(v, o) {
-            this.requestData()
-        },
-        pageSize: function(v, o) {
-            this.requestData()
-        },
         'formModel.location_id'(v, o) {
             if (v) {
                 this.formModel.lokasi_asal = this.$store.state.locationList.find(l => l.id == v).name;
@@ -422,10 +408,7 @@ export default {
         filterChange: function(f) {
             let column = Object.keys(f)[0];
             this.filters[column] = Object.values(f[column]);
-            this.refreshData();
-        },
-        goToPage: function(p) {
-            this.page = p;
+            this.page = 1
             this.requestData();
         },
         deleteItem(index) {
@@ -593,11 +576,6 @@ export default {
                     });
                 })
             }).catch(() => { });
-        },
-        refreshData() {
-            this.keyword = '';
-            this.page = 1;
-            this.requestData();
         },
         requestData() {
             let params = {
