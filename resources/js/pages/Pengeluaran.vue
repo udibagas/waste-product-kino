@@ -32,9 +32,11 @@
                     {{ scope.row.tanggal | readableDate }}
                 </template>
             </el-table-column>
-            <el-table-column prop="no_sj" label="No. Surat Jalan" min-width="100" sortable="custom"></el-table-column>
+            <el-table-column prop="user" label="User" min-width="150"></el-table-column>
+            <el-table-column prop="no_sj" label="No. Surat Jalan" min-width="170" sortable="custom"></el-table-column>
 
             <el-table-column
+            min-width="150"
             prop="lokasi_asal"
             label="Lokasi Asal"
             sortable="custom"
@@ -43,6 +45,7 @@
             </el-table-column>
 
             <el-table-column
+            min-width="150"
             prop="lokasi_terima"
             label="Lokasi Terima"
             sortable="custom"
@@ -50,8 +53,8 @@
             :filters="$store.state.locationList.map(l => { return {value: l.id, text: l.plant + ' - ' + l.name } })" >
             </el-table-column>
 
-            <el-table-column prop="penerima" label="Penerima" sortable="custom"></el-table-column>
-            <el-table-column prop="jembatan_timbang" label="Jembatan Timbang" sortable="custom" align="right" header-align="right">
+            <el-table-column prop="penerima" label="Penerima" sortable="custom" min-width="120"></el-table-column>
+            <el-table-column prop="jembatan_timbang" label="Jembatan Timbang" min-width="170" sortable="custom" align="right" header-align="right">
                 <template slot-scope="scope">
                     {{ scope.row.jembatan_timbang | formatNumber }} kg
                 </template>

@@ -32,10 +32,11 @@
                     {{ scope.row.tanggal | readableDate }}
                 </template>
             </el-table-column>
-            <el-table-column prop="no_sj_keluar" min-width="120" label="No. Surat Jalan" sortable="custom"></el-table-column>
+            <el-table-column prop="user" label="User" min-width="150"></el-table-column>
+            <el-table-column prop="no_sj_keluar" min-width="170" label="No. Surat Jalan" sortable="custom"></el-table-column>
 
             <el-table-column
-            min-width="120"
+            min-width="150"
             prop="lokasi_asal"
             label="Lokasi Asal"
             sortable="custom"
@@ -44,7 +45,7 @@
             </el-table-column>
 
             <el-table-column
-            min-width="120"
+            min-width="150"
             prop="lokasi_terima"
             label="Lokasi Terima"
             sortable="custom"
@@ -54,7 +55,7 @@
 
             <el-table-column prop="penerima" min-width="150" label="Penerima" sortable="custom"></el-table-column>
 
-            <el-table-column prop="keterangan" min-width="100" label="Keterangan" sortable="custom"></el-table-column>
+            <el-table-column prop="keterangan" min-width="120" label="Keterangan" sortable="custom"></el-table-column>
 
             <el-table-column
             prop="status"

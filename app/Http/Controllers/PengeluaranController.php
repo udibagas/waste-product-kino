@@ -20,20 +20,22 @@ class PengeluaranController extends Controller
         $sort = $request->sort ? $request->sort : 'tanggal';
         $order = $request->order == 'ascending' ? 'asc' : 'desc';
 
-        return Pengeluaran::when($request->keyword, function ($q) use ($request) {
-            return $q->where('no_sj', 'LIKE', '%' . $request->keyword . '%')
-                ->orWhere('lokasi_asal', 'LIKE', '%' . $request->keyword . '%')
-                ->orWhere('lokasi_terima', 'LIKE', '%' . $request->keyword . '%')
-                ->orWhere('penerima', 'LIKE', '%' . $request->keyword . '%');
-        })->when($request->lokasi_asal_id, function($q) use ($request) {
-            return $q->whereIn('lokasi_asal_id', $request->lokasi_asal_id);
-        })->when($request->lokasi_terima_id, function ($q) use ($request) {
-            return $q->whereIn('lokasi_terima_id', $request->lokasi_terima_id);
-        })->when($request->status, function ($q) use ($request) {
-            return $q->whereIn('status', $request->status);
-        })->when($request->user()->role == \App\User::ROLE_USER, function ($q) use ($request) {
-            return $q->where('lokasi_asal_id', $request->user()->location_id);
-        })->orderBy($sort, $order)->paginate($request->pageSize);
+        return Pengeluaran::selectRaw('pengeluarans.*, users.name AS [user]')
+            ->join('users', 'users.id', '=', 'pengeluarans.user_id')
+            ->when($request->keyword, function ($q) use ($request) {
+                return $q->where('no_sj', 'LIKE', '%' . $request->keyword . '%')
+                    ->orWhere('lokasi_asal', 'LIKE', '%' . $request->keyword . '%')
+                    ->orWhere('lokasi_terima', 'LIKE', '%' . $request->keyword . '%')
+                    ->orWhere('penerima', 'LIKE', '%' . $request->keyword . '%');
+            })->when($request->lokasi_asal_id, function($q) use ($request) {
+                return $q->whereIn('lokasi_asal_id', $request->lokasi_asal_id);
+            })->when($request->lokasi_terima_id, function ($q) use ($request) {
+                return $q->whereIn('lokasi_terima_id', $request->lokasi_terima_id);
+            })->when($request->status, function ($q) use ($request) {
+                return $q->whereIn('status', $request->status);
+            })->when($request->user()->role == \App\User::ROLE_USER, function ($q) use ($request) {
+                return $q->where('lokasi_asal_id', $request->user()->location_id);
+            })->orderBy($sort, $order)->paginate($request->pageSize);
     }
 
     public function store(PengeluaranRequest $request)

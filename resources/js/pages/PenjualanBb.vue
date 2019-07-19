@@ -39,6 +39,7 @@
                     {{ scope.row.tanggal | readableDate }}
                 </template>
             </el-table-column>
+            <el-table-column prop="user" label="User" min-width="150"></el-table-column>
             <el-table-column min-width="150px" prop="no_sj" label="No. Surat Jalan" sortable="custom"></el-table-column>
             <el-table-column min-width="150px" prop="no_aju" label="No. Pengajuan" sortable="custom"></el-table-column>
 
