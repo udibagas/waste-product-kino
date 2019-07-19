@@ -33,6 +33,7 @@
                     {{ scope.row.tanggal | readableDate }}
                 </template>
             </el-table-column>
+            <el-table-column prop="no_sj" min-width="200" label="No. Surat Jalan" sortable="custom"></el-table-column>
 
             <el-table-column prop="location.name"
             min-width="130"
@@ -82,7 +83,6 @@
                     {{ scope.row.stock_out | formatNumber }} kg
                 </template>
             </el-table-column>
-            <el-table-column prop="no_sj" min-width="200" label="No. Surat Jalan" sortable="custom"></el-table-column>
         </el-table>
 
         <br>
