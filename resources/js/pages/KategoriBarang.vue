@@ -66,14 +66,14 @@
         :total="paginatedData.total">
         </el-pagination>
 
-        <el-dialog center :visible.sync="showForm" :title="formTitle" width="600px" v-loading="loading" :close-on-click-modal="false">
+        <el-dialog center :visible.sync="showForm" :title="formTitle" width="400px" v-loading="loading" :close-on-click-modal="false">
             <el-alert type="error" title="ERROR"
                 :description="error.message + '\n' + error.file + ':' + error.line"
                 v-show="error.message"
                 style="margin-bottom:15px;">
             </el-alert>
 
-            <el-form label-width="180px">
+            <el-form label-width="100px">
                 <el-form-item label="Jenis" :class="formErrors.jenis ? 'is-error' : ''">
                     <el-select placeholder="Jenis" v-model="formModel.jenis" style="width:100%;">
                         <el-option value="BB" label="BB"></el-option>
@@ -104,7 +104,7 @@
             </el-form>
 
             <span slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="save" icon="el-icon-success">SAVE</el-button>
+                <el-button type="primary" @click="() => !!formModel.id ? update() : store()" icon="el-icon-success">SAVE</el-button>
                 <el-button type="info" @click="showForm = false" icon="el-icon-error">CANCEL</el-button>
             </span>
         </el-dialog>
@@ -150,13 +150,6 @@ export default {
             this.filters[column] = Object.values(f[column]);
             this.page = 1
             this.requestData();
-        },
-        save() {
-            if (!!this.formModel.id) {
-                this.update()
-            } else {
-                this.store()
-            }
         },
         approve(data, status) {
             this.$confirm('Anda yakin?', 'Warning', {
@@ -282,7 +275,3 @@ export default {
     }
 }
 </script>
-
-<style lang="css" scoped>
-
-</style>

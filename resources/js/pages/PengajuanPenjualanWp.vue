@@ -146,7 +146,7 @@
                 <el-row :gutter="15">
                     <el-col :span="12">
                         <el-form-item label="Tanggal" :class="formErrors.tanggal ? 'is-error' : ''">
-                            <el-date-picker v-model="formModel.tanggal" type="date" value-format="yyyy-MM-dd" placeholder="Tanggal" style="width:100%;"> </el-date-picker>
+                            <el-date-picker v-model="formModel.tanggal" type="date" format="dd-MMM-yyyy" value-format="yyyy-MM-dd" placeholder="Tanggal" style="width:100%;"> </el-date-picker>
                             <div class="el-form-item__error" v-if="formErrors.tanggal">{{formErrors.tanggal[0]}}</div>
                         </el-form-item>
 
@@ -156,12 +156,12 @@
                         </el-form-item>
 
                         <el-form-item label="Period From" :class="formErrors.period_from ? 'is-error' : ''">
-                            <el-date-picker v-model="formModel.period_from" type="date" value-format="yyyy-MM-dd" placeholder="Period From" style="width:100%;"> </el-date-picker>
+                            <el-date-picker v-model="formModel.period_from" type="date" format="dd-MMM-yyyy" value-format="yyyy-MM-dd" placeholder="Period From" style="width:100%;"> </el-date-picker>
                             <div class="el-form-item__error" v-if="formErrors.period_from">{{formErrors.period_from[0]}}</div>
                         </el-form-item>
 
                         <el-form-item label="Period To" :class="formErrors.period_to ? 'is-error' : ''">
-                            <el-date-picker v-model="formModel.period_to" type="date" value-format="yyyy-MM-dd" placeholder="Period To" style="width:100%;"> </el-date-picker>
+                            <el-date-picker v-model="formModel.period_to" type="date" format="dd-MMM-yyyy" value-format="yyyy-MM-dd" placeholder="Period To" style="width:100%;"> </el-date-picker>
                             <div class="el-form-item__error" v-if="formErrors.period_to">{{formErrors.period_to[0]}}</div>
                         </el-form-item>
                     </el-col>

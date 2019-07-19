@@ -1,6 +1,6 @@
 <template>
     <el-card>
-        <h4>REPORT SUMMARY MUTASI BB</h4>
+        <h4>REPORT SUMMARY MUTASI BARANG BEKAS</h4>
         <hr>
 
         <el-form :inline="true" class="form-right">
@@ -19,6 +19,8 @@
                 @change="requestData"
                 v-model="dateRange"
                 value-format="yyyy-MM-dd"
+                format="dd-MMM-yyyy"
+                :clearable="false"
                 type="daterange"
                 range-separator="-"
                 start-placeholder="Dari"

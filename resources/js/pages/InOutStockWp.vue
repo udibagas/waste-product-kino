@@ -1,6 +1,6 @@
 <template>
     <el-card>
-        <h4>IN OUT STOCK BB</h4>
+        <h4>IN OUT STOCK WASTE PRODUCT</h4>
         <hr>
 
         <el-form :inline="true" class="form-right" @submit.native.prevent="() => { return }">
@@ -9,7 +9,6 @@
                 @change="requestData"
                 v-model="dateRange"
                 value-format="yyyy-MM-dd"
-                :clearable="false"
                 type="daterange"
                 range-separator="-"
                 start-placeholder="Dari"

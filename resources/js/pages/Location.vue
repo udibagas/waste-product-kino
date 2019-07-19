@@ -26,7 +26,7 @@
             <el-table-column prop="name" label="Name" sortable="custom"></el-table-column>
             <el-table-column prop="is_dummy" label="Is Dummy" sortable="custom" min-width="100" align="center" header-align="center">
                 <template slot-scope="scope">
-                    {{scope.row.is_dummy ? 'Yes' : 'No'}}
+                    <el-tag :type="scope.row.is_dummy ? 'success' : 'danger'">{{scope.row.is_dummy ? 'Yes' : 'No'}}</el-tag>
                 </template>
             </el-table-column>
 
@@ -241,7 +241,3 @@ export default {
     }
 }
 </script>
-
-<style lang="css" scoped>
-
-</style>

@@ -179,7 +179,7 @@
                 <el-row :gutter="15">
                     <el-col :span="12">
                         <el-form-item label="Tanggal" :class="formErrors.tanggal ? 'is-error' : ''">
-                            <el-date-picker v-model="formModel.tanggal" type="date" value-format="yyyy-MM-dd" placeholder="Tanggal" style="width:100%;"> </el-date-picker>
+                            <el-date-picker v-model="formModel.tanggal" type="date" format="dd-MMM-yyyy" value-format="yyyy-MM-dd" placeholder="Tanggal" style="width:100%;"> </el-date-picker>
                             <div class="el-form-item__error" v-if="formErrors.tanggal">{{formErrors.tanggal[0]}}</div>
                         </el-form-item>
 
@@ -232,7 +232,7 @@
                         </el-form-item>
 
                         <el-form-item label="TOP Date" :class="formErrors.top_date ? 'is-error' : ''">
-                            <el-date-picker placeholder="TOP Date" v-model="formModel.top_date" value-format="yyyy-MM-dd" style="width:100%;"></el-date-picker>
+                            <el-date-picker placeholder="TOP Date" v-model="formModel.top_date" format="dd-MMM-yyyy" value-format="yyyy-MM-dd" style="width:100%;"></el-date-picker>
                             <div class="el-form-item__error" v-if="formErrors.top_date">{{formErrors.top_date[0]}}</div>
                         </el-form-item>
 

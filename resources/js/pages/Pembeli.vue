@@ -100,7 +100,7 @@
             </el-form>
 
             <span slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="save" icon="el-icon-success">SAVE</el-button>
+                <el-button type="primary" @click="() => !!formModel.id ? update() : store()" icon="el-icon-success">SAVE</el-button>
                 <el-button type="info" @click="showForm = false" icon="el-icon-error">CANCEL</el-button>
             </span>
         </el-dialog>
@@ -255,7 +255,3 @@ export default {
     }
 }
 </script>
-
-<style lang="css" scoped>
-
-</style>

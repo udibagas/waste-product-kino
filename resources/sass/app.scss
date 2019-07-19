@@ -7,92 +7,11 @@
 @import '~element-ui/lib/theme-chalk/index.css';
 
 @font-face {
-  font-family: 'SourceSansPro';
-  src: url('fonts/SourceSansPro-Regular.ttf');
-  font-weight: normal;
-}
-
-@font-face {
-  font-family: 'SourceSansPro';
-  src: url('fonts/SourceSansPro-Italic.ttf');
-  font-weight: italic;
-}
-
-@font-face {
-  font-family: 'SourceSansPro';
-  src: url('fonts/SourceSansPro-Semibold.ttf');
-  font-weight: bolder;
-}
-
-@font-face {
-  font-family: 'SourceSansPro';
-  src: url('fonts/SourceSansPro-SemiboldItalic.ttf');
-  font-weight: bolder;
-  font-weight: italic;
-}
-
-@font-face {
-  font-family: 'SourceSansPro';
-  src: url('fonts/SourceSansPro-Bold.ttf');
-  font-weight: bold;
-}
-
-@font-face {
-  font-family: 'SourceSansPro';
-  src: url('fonts/SourceSansPro-BoldItalic.ttf');
-  font-weight: bold;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: 'SourceSansPro';
-  src: url('fonts/SourceSansPro-Black.ttf');
-  font-weight: 900;
-}
-
-@font-face {
-  font-family: 'SourceSansPro';
-  src: url('fonts/SourceSansPro-BlackItalic.ttf');
-  font-weight: 900;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: 'SourceSansPro';
-  src: url('fonts/SourceSansPro-Light.ttf');
-  font-weight: lighter;
-}
-
-@font-face {
-  font-family: 'SourceSansPro';
-  src: url('fonts/SourceSansPro-LightItalic.ttf');
-  font-weight: lighter;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: 'SourceSansPro';
-  src: url('fonts/SourceSansPro-ExtraLight.ttf');
-  font-weight: 100;
-}
-
-@font-face {
-  font-family: 'SourceSansPro';
-  src: url('fonts/SourceSansPro-ExtraLightItalic.ttf');
-  font-weight: 100;
-  font-style: italic;
-}
-
-@font-face {
   font-family: "MyriadMM";
   src: url("fonts/MyriadMM.ttf");
 }
 
-
 .el-form-item__label {
-  // background-color: #324057;
-  // background-color: #DCDFE6;
-  // color: #fff;
   font-weight: bold;
 }
 
@@ -103,14 +22,6 @@
 
 .el-dialog__title {
   color: #fff;
-}
-
-.el-input__inner, .el-textarea__inner {
-  border-radius: 0;
-}
-
-.pager-options {
-  width: 70px;
 }
 
 .el-icon-more {
@@ -130,12 +41,7 @@ h4 {
   color: #606266;
 }
 
-.table > thead > tr > th {
-  vertical-align: middle;
-  // background-color: #66b1ff;
-  // color: #fff;
-}
-
+.table > thead > tr > th,
 .table > tbody > tr > td {
   vertical-align: middle;
 }

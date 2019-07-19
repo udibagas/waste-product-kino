@@ -51,7 +51,7 @@
 
             <el-form label-width="150px">
                 <el-form-item label="Tanggal" :class="formErrors.tanggal ? 'is-error' : ''">
-                    <el-date-picker v-model="formModel.tanggal" type="date" value-format="yyyy-MM-dd" placeholder="Tanggal" style="width:100%;"> </el-date-picker>
+                    <el-date-picker v-model="formModel.tanggal" type="date" format="dd-MMM-yyyy" value-format="yyyy-MM-dd" placeholder="Tanggal" style="width:100%;"> </el-date-picker>
                     <div class="el-form-item__error" v-if="formErrors.tanggal">{{formErrors.tanggal[0]}}</div>
                 </el-form-item>
                 <el-form-item label="Pembayaran (Rp)" :class="formErrors.value ? 'is-error' : ''">

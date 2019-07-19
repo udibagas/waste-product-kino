@@ -127,11 +127,18 @@ class NavigationController extends Controller
                 'order' => 2
             ],
             [
+                'icon' => 'exchange-alt',
+                'label' => 'In Out Stock',
+                'url' => '/inOutStockWp',
+                'parent_id' => 3,
+                'order' => 3
+            ],
+            [
                 'icon' => 'chart-bar',
                 'label' => 'Laporan',
                 'url' => '/reportWp',
                 'parent_id' => 3,
-                'order' => 3
+                'order' => 4
             ],
             // Sub Menu Master Data (ID : 4)
             [

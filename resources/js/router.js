@@ -12,6 +12,7 @@ import PenjualanWp from './pages/PenjualanWp'
 import PengajuanPenjualanBb from './pages/PengajuanPenjualanBb'
 import PengajuanPenjualanWp from './pages/PengajuanPenjualanWp'
 import InOutStockBb from './pages/InOutStockBb'
+import InOutStockWp from './pages/InOutStockWp'
 import StockBb from './pages/StockBb'
 import StockWp from './pages/StockWp'
 import ReportBb from './pages/ReportBb'
@@ -78,6 +79,11 @@ const routes = [
         name: 'inOutStockBb',
         path: '/inOutStockBb',
         component: InOutStockBb
+    },
+    {
+        name: 'inOutStockWp',
+        path: '/inOutStockWp',
+        component: InOutStockWp
     },
     {
         name: 'stockBb',
