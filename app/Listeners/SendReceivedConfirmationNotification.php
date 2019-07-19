@@ -32,7 +32,6 @@ class SendReceivedConfirmationNotification
         if ($event->penerimaan->pengeluaran) {
             Mail::to($event->penerimaan->pengeluaran->user->email)
                 ->to($event->penerimaan->user->email)
-                ->cc('bagas@lamsolusi.com')
                 ->queue(new ReceiptNotification($event->penerimaan));
         }
     }

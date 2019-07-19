@@ -29,7 +29,6 @@ class SendRejectedNotification2Notification
     public function handle(PengajuanPenjualanRejected2 $event)
     {
         Mail::to($event->pengajuanPenjualan->user->email)
-            ->cc('bagas@lamsolusi.com')
             ->queue(new RejectionNotification($event->pengajuanPenjualan));
     }
 }

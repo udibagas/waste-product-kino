@@ -29,7 +29,6 @@ class SendApprovalConfirmationNotification
     public function handle(PengajuanPenjualanApproved2 $event)
     {
         Mail::to($event->pengajuanPenjualan->user)
-            ->cc('bagas@lamsolusi.com')
             ->queue(new ApprovalConfirmation($event->pengajuanPenjualan));
     }
 }

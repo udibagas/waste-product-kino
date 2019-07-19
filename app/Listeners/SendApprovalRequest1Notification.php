@@ -35,7 +35,6 @@ class SendApprovalRequest1Notification implements ShouldQueue
 
         if ($skema) {
             Mail::to($skema->user)
-                ->cc('bagas@lamsolusi.com')
                 ->queue(new ApprovalRequest($event->pengajuanPenjualan, 1, $skema->user));
         }
     }
