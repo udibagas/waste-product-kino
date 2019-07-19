@@ -1,8 +1,5 @@
 <template>
-    <el-card>
-        <h4>IN OUT STOCK BB</h4>
-        <hr>
-
+    <div>
         <el-form :inline="true" class="form-right" @submit.native.prevent="() => { return }">
             <el-form-item>
                 <el-date-picker
@@ -25,7 +22,7 @@
 
         <el-table :data="paginatedData.data" stripe
         :default-sort = "{prop: 'tanggal', order: 'descending'}"
-        height="calc(100vh - 330px)"
+        height="calc(100vh - 385px)"
         v-loading="loading"
         style="border-top:1px solid #eee;"
         @filter-change="filterChange"
@@ -61,31 +58,30 @@
             :filters="$store.state.kategoriBarangList.map(l => {return {text: l.kode + ' - ' + l.nama, value: l.id}})"
             sortable="custom">
                 <template slot-scope="scope">
-                    {{ scope.row.barang.jenis }} : {{ scope.row.barang.kode }} - {{ scope.row.barang.nama }}
+                    {{ scope.row.barang.kode }} - {{ scope.row.barang.nama }}
                 </template>
             </el-table-column>
 
-            <el-table-column prop="qty_in" min-width="110" label="Qty In" sortable="custom" align="center" header-align="center">
+            <el-table-column prop="qty_in" min-width="110" label="Qty In" sortable="custom" align="right" header-align="right">
                 <template slot-scope="scope">
-                    {{ scope.row.qty_in | formatNumber }}
+                    {{ scope.row.qty_in | formatNumber }} {{scope.row.eun}}
                 </template>
             </el-table-column>
-            <el-table-column prop="qty_out" min-width="110" label="Qty Out" sortable="custom" align="center" header-align="center">
+            <el-table-column prop="qty_out" min-width="110" label="Qty Out" sortable="custom" align="right" header-align="right">
                 <template slot-scope="scope">
-                    {{ scope.row.qty_out | formatNumber }}
+                    {{ scope.row.qty_out | formatNumber }} {{scope.row.eun}}
                 </template>
             </el-table-column>
-            <el-table-column prop="stock_in" min-width="150" label="Stock In (kg)" sortable="custom" align="center" header-align="center">
+            <el-table-column prop="stock_in" min-width="110" label="Stock In" sortable="custom" align="right" header-align="right">
                 <template slot-scope="scope">
-                    {{ scope.row.stock_in | formatNumber }}
+                    {{ scope.row.stock_in | formatNumber }} kg
                 </template>
             </el-table-column>
-            <el-table-column prop="stock_out" min-width="150" label="Stock Out (kg)" sortable="custom" align="center" header-align="center">
+            <el-table-column prop="stock_out" min-width="110" label="Stock Out" sortable="custom" align="right" header-align="right">
                 <template slot-scope="scope">
-                    {{ scope.row.stock_out | formatNumber }}
+                    {{ scope.row.stock_out | formatNumber }} kg
                 </template>
             </el-table-column>
-            <el-table-column prop="eun" min-width="70" label="Eun" sortable="custom"></el-table-column>
             <el-table-column prop="no_sj" min-width="200" label="No. Surat Jalan" sortable="custom"></el-table-column>
         </el-table>
 
@@ -100,7 +96,7 @@
         :page-sizes="[10,25,50,100]"
         :total="paginatedData.total">
         </el-pagination>
-    </el-card>
+    </div>
 </template>
 
 <script>

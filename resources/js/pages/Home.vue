@@ -1,7 +1,7 @@
 <template>
     <el-card>
-        <h3>Welcome {{user.name}}!</h3>
-        
+        <h3 style="margin-top:20vh">Welcome {{user.name}}!</h3>
+
         <h1>Waste Product Management System</h1>
     </el-card>
 </template>
@@ -12,13 +12,13 @@ export default {
        return {
            user: USER
        }
-   } 
+   }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .el-card {
-    padding: 200px 0;
+    height: calc(100vh - 100px)
 }
 
 h1, h3 {

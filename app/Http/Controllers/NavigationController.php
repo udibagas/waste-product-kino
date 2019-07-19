@@ -91,13 +91,6 @@ class NavigationController extends Controller
                 'order' => 4
             ],
             [
-                'icon' => 'exchange-alt',
-                'label' => 'In Out Stock',
-                'url' => '/inOutStockBb',
-                'parent_id' => 2,
-                'order' => 5
-            ],
-            [
                 'icon' => 'chart-bar',
                 'label' => 'Laporan',
                 'url' => '/reportBb',
@@ -125,13 +118,6 @@ class NavigationController extends Controller
                 'url' => '/penjualanWp',
                 'parent_id' => 3,
                 'order' => 2
-            ],
-            [
-                'icon' => 'exchange-alt',
-                'label' => 'In Out Stock',
-                'url' => '/inOutStockWp',
-                'parent_id' => 3,
-                'order' => 3
             ],
             [
                 'icon' => 'chart-bar',
@@ -184,5 +170,7 @@ class NavigationController extends Controller
                 'order' => 5
             ],
         ]);
+
+        return Menu::where('parent_id', 0)->get();
     }
 }

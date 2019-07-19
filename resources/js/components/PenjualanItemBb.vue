@@ -3,7 +3,7 @@
         <thead>
             <tr>
                 <th rowspan="2" class="text-center">#</th>
-                <th rowspan="2" class="text-center">Kategori</th>
+                <th rowspan="2">Kategori</th>
                 <th colspan="2" class="text-center">Stock</th>
                 <th colspan="4" class="text-center">Pengajuan</th>
                 <th colspan="3" class="text-center">Aktual</th>
@@ -23,11 +23,11 @@
         <tbody>
             <tr v-for="(item, index) in data.items_bb" :key="index">
                 <td class="text-center">{{index+1}}</td>
-                <td class="text-center">{{item.kategori.kode}} - {{item.kategori.nama}}</td>
+                <td>{{item.kategori.kode}} - {{item.kategori.nama}}</td>
                 <td class="text-center">{{item.stock_berat | formatNumber}} kg</td>
-                <td class="text-center">{{item.stock_qty | formatNumber}}</td>
+                <td class="text-center">{{item.stock_qty | formatNumber}} pcs</td>
                 <td class="text-center">{{item.timbangan_manual | formatNumber}} kg</td>
-                <td class="text-center">{{item.qty | formatNumber}}</td>
+                <td class="text-center">{{item.qty | formatNumber}} pcs</td>
                 <td class="text-center">Rp {{item.kategori.harga | formatNumber}}</td>
                 <td class="text-center">Rp {{item.kategori.harga * item.timbangan_manual | formatNumber}}</td>
                 <td class="text-center">{{item.jembatan_timbang | formatNumber}} kg</td>

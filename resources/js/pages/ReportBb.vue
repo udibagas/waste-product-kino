@@ -1,88 +1,102 @@
 <template>
     <el-card>
-        <h4>REPORT SUMMARY MUTASI BARANG BEKAS</h4>
+        <h4>REPORT BARANG BEKAS</h4>
         <hr>
+        <el-tabs type="card">
+            <el-tab-pane label="SUMMARY MUTASI" lazy>
+                <el-form :inline="true" class="form-right">
+                    <el-form-item>
+                        <el-select @change="requestData" v-model="location_id" style="width:100%" placeholder="Lokasi">
+                            <el-option
+                            v-for="item in $store.state.locationList"
+                            :key="item.id"
+                            :label="item.plant + ' - ' + item.name"
+                            :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-date-picker
+                        @change="requestData"
+                        v-model="dateRange"
+                        value-format="yyyy-MM-dd"
+                        format="dd-MMM-yyyy"
+                        :clearable="false"
+                        type="daterange"
+                        range-separator="-"
+                        start-placeholder="Dari"
+                        end-placeholder="Sampai">
+                        </el-date-picker>
+                    </el-form-item>
+                    <el-form-item style="margin-right:0;">
+                        <el-button @click="exportToExcel" type="primary"><i class="el-icon-download"></i> EXPORT KE EXCEL</el-button>
+                    </el-form-item>
+                </el-form>
 
-        <el-form :inline="true" class="form-right">
-            <el-form-item>
-                <el-select @change="requestData" v-model="location_id" style="width:100%" placeholder="Lokasi">
-                    <el-option
-                    v-for="item in $store.state.locationList"
-                    :key="item.id"
-                    :label="item.plant + ' - ' + item.name"
-                    :value="item.id">
-                    </el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item>
-                <el-date-picker
-                @change="requestData"
-                v-model="dateRange"
-                value-format="yyyy-MM-dd"
-                format="dd-MMM-yyyy"
-                :clearable="false"
-                type="daterange"
-                range-separator="-"
-                start-placeholder="Dari"
-                end-placeholder="Sampai">
-                </el-date-picker>
-            </el-form-item>
-            <el-form-item style="margin-right:0;">
-                <el-button @click="exportToExcel" type="primary"><i class="el-icon-download"></i> EXPORT KE EXCEL</el-button>
-            </el-form-item>
-        </el-form>
+                <el-table :data="report" stripe
+                v-loading="loading"
+                style="border-top:1px solid #eee;">
+                    <el-table-column type="index" width="50"> </el-table-column>
+                    <el-table-column type="expand" width="40">
+                        <template slot-scope="scope">
+                            <InOutStockBbDetail :location_id="location_id" :date_range="dateRange" :kategori_id="scope.row.kategori_id" />
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Kategori Barang" min-width="150px">
+                        <template slot-scope="scope">
+                            {{ getKategori(scope.row.kategori_id) }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Qty (pcs)" header-align="center">
+                        <el-table-column prop="qty_in" min-width="100" label="IN" align="center" header-align="center">
+                            <template slot-scope="scope">
+                                {{ scope.row.qty_in | formatNumber }}
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="qty_out" min-width="100" label="OUT" align="center" header-align="center">
+                            <template slot-scope="scope">
+                                {{ scope.row.qty_out | formatNumber }}
+                            </template>
+                        </el-table-column>
+                        <el-table-column min-width="100" label="Selisih" align="center" header-align="center">
+                            <template slot-scope="scope">
+                                {{ (scope.row.qty_in - scope.row.qty_out) | formatNumber }}
+                            </template>
+                        </el-table-column>
+                    </el-table-column>
 
-        <el-table :data="report" stripe v-loading="loading" style="border-top:1px solid #eee;" height="calc(100vh - 275px)">
-            <el-table-column type="index" width="50"> </el-table-column>
-            <el-table-column label="Kategori Barang" min-width="150px">
-                <template slot-scope="scope">
-                    {{ getKategori(scope.row.kategori_id) }}
-                </template>
-            </el-table-column>
-            <el-table-column label="Qty (pcs)" header-align="center">
-                <el-table-column prop="qty_in" min-width="100" label="IN" align="center" header-align="center">
-                    <template slot-scope="scope">
-                        {{ scope.row.qty_in | formatNumber }}
-                    </template>
-                </el-table-column>
-                <el-table-column prop="qty_out" min-width="100" label="OUT" align="center" header-align="center">
-                    <template slot-scope="scope">
-                        {{ scope.row.qty_out | formatNumber }}
-                    </template>
-                </el-table-column>
-                <el-table-column min-width="100" label="Selisih" align="center" header-align="center">
-                    <template slot-scope="scope">
-                        {{ (scope.row.qty_in - scope.row.qty_out) | formatNumber }}
-                    </template>
-                </el-table-column>
-            </el-table-column>
-
-            <el-table-column label="Berat (kg)" header-align="center">
-                <el-table-column prop="stock_in" min-width="100" label="IN" align="center" header-align="center">
-                    <template slot-scope="scope">
-                        {{ scope.row.stock_in.toFixed(4) | formatNumber }}
-                    </template>
-                </el-table-column>
-                <el-table-column prop="stock_out" min-width="100" label="OUT" align="center" header-align="center">
-                    <template slot-scope="scope">
-                        {{ scope.row.stock_out.toFixed(4) | formatNumber }}
-                    </template>
-                </el-table-column>
-                <el-table-column min-width="100" label="Selisih" align="center" header-align="center">
-                    <template slot-scope="scope">
-                        {{ (scope.row.stock_in - scope.row.stock_out).toFixed(4) | formatNumber }}
-                    </template>
-                </el-table-column>
-            </el-table-column>
-        </el-table>
+                    <el-table-column label="Berat (kg)" header-align="center">
+                        <el-table-column prop="stock_in" min-width="100" label="IN" align="center" header-align="center">
+                            <template slot-scope="scope">
+                                {{ scope.row.stock_in.toFixed(4) | formatNumber }}
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="stock_out" min-width="100" label="OUT" align="center" header-align="center">
+                            <template slot-scope="scope">
+                                {{ scope.row.stock_out.toFixed(4) | formatNumber }}
+                            </template>
+                        </el-table-column>
+                        <el-table-column min-width="100" label="Selisih" align="center" header-align="center">
+                            <template slot-scope="scope">
+                                {{ (scope.row.stock_in - scope.row.stock_out).toFixed(4) | formatNumber }}
+                            </template>
+                        </el-table-column>
+                    </el-table-column>
+                </el-table>
+            </el-tab-pane>
+            <el-tab-pane label="IN OUT STOCK" lazy><InOutStockBb /></el-tab-pane>
+        </el-tabs>
     </el-card>
 </template>
 
 <script>
 import moment from 'moment'
 import exportFromJSON from 'export-from-json'
+import InOutStockBb from './InOutStockBb'
+import InOutStockBbDetail from '../components/InOutStockBbDetail'
 
 export default {
+    components: { InOutStockBb, InOutStockBbDetail },
     data() {
         return {
             loading: false,

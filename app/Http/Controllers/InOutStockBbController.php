@@ -28,11 +28,19 @@ class InOutStockBbController extends Controller
                     ->orWhere('kategori_barangs.nama', 'LIKE', '%' . $request->keyword . '%')
                     ->orWhere('kategori_barangs.kode', 'LIKE', '%' . $request->keyword . '%');
             })->when($request->location_id, function ($q) use ($request) {
-                return $q->whereIn('location_id', $request->location_id);
+                if (is_array($request->location_id)) {
+                    return $q->whereIn('location_id', $request->location_id);
+                } else {
+                    return $q->where('location_id', $request->location_id);
+                }
             })->when($request->lokasi_asal, function ($q) use ($request) {
                 return $q->whereIn('lokasi_asal', $request->lokasi_asal);
             })->when($request->kategori_barang_id, function ($q) use ($request) {
-                return $q->whereIn('kategori_barang_id', $request->kategori_barang_id);
+                if (is_array($request->kategori_barang_id)) {
+                    return $q->whereIn('kategori_barang_id', $request->kategori_barang_id);
+                } else {
+                    return $q->where('kategori_barang_id', $request->kategori_barang_id);
+                }
             })->orderBy($sort, $order)->paginate($request->pageSize);
     }
 }
