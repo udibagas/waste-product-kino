@@ -52,7 +52,7 @@
                 </el-table-column>
                 <el-table-column min-width="100" label="Selisih" align="center" header-align="center">
                     <template slot-scope="scope">
-                        {{ (scope.row.qty_in - scope.row.qty_out).toFixed(4) | formatNumber }}
+                        {{ (scope.row.qty_in - scope.row.qty_out) | formatNumber }}
                     </template>
                 </el-table-column>
             </el-table-column>
@@ -60,12 +60,12 @@
             <el-table-column label="Berat (kg)" header-align="center">
                 <el-table-column prop="stock_in" min-width="100" label="IN" align="center" header-align="center">
                     <template slot-scope="scope">
-                        {{ scope.row.stock_in | formatNumber }}
+                        {{ scope.row.stock_in.toFixed(4) | formatNumber }}
                     </template>
                 </el-table-column>
                 <el-table-column prop="stock_out" min-width="100" label="OUT" align="center" header-align="center">
                     <template slot-scope="scope">
-                        {{ scope.row.stock_out | formatNumber }}
+                        {{ scope.row.stock_out.toFixed(4) | formatNumber }}
                     </template>
                 </el-table-column>
                 <el-table-column min-width="100" label="Selisih" align="center" header-align="center">
@@ -116,7 +116,7 @@ export default {
                 return 'Unregistered Kategori : ' + id
             }
 
-            return kategori.jenis + ' : ' + kategori.kode + ' - ' + kategori.nama
+            return kategori.kode + ' - ' + kategori.nama
         },
         getUnit(id) {
             let kategori = this.$store.state.kategoriBarangList.find(k => k.id == id)
