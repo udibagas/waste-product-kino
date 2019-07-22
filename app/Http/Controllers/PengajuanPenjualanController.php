@@ -15,6 +15,8 @@ use App\Events\PengajuanPenjualanRejected1;
 use App\Events\PengajuanPenjualanRejected2;
 use App\SkemaApprovalPenjualan;
 use Illuminate\Support\Facades\Auth;
+use App\Mail\ApprovalRequest;
+use Illuminate\Support\Facades\Mail;
 
 class PengajuanPenjualanController extends Controller
 {
@@ -95,8 +97,11 @@ class PengajuanPenjualanController extends Controller
             $pengajuanPenjualan->itemsWp()->createMany($items);
         }
 
-        if ($request->status == PengajuanPenjualan::STATUS_SUBMITTED) {
-            event(new PengajuanPenjualanSubmitted($pengajuanPenjualan));
+        if ($request->status == PengajuanPenjualan::STATUS_SUBMITTED)
+        {
+            $skema = $pengajuanPenjualan->location->skemaApprovalPenjualan()->where('level', 1)->first();
+            Mail::to($skema->user)->queue(new ApprovalRequest($pengajuanPenjualan, 1, $skema->user));
+            // event(new PengajuanPenjualanSubmitted($pengajuanPenjualan));
         }
 
         return $pengajuanPenjualan;
@@ -142,8 +147,11 @@ class PengajuanPenjualanController extends Controller
             }
         }
 
-        if ($request->status == PengajuanPenjualan::STATUS_SUBMITTED) {
-            event(new PengajuanPenjualanSubmitted($pengajuanPenjualan));
+        if ($request->status == PengajuanPenjualan::STATUS_SUBMITTED)
+        {
+            $skema = $pengajuanPenjualan->location->skemaApprovalPenjualan()->where('level', 1)->first();
+            Mail::to($skema->user)->queue(new ApprovalRequest($pengajuanPenjualan, 1, $skema->user));
+            // event(new PengajuanPenjualanSubmitted($pengajuanPenjualan));
         }
 
         return $pengajuanPenjualan;
