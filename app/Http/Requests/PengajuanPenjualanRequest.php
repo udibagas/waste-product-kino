@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\HasApprovalLevel1;
+use App\Rules\HasApprovalLevel2;
 
 class PengajuanPenjualanRequest extends FormRequest
 {
@@ -26,10 +28,10 @@ class PengajuanPenjualanRequest extends FormRequest
         return [
             'tanggal' => 'required',
             'no_aju' => 'required',
-            'location_id' => 'required',
+            'location_id' => ['required', new HasApprovalLevel1, new HasApprovalLevel2],
             'period_from' => 'required_if:jenis,WP',
             'period_to' => 'required_if:jenis,WP',
-            'jenis' =>'required'
+            'jenis' =>'required',
         ];
     }
 
