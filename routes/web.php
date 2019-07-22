@@ -69,6 +69,7 @@ Route::resource('pembayaran','PembayaranController')->only(['store']);
 Route::get('inOutStockBb', 'InOutStockBbController@index');
 Route::get('inOutStockWp', 'InOutStockWpController@index');
 Route::get('report/bb', 'ReportController@bb');
+Route::get('report/wp', 'ReportController@wp');
 Route::get('stockBb/getStock', 'StockBbController@getStock');
 Route::get('stockBb/getStockList', 'StockBbController@getStockList');
 Route::get('stockBb', 'StockBbController@index');

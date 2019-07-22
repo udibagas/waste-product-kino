@@ -86,6 +86,18 @@ class UpdateStockPenjualan
                     $stock->stock = $stock->stock - $item->berat;
                     $stock->save();
                 }
+
+                DB::table('in_out_stock_wps')->insert([
+                    'tanggal' => date('Y-m-d'),
+                    'no_aju' => $event->penjualan->no_aju,
+                    'no_sj' => $event->penjualan->no_sj,
+                    'material' => $item->material_id,
+                    'material_description' => $item->material_description,
+                    'stock_out' => $item->berat,
+                    'plant' => $event->penjualan->location->plant,
+                    'sloc' => '',
+                    'mvt' => '',
+                ]);
             }
         }
     }

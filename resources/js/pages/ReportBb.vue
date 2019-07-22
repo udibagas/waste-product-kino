@@ -78,7 +78,7 @@
                         </el-table-column>
                         <el-table-column min-width="100" label="Selisih" align="center" header-align="center">
                             <template slot-scope="scope">
-                                {{ (scope.row.stock_in - scope.row.stock_out) | formatNumber }}
+                                {{ (scope.row.stock_in - scope.row.stock_out).toFixed(4) | formatNumber }}
                             </template>
                         </el-table-column>
                     </el-table-column>

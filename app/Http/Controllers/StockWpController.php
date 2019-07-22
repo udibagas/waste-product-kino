@@ -44,17 +44,35 @@ class StockWpController extends Controller
 
     public function store(Request $request)
     {
+        $tanggal = date('Y-m-d');
+
         try
         {
             DB::beginTransaction();
             foreach ($request->rows as $i => $row)
             {
+                // cari konversi
+                $konversi = KonversiBerat::where('material_id', $row['material'])->first();
+
+                $row1 = $row;
+                unset($row1['stock']);
+                unset($row1['quantity']);
+                $row1['location_id'] = 0;
+                $row1['tanggal'] = $tanggal;
+
+                if ((int) $row['quantity'] >= 0) {
+                    $row1['qty_in'] = (int) $row['quantity'];
+                    $row1['stock_in'] = $konversi ? $row1['qty_in'] * $konversi->berat : 0;
+                } else {
+                    $row1['qty_out'] = abs((int) $row['quantity']);
+                    $row1['stock_out'] = $konversi ? $row1['qty_out'] * $konversi->berat : 0;
+                }
+
+                DB::table('in_out_stock_wps')->insert($row1);
+
                 $stock = StockWp::where('plant', $row['plant'])
                     ->where('material', $row['material'])
                     ->first();
-
-                // cari konversi
-                $konversi = KonversiBerat::where('material_id', $row['material'])->first();
 
                 if ($stock) {
                     if ($konversi) {
