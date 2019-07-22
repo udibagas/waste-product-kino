@@ -391,7 +391,7 @@ export default {
                     return
                 }
 
-                let invalid3 = this.formModel.items.filter(i => i.timbangan_manual > i.stock_berat).length
+                let invalid3 = this.formModel.items.filter(i => parseFloat(i.timbangan_manual) > parseFloat(i.stock_berat)).length
 
                 if (invalid3) {
                     this.$message({ message: 'Berat melebihi stock', showClose: true, type: 'error' });
