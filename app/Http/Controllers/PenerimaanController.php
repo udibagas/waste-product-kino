@@ -78,7 +78,6 @@ class PenerimaanController extends Controller
             return response(['message' => 'Penerimaan sudah di submit.'], 500);
         }
 
-        $penerimaan->items()->delete();
         $penerimaan->delete();
         return ['message' => 'ok'];
     }
