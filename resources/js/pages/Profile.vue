@@ -37,7 +37,7 @@
                 </el-col>
                 <el-col :span="12">
                     <el-form-item label="Role">
-                        <el-input disabled v-model="formModel.role"></el-input>
+                        <el-input disabled :value="formModel.role == 1 ? 'Admin' : 'User'"></el-input>
                     </el-form-item>
 
                     <el-form-item label="Plant" v-if="formModel.location">

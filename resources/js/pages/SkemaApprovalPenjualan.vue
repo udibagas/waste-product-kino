@@ -93,8 +93,8 @@
 
                 <el-form-item label="Level" :class="formErrors.level ? 'is-error' : ''">
                     <el-select v-model="formModel.level" style="width:100%" placeholder="Level">
-                        <el-option label="Level 1" value="1"> </el-option>
-                        <el-option label="Level 2" value="2"> </el-option>
+                        <el-option label="Level 1" :value="1"> </el-option>
+                        <el-option label="Level 2" :value="2"> </el-option>
                     </el-select>
                     <div class="el-form-item__error" v-if="formErrors.user_id">{{formErrors.user_id[0]}}</div>
                 </el-form-item>

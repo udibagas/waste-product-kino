@@ -134,27 +134,36 @@
                         </el-form-item>
 
                         <el-form-item label="Role">
-                            <el-radio v-model="formModel.role" :label="0">User</el-radio>
-                            <el-radio v-model="formModel.role" :label="1">Admin</el-radio>
+                            <el-radio border v-model="formModel.role" :label="0">User</el-radio>
+                            <el-radio border v-model="formModel.role" :label="1">Admin</el-radio>
                             <div class="el-form-item__error" v-if="formErrors.role">{{formErrors.role[0]}}</div>
                         </el-form-item>
 
                         <el-form-item v-show="formModel.role == 0" label="Allow Approve Category">
-                            <el-checkbox v-model="formModel.allow_approve_kategori">Yes</el-checkbox>
+                            <el-switch
+                            v-model="formModel.allow_approve_kategori"
+                            :active-value="1"
+                            :inactive-value="0"
+                            active-color="#13ce66">
+                            </el-switch>
+                            <span style="margin-left:10px">{{!!formModel.allow_approve_kategori ? 'Yes' : 'No'}}</span>
                         </el-form-item>
 
                         <el-form-item label="Status">
-                            <el-radio v-model="formModel.status" :label="0">Inactive</el-radio>
-                            <el-radio v-model="formModel.status" :label="1">Active</el-radio>
-                            <div class="el-form-item__error" v-if="formErrors.status">{{formErrors.status[0]}}</div>
+                            <el-switch
+                            :active-value="1"
+                            :inactive-value="0"
+                            v-model="formModel.status"
+                            active-color="#13ce66">
+                            </el-switch>
+                            <span style="margin-left:10px">{{!!formModel.status ? 'Active' : 'Inactive'}}</span>
                         </el-form-item>
                     </el-col>
                 </el-row>
             </el-form>
 
             <div v-show="formModel.role == 0">
-                <h3>Hak Akses</h3>
-                <hr>
+                <el-divider>HAK AKSES</el-divider>
                 <el-tree
                 :data="$store.state.menuList"
                 :props="{ children: 'children', label: 'label' }"
@@ -175,7 +184,7 @@
 
 <script>
 export default {
-    data: function() {
+    data() {
         return {
             roles: { 0: 'User', 1: 'Admin' },
             loading: false,
@@ -195,14 +204,14 @@ export default {
         }
     },
     methods: {
-        sortChange: function(column) {
+        sortChange(column) {
             if (this.sort !== column.prop || this.order !== column.order) {
                 this.sort = column.prop;
                 this.order = column.order;
                 this.requestData();
             }
         },
-        filterChange: function(f) {
+        filterChange(f) {
             let column = Object.keys(f)[0];
             this.filters[column] = Object.values(f[column]);
             this.page = 1
@@ -219,57 +228,55 @@ export default {
                 this.store()
             }
         },
-        store: function() {
+        store() {
             this.loading = true;
-            axios.post('/user', this.formModel)
-                .then(r => {
-                    this.loading = false;
-                    this.showForm = false;
-                    this.$message({
-                        message: 'Data BERHASIL disimpan.',
-                        type: 'success'
-                    });
-                    this.requestData();
-                })
-                .catch(e => {
-                    this.loading = false;
-                    if (e.response.status == 422) {
-                        this.error = {}
-                        this.formErrors = e.response.data.errors;
-                    }
+            axios.post('/user', this.formModel).then(r => {
+                this.showForm = false;
+                this.$message({
+                    message: 'Data BERHASIL disimpan.',
+                    type: 'success',
+                    showClose: true
+                });
+                this.requestData();
+            }).catch(e => {
+                if (e.response.status == 422) {
+                    this.error = {}
+                    this.formErrors = e.response.data.errors;
+                }
 
-                    if (e.response.status == 500) {
-                        this.formErrors = {}
-                        this.error = e.response.data;
-                    }
-                })
+                if (e.response.status == 500) {
+                    this.formErrors = {}
+                    this.error = e.response.data;
+                }
+            }).finally(() => {
+                this.loading = false
+            })
         },
-        update: function() {
+        update() {
             this.loading = true;
-            axios.put('/user/' + this.formModel.id, this.formModel)
-                .then(r => {
-                    this.loading = false;
-                    this.showForm = false
-                    this.$message({
-                        message: 'Data BERHASIL disimpan.',
-                        type: 'success'
-                    });
-                    this.requestData()
-                })
-                .catch(e => {
-                    this.loading = false;
-                    if (e.response.status == 422) {
-                        this.error = {}
-                        this.formErrors = e.response.data.errors;
-                    }
+            axios.put('/user/' + this.formModel.id, this.formModel).then(r => {
+                this.showForm = false
+                this.$message({
+                    message: 'Data BERHASIL disimpan.',
+                    type: 'success',
+                    showClose: true
+                });
+                this.requestData()
+            }).catch(e => {
+                if (e.response.status == 422) {
+                    this.error = {}
+                    this.formErrors = e.response.data.errors;
+                }
 
-                    if (e.response.status == 500) {
-                        this.formErrors = {}
-                        this.error = e.response.data;
-                    }
-                })
+                if (e.response.status == 500) {
+                    this.formErrors = {}
+                    this.error = e.response.data;
+                }
+            }).finally(() => {
+                this.loading = false
+            })
         },
-        addData: function() {
+        addData() {
             this.formTitle = 'TAMBAH USER'
             this.error = {}
             this.formErrors = {}
@@ -280,25 +287,23 @@ export default {
                 rights: []
             }
             this.showForm = true
-            let _this = this
-            setTimeout(function() {
-                _this.$refs.tree.setCheckedKeys([]);
+            setTimeout(() => {
+                this.$refs.tree.setCheckedKeys([]);
             }, 10)
         },
-        editData: function(data) {
+        editData(data) {
             this.formTitle = 'EDIT USER'
             this.formModel = JSON.parse(JSON.stringify(data));
             this.error = {}
             this.formErrors = {}
             this.showForm = true
-            let _this = this
 
-            setTimeout(function() {
-                _this.$refs.tree.setCheckedKeys(_this.formModel.rights.map(r => { return r.menu_id }));
+            setTimeout(() => {
+                this.$refs.tree.setCheckedKeys(this.formModel.rights.map(r => { return r.menu_id }));
             }, 10)
         },
-        deleteData: function(id) {
-            this.$confirm('Anda yakin akan menghapus user ini?', 'Warning', {
+        deleteData(id) {
+            this.$confirm('Anda yakin akan menghapus user ini?', 'Confirm', {
                 type: 'warning',
                 confirmButtonText: 'Ya',
                 cancelButtonText: 'Tidak'
@@ -307,17 +312,19 @@ export default {
                     this.requestData();
                     this.$message({
                         message: 'User BERHASIL dihapus.',
-                        type: 'success'
+                        type: 'success',
+                        showClose: true
                     });
                 }).catch(e => {
                     this.$message({
                         message: 'User GAGAL dihapus. ' + e.response.data.message,
-                        type: 'error'
+                        type: 'error',
+                        showClose: true
                     });
                 })
-            }).catch(() => { });
+            }).catch(e => console.log(e));
         },
-        requestData: function() {
+        requestData() {
             let params = {
                 page: this.page,
                 keyword: this.keyword,
@@ -325,27 +332,25 @@ export default {
                 sort: this.sort,
                 order: this.order,
             }
-            this.loading = true;
 
+            this.loading = true;
             axios.get('/user', {params: Object.assign(params, this.filters)}).then(r => {
-                this.loading = false;
                 this.paginatedData = r.data
             }).catch(e => {
-                this.loading = false;
                 this.$message({
                     message: e.response.data.message || e.response.message,
-                    type: 'error'
+                    type: 'error',
+                    showClose: true
                 });
+            }).finally(() => {
+                this.loading = false
             })
         }
     },
-    created: function() {
+    created() {
         this.requestData();
         this.$store.commit('getLocationList');
         this.$store.commit('getMenuList');
     }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

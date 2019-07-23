@@ -9,6 +9,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
+    <script>
+        const BASE_URL = '{{url("/")}}';
+    </script>
     <script src="{{ asset('js/bootstrap.js') }}"></script>
 
     <!-- Styles -->
@@ -149,12 +152,12 @@
                         <button @click.prevent="approve(2)" class="btn btn-danger btn-lg">REJECT</button>
                     </div>
 
-                    <div v-if="approval_success">
-                        <h3 class="text-center">Approval berhasil.</h3>
+                    <div v-if="approval_success" class="alert alert-success text-center">
+                        <strong>APPROVAL BERHASIL!</strong>
                     </div>
 
-                    <div v-if="busy">
-                        <h3 class="text-center">Mohon Tunggu...</h3>
+                    <div v-if="busy" class="alert alert-danger text-center">
+                        <strong>MOHON TUNGGU...</strong>
                     </div>
                 </div>
             </div>
@@ -183,7 +186,7 @@
                         note: this.note
                     }
                     this.busy = true
-                    axios.put('{{ url("/pengajuanPenjualan/".$data->id."/approve") }}', data).then(r => {
+                    axios.put('/pengajuanPenjualan/{{ $data->id }}/approve', data).then(r => {
                         this.approval_success = true
                         // alert('Approval berhasil');
                     }).catch(e => {
