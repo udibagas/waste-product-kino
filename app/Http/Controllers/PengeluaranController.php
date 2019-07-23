@@ -78,7 +78,6 @@ class PengeluaranController extends Controller
             return response(['message' => 'Pengeluaran sudah di submit.'], 500);
         }
 
-        $pengeluaran->items()->delete();
         $pengeluaran->delete();
         return ['message' => 'ok'];
     }
