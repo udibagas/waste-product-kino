@@ -142,8 +142,8 @@
                         <el-form-item v-show="formModel.role == 0" label="Allow Approve Category">
                             <el-switch
                             v-model="formModel.allow_approve_kategori"
-                            :active-value="1"
-                            :inactive-value="0"
+                            :active-value="true"
+                            :inactive-value="false"
                             active-color="#13ce66">
                             </el-switch>
                             <span style="margin-left:10px">{{!!formModel.allow_approve_kategori ? 'Yes' : 'No'}}</span>
@@ -163,7 +163,7 @@
             </el-form>
 
             <div v-show="formModel.role == 0">
-                <el-divider>HAK AKSES</el-divider>
+                <el-divider><strong>HAK AKSES</strong></el-divider>
                 <el-tree
                 :data="$store.state.menuList"
                 :props="{ children: 'children', label: 'label' }"

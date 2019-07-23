@@ -81,8 +81,6 @@ class PenjualanController extends Controller
             return response(['message' => 'Penjualan sudah di submit.'], 500);
         }
 
-        $penjualan->itemsBb()->delete();
-        // $penjualan->itemsWp()->delete();
         $penjualan->delete();
         return ['message' => 'ok'];
     }

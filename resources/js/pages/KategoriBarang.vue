@@ -113,7 +113,7 @@
 
 <script>
 export default {
-    data: function() {
+    data() {
         return {
             user: USER,
             statuses: [
@@ -138,14 +138,14 @@ export default {
         }
     },
     methods: {
-        sortChange: function(column) {
+        sortChange(column) {
             if (this.sort !== column.prop || this.order !== column.order) {
                 this.sort = column.prop;
                 this.order = column.order;
                 this.requestData();
             }
         },
-        filterChange: function(f) {
+        filterChange(f) {
             let column = Object.keys(f)[0];
             this.filters[column] = Object.values(f[column]);
             this.page = 1
@@ -162,71 +162,67 @@ export default {
                 this.update()
             }).catch(() => {})
         },
-        store: function() {
+        store() {
             this.loading = true;
-            axios.post('/kategoriBarang', this.formModel)
-                .then(r => {
-                    this.loading = false;
-                    this.showForm = false;
-                    this.$message({
-                        message: 'Data BERHASIL disimpan.',
-                        type: 'success'
-                    });
-                    this.requestData();
-                })
-                .catch(e => {
-                    this.loading = false;
-                    if (e.response.status == 422) {
-                        this.error = {}
-                        this.formErrors = e.response.data.errors;
-                    }
+            axios.post('/kategoriBarang', this.formModel).then(r => {
+                this.showForm = false;
+                this.$message({
+                    message: 'Data BERHASIL disimpan.',
+                    type: 'success'
+                });
+                this.requestData();
+            }).catch(e => {
+                if (e.response.status == 422) {
+                    this.error = {}
+                    this.formErrors = e.response.data.errors;
+                }
 
-                    if (e.response.status == 500) {
-                        this.formErrors = {}
-                        this.error = e.response.data;
-                    }
-                })
+                if (e.response.status == 500) {
+                    this.formErrors = {}
+                    this.error = e.response.data;
+                }
+            }).finally(() => {
+                this.loading = false
+            })
         },
-        update: function() {
+        update() {
             this.loading = true;
-            axios.put('/kategoriBarang/' + this.formModel.id, this.formModel)
-                .then(r => {
-                    this.loading = false;
-                    this.showForm = false
-                    this.$message({
-                        message: 'Data BERHASIL disimpan.',
-                        type: 'success'
-                    });
-                    this.requestData()
-                })
-                .catch(e => {
-                    this.loading = false;
-                    if (e.response.status == 422) {
-                        this.error = {}
-                        this.formErrors = e.response.data.errors;
-                    }
+            axios.put('/kategoriBarang/' + this.formModel.id, this.formModel).then(r => {
+                this.showForm = false
+                this.$message({
+                    message: 'Data BERHASIL disimpan.',
+                    type: 'success'
+                });
+                this.requestData()
+            }).catch(e => {
+                if (e.response.status == 422) {
+                    this.error = {}
+                    this.formErrors = e.response.data.errors;
+                }
 
-                    if (e.response.status == 500) {
-                        this.formErrors = {}
-                        this.error = e.response.data;
-                    }
-                })
+                if (e.response.status == 500) {
+                    this.formErrors = {}
+                    this.error = e.response.data;
+                }
+            }).finally(() => {
+                this.loading = false
+            })
         },
-        addData: function() {
+        addData() {
             this.formTitle = 'TAMBAH KATEGORI BARANG'
             this.error = {}
             this.formErrors = {}
             this.formModel = {}
             this.showForm = true
         },
-        editData: function(data) {
+        editData(data) {
             this.formTitle = 'EDIT KATEGORI BARANG'
             this.formModel = JSON.parse(JSON.stringify(data));
             this.error = {}
             this.formErrors = {}
             this.showForm = true
         },
-        deleteData: function(id) {
+        deleteData(id) {
             this.$confirm('Anda yakin akan menghapus user ini?', 'Warning', {
                 type: 'warning',
                 confirmButtonText: 'Ya',
@@ -235,18 +231,20 @@ export default {
                 axios.delete('/kategoriBarang/' + id).then(r => {
                     this.requestData();
                     this.$message({
-                        message: 'User BERHASIL dihapus.',
-                        type: 'success'
+                        message: 'Kategori BERHASIL dihapus.',
+                        type: 'success',
+                        showClose: true
                     });
                 }).catch(e => {
                     this.$message({
-                        message: 'User GAGAL dihapus. ' + e.response.data.message,
-                        type: 'error'
+                        message: 'Kategori GAGAL dihapus. ' + e.response.data.message,
+                        type: 'error',
+                        showClose: true
                     });
                 })
             }).catch(() => { });
         },
-        requestData: function() {
+        requestData() {
             let params = {
                 page: this.page,
                 keyword: this.keyword,
@@ -254,23 +252,21 @@ export default {
                 sort: this.sort,
                 order: this.order,
             }
-            this.loading = true;
 
-            axios.get('/kategoriBarang', {params: Object.assign(params, this.filters)})
-                .then(r => {
-                    this.loading = false;
-                    this.paginatedData = r.data
-                })
-                .catch(e => {
-                    this.loading = false;
-                    this.$message({
-                        message: e.response.data.message || e.response.message,
-                        type: 'error'
-                    });
-                })
+            this.loading = true;
+            axios.get('/kategoriBarang', {params: Object.assign(params, this.filters)}).then(r => {
+                this.paginatedData = r.data
+            }).catch(e => {
+                this.$message({
+                    message: e.response.data.message || e.response.message,
+                    type: 'error'
+                });
+            }).finally(() => {
+                this.loading = false
+            })
         }
     },
-    created: function() {
+    created() {
         this.requestData();
     }
 }
