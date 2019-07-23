@@ -13,11 +13,11 @@ class AddForeignKeyOnPengeluaranItemsBbs11 extends Migration
      */
     public function up()
     {
-        Schema::table('pengeluaran_items', function (Blueprint $table) {
-            $table->foreign('pengeluaran_id')
-                ->references('id')->on('pengeluarans')
-                ->onDelete('cascade');
-        });
+        // Schema::table('pengeluaran_items', function (Blueprint $table) {
+        //     $table->foreign('pengeluaran_id')
+        //         ->references('id')->on('pengeluarans')
+        //         ->onDelete('cascade');
+        // });
     }
 
     /**
@@ -27,8 +27,8 @@ class AddForeignKeyOnPengeluaranItemsBbs11 extends Migration
      */
     public function down()
     {
-        Schema::table('pengeluaran_items', function (Blueprint $table) {
-            $table->dropForeign('pengeluaran_items_pengeluaran_id_foreign');
-        });
+        // Schema::table('pengeluaran_items', function (Blueprint $table) {
+        //     $table->dropForeign('pengeluaran_items_pengeluaran_id_foreign');
+        // });
     }
 }
