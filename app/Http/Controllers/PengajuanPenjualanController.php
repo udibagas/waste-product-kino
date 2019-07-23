@@ -156,8 +156,6 @@ class PengajuanPenjualanController extends Controller
             return response(['message' => 'Pengajuan penjualan sudah di submit.'], 500);
         }
 
-        $pengajuanPenjualan->itemsBb()->delete();
-        $pengajuanPenjualan->itemsWp()->delete();
         $pengajuanPenjualan->delete();
         return ['message' => 'ok'];
     }
