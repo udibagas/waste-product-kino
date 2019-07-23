@@ -172,8 +172,8 @@
                             <th style="width:100px" class="text-center">Berat</th>
                             <th style="width:100px" class="text-center">Jumlah (PCS)</th>
                             <th style="width:100px" class="text-center">Berat (KG)</th>
-                            <th style="width:100px" class="text-center">Jumlah (PCS)</th>
-                            <th style="width:100px" class="text-center">Berat (KG)</th>
+                            <th style="width:100px" class="text-center">Jumlah</th>
+                            <th style="width:100px" class="text-center">Berat</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -418,41 +418,15 @@ export default {
         },
         store: function() {
             this.loading = true;
-            axios.post('/pengeluaran', this.formModel)
-                .then(r => {
-                    this.loading = false;
-                    this.showForm = false;
-                    this.$message({
-                        message: 'Data BERHASIL disimpan.',
-                        type: 'success'
-                    });
-                    this.requestData();
-                })
-                .catch(e => {
-                    this.loading = false;
-                    if (e.response.status == 422) {
-                        this.error = {}
-                        this.formErrors = e.response.data.errors;
-                    }
-
-                    if (e.response.status == 500) {
-                        this.formErrors = {}
-                        this.error = e.response.data;
-                    }
-                })
-        },
-        update: function() {
-            this.loading = true;
-            axios.put('/pengeluaran/' + this.formModel.id, this.formModel).then(r => {
-                this.loading = false;
-                this.showForm = false
+            axios.post('/pengeluaran', this.formModel).then(r => {
+                this.showForm = false;
                 this.$message({
                     message: 'Data BERHASIL disimpan.',
-                    type: 'success'
+                    type: 'success',
+                    showClose: true
                 });
-                this.requestData()
+                this.requestData();
             }).catch(e => {
-                this.loading = false;
                 if (e.response.status == 422) {
                     this.error = {}
                     this.formErrors = e.response.data.errors;
@@ -462,6 +436,32 @@ export default {
                     this.formErrors = {}
                     this.error = e.response.data;
                 }
+            }).finally(() => {
+                this.loading = false
+            })
+        },
+        update: function() {
+            this.loading = true;
+            axios.put('/pengeluaran/' + this.formModel.id, this.formModel).then(r => {
+                this.showForm = false
+                this.$message({
+                    message: 'Data BERHASIL disimpan.',
+                    type: 'success',
+                    showClose: true
+                });
+                this.requestData()
+            }).catch(e => {
+                if (e.response.status == 422) {
+                    this.error = {}
+                    this.formErrors = e.response.data.errors;
+                }
+
+                if (e.response.status == 500) {
+                    this.formErrors = {}
+                    this.error = e.response.data;
+                }
+            }).finally(() => {
+                this.loading = false
             })
         },
         addData: function() {
@@ -558,20 +558,19 @@ export default {
                 sort: this.sort,
                 order: this.order,
             }
-            this.loading = true;
 
-            axios.get('/pengeluaran', {params: Object.assign(params, this.filters)})
-                .then(r => {
-                    this.loading = false;
-                    this.paginatedData = r.data
-                })
-                .catch(e => {
-                    this.loading = false;
-                    this.$message({
-                        message: e.response.data.message || e.response.message,
-                        type: 'error'
-                    });
-                })
+            this.loading = true;
+            axios.get('/pengeluaran', {params: Object.assign(params, this.filters)}).then(r => {
+                this.paginatedData = r.data
+            }).catch(e => {
+                this.$message({
+                    message: e.response.data.message || e.response.message,
+                    type: 'error',
+                    showClose: true
+                });
+            }).finally(() => {
+                this.loading = false
+            })
         }
     },
     created: function() {
