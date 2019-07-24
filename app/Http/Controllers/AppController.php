@@ -10,7 +10,7 @@ class AppController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('checkRole')->except('checkAuth');
+        $this->middleware('checkRole')->except(['checkAuth', 'index']);
     }
 
     public function index()
@@ -18,19 +18,19 @@ class AppController extends Controller
         return view('layouts.app');
     }
 
-    public function checkAuth(Request $request) 
+    public function checkAuth(Request $request)
     {
         if (auth()->user()->role == \App\User::ROLE_ADMIN) {
             return 'OK';
         }
 
-        $sql = "SELECT * 
-            FROM menus m 
-            JOIN user_rights ur 
-                ON ur.menu_id = m.id 
-            WHERE ur.user_id = ? 
+        $sql = "SELECT *
+            FROM menus m
+            JOIN user_rights ur
+                ON ur.menu_id = m.id
+            WHERE ur.user_id = ?
                 AND m.url = ?";
-        
+
         $allowed = DB::select($sql, [auth()->user()->id, $request->route]);
 
         if (!$allowed) {
