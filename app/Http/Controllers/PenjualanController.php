@@ -27,13 +27,13 @@ class PenjualanController extends Controller
             })->when($request->pembeli_id, function ($q) use ($request) {
                 return $q->whereIn('pembeli_id', $request->pembeli_id);
             })->when($request->location_id, function ($q) use ($request) {
-                return $q->whereIn('location_id', $request->location_id);
+                return $q->whereIn('penjualans.location_id', $request->location_id);
             })->when($request->status, function ($q) use ($request) {
                 return $q->whereIn('status', $request->status);
             })->when($request->status_pembayaran, function ($q) use ($request) {
                 return $q->whereIn('status_pembayaran', $request->status_pembayaran);
             })->when($request->user()->role == \App\User::ROLE_USER, function ($q) use ($request) {
-                return $q->where('location_id', $request->user()->location_id);
+                return $q->where('penjualans.location_id', $request->user()->location_id);
             })->when($request->jenis, function ($q) use ($request) {
                 return $q->where('jenis', $request->jenis);
             })->orderBy($sort, $order)->paginate($request->pageSize);
