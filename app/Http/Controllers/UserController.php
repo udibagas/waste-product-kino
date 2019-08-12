@@ -110,8 +110,12 @@ class UserController extends Controller
         ]);
 
         $user->update($input);
-        $user->rights()->delete();
-        $user->rights()->createMany($request->rights);
+
+        if ($request->rights) {
+            $user->rights()->delete();
+            $user->rights()->createMany($request->rights);
+        }
+
         return $user;
     }
 
@@ -126,7 +130,7 @@ class UserController extends Controller
         if ($user->id === auth()->user()->id) {
             return response(['message' => 'Tidak boleh menghapus user sendiri'], 500);
         }
-        
+
         $user->delete();
         return ['message' => 'OK'];
     }
