@@ -378,7 +378,7 @@ export default {
     },
     methods: {
         printSlipJual(id) {
-            window.open('/penjualan/' + id + '/printSlip', '_blank')
+            window.open(BASE_URL + '/penjualan/' + id + '/printSlip', '_blank')
         },
         inputPembayaran(data) {
             this.formModelPembayaran = data
