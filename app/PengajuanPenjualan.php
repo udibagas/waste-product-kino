@@ -40,6 +40,8 @@ class PengajuanPenjualan extends Model
 
     protected $with = ['itemsBb', 'itemsWp', 'location', 'user'];
 
+    protected $appends = ['summaryItems'];
+
     public function itemsBb()
     {
         return $this->hasMany(PengajuanPenjualanItemBb::class);
@@ -65,7 +67,7 @@ class PengajuanPenjualan extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function summaryItems()
+    public function getSummaryItemsAttribute()
     {
         $sql = "SELECT
             kategori,

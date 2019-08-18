@@ -285,6 +285,6 @@ class PengajuanPenjualanController extends Controller
 
     public function getItemWpSummary(PengajuanPenjualan $pengajuanPenjualan)
     {
-        return $pengajuanPenjualan->summaryItems();
+        return $pengajuanPenjualan->summaryItems;
     }
 }

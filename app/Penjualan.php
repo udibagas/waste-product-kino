@@ -32,7 +32,7 @@ class Penjualan extends Model
 
     protected $with = ['itemsBb', 'itemsWp', 'location', 'pembeli', 'pembayaran'];
 
-    protected $appends = ['terbayar'];
+    protected $appends = ['terbayar', 'summaryItems'];
 
     public function itemsBb() {
         return $this->hasMany(PenjualanItemBb::class);
@@ -77,7 +77,7 @@ class Penjualan extends Model
         return 'a';
     }
 
-    public function summaryItems()
+    public function getSummaryItemsAttribute()
     {
         $sql = "SELECT
             kategori,
