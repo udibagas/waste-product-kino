@@ -95,4 +95,9 @@ class PenjualanController extends Controller
         return Penjualan::whereRaw('YEAR(tanggal) = ? ', [$request->tahun])
             ->orderBy('id', 'DESC')->first();
     }
+
+    public function getItemWpSummary(Penjualan $penjualan)
+    {
+        return $penjualan->summaryItems();
+    }
 }

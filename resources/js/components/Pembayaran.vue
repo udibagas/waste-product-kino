@@ -1,5 +1,5 @@
 <template>
-    <table class="table table-sm table-striped table-bordered table-hover" style="width: 600px">
+    <table class="table table-sm table-striped table-bordered table-hover">
         <thead>
             <tr>
                 <th class="text-center">Update Time</th>

@@ -76,4 +76,18 @@ class Penjualan extends Model
     public function getApprover2Attribute() {
         return 'a';
     }
+
+    public function summaryItems()
+    {
+        $sql = "SELECT
+            kategori,
+            SUM(berat) AS [berat],
+            AVG(price_per_unit) AS [price_per_unit],
+            (SUM(berat) * AVG(price_per_unit)) AS [value]
+        FROM penjualan_item_wps
+        WHERE penjualan_id = :id
+        GROUP BY kategori";
+
+        return DB::select($sql, [':id' => $this->id]);
+    }
 }

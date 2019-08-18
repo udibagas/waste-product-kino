@@ -15,33 +15,22 @@
         </el-form>
 
         <el-table :data="paginatedData.data" stripe
+        @row-dblclick="(row, column, event) =>  { penjualan = row; showDetailDialog = true }"
         height="calc(100vh - 330px)"
         :default-sort = "{prop: 'tanggal', order: 'descending'}"
         v-loading="loading"
         style="border-top:1px solid #eee;"
         @filter-change="filterChange"
         @sort-change="sortChange">
-            <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
-            <el-table-column type="expand" width="20px">
-                <template slot-scope="scope">
-                    <el-tabs type="border-card">
-                        <el-tab-pane label="Items">
-                            <PenjualanItemWp :data="scope.row" />
-                        </el-tab-pane>
-                        <el-tab-pane label="Pembayaran">
-                            <Pembayaran :data="scope.row.pembayaran" />
-                        </el-tab-pane>
-                    </el-tabs>
-                </template>
-            </el-table-column>
-            <el-table-column prop="tanggal" width="100" label="Tanggal" sortable="custom">
+            <el-table-column fixed="left" type="index" width="50" :index="paginatedData.from"> </el-table-column>
+            <el-table-column fixed="left" prop="tanggal" width="100" label="Tanggal" sortable="custom">
                 <template slot-scope="scope">
                     {{ scope.row.tanggal | readableDate }}
                 </template>
             </el-table-column>
-            <el-table-column prop="user" label="User" min-width="150"></el-table-column>
-            <el-table-column min-width="150px" prop="no_sj" label="No. Surat Jalan" sortable="custom"></el-table-column>
+            <el-table-column fixed="left" min-width="150px" prop="no_sj" label="No. Surat Jalan" sortable="custom"></el-table-column>
             <el-table-column min-width="150px" prop="no_aju" label="No. Pengajuan" sortable="custom"></el-table-column>
+            <el-table-column prop="user" label="User" min-width="150"></el-table-column>
 
             <el-table-column
             prop="plant"
@@ -98,6 +87,7 @@
             </el-table-column>
 
             <el-table-column
+            fixed="right"
             prop="status"
             width="100"
             align="center"
@@ -112,6 +102,7 @@
             </el-table-column>
 
             <el-table-column
+            fixed="right"
             prop="status_pembayaran"
             width="170"
             align="center"
@@ -127,12 +118,13 @@
 
             <el-table-column fixed="right" width="40px">
                 <template slot-scope="scope">
-                    <el-dropdown v-if="scope.row.status === 0 || scope.row.status_pembayaran !== 2">
+                    <el-dropdown>
                         <span class="el-dropdown-link">
                             <i class="el-icon-more"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item v-if="scope.row.status === 0" @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
+                            <el-dropdown-item @click.native.prevent="() => { penjualan = scope.row; showDetailDialog = true;}"><i class="el-icon-zoom-in"></i> Show Detail</el-dropdown-item>
                             <el-dropdown-item v-if="scope.row.status === 0" @click.native.prevent="deleteData(scope.row.id)"><i class="el-icon-delete"></i> Hapus</el-dropdown-item>
                             <el-dropdown-item v-if="scope.row.status === 1" @click.native.prevent="printSlipJual(scope.row.id)"><i class="el-icon-printer"></i> Print Slip Jual</el-dropdown-item>
                             <el-dropdown-item v-if="scope.row.status === 1 && scope.row.status_pembayaran !== 2" @click.native.prevent="inputPembayaran(scope.row)"><i class="el-icon-check"></i> Input Pembayaran</el-dropdown-item>
@@ -153,6 +145,11 @@
         :page-sizes="[10,25,50,100]"
         :total="paginatedData.total">
         </el-pagination>
+
+        <!-- DIALOG UNTUK DETAIL -->
+        <el-dialog center v-if="!!penjualan" top="60px" title="DETAIL PENGAJUAN PENJUALAN" width="90%" :visible.sync="showDetailDialog">
+            <PenjualanDetailWp :data="penjualan" />
+        </el-dialog>
 
         <!-- FORM PEMBAYARAN -->
         <el-dialog
@@ -287,12 +284,11 @@
 
 <script>
 import moment from 'moment'
-import PenjualanItemWp from '../components/PenjualanItemWp'
-import Pembayaran from '../components/Pembayaran'
+import PenjualanDetailWp from '../components/PenjualanDetailWp'
 import FormPembayaran from '../components/FormPembayaran'
 
 export default {
-    components: { PenjualanItemWp, Pembayaran, FormPembayaran },
+    components: { PenjualanDetailWp, FormPembayaran },
     watch: {
         'formModel.pembeli_id'(v, o) {
             let pembeli = this.$store.state.pembeliList.find(p => p.id == v)
@@ -323,6 +319,8 @@ export default {
             loading: false,
             showForm: false,
             showFormPembayaran: false,
+            showDetailDialog: false,
+            penjualan: {},
             formTitle: '',
             formErrors: {},
             error: {},

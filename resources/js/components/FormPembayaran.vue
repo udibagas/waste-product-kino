@@ -126,6 +126,8 @@ export default {
 <style scoped>
 td.label {
     width: 150px;
+    background-color: #333c58;
     font-weight: bold;
+    color: #fff;
 }
 </style>

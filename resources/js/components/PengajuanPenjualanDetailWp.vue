@@ -141,7 +141,6 @@ export default {
 </script>
 
 <style scoped>
-
 .td-label {
     width: 150px;
     background-color: #333c58;

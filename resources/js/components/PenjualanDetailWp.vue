@@ -5,8 +5,8 @@
                 <tr><td class="td-label">Tanggal</td><td class="td-value">{{data.tanggal | readableDate}}</td></tr>
                 <tr><td class="td-label">No. Surat Jalan</td><td class="td-value">{{data.no_sj}}</td></tr>
                 <tr><td class="td-label">No. Pengajuan</td><td class="td-value">{{data.no_aju}}</td></tr>
-                <tr><td class="td-label">User</td><td class="td-value">{{data.user.name}}</td></tr>
-                <tr><td class="td-label">Plant</td><td class="td-value">{{data.location.plant}} - {{data.location.plant}}</td></tr>
+                <tr><td class="td-label">User</td><td class="td-value">{{data.user}}</td></tr>
+                <tr><td class="td-label">Plant</td><td class="td-value">{{data.location.plant}} - {{data.location.nama}}</td></tr>
                 <tr><td class="td-label">Pembeli</td><td class="td-value">{{data.pembeli.nama}} - {{data.pembeli.kontak}}</td></tr>
                 <tr><td class="td-label">Jembatan Timbang</td><td class="td-value">{{data.jembatan_timbang | formatNumber}} Kg</td></tr>
                 <tr><td class="td-label">Value</td><td class="td-value">Rp {{data.value | formatNumber}}</td></tr>
@@ -31,11 +31,34 @@
         </table>
 
         <el-tabs type="border-card">
-            <el-tab-pane label="ITEMS">
-                <table class="table table-sm table-bordered" style="width: 800px">
+            <el-tab-pane label="SUMMARY ITEM">
+                <table class="table table-sm table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>#</th>
+                            <th class="text-center">Kategori</th>
+                            <th class="text-center">Berat</th>
+                            <th class="text-center">Price Per Kg</th>
+                            <th class="text-center">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(item, index) in items" :key="index">
+                            <td>{{index+1}}.</td>
+                            <td>{{item.kategori}}</td>
+                            <td class="text-right">{{item.berat.toFixed(4) | formatNumber}} kg</td>
+                            <td class="text-right">Rp {{item.price_per_unit | formatNumber}}</td>
+                            <td class="text-right">Rp {{item.value | formatNumber}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </el-tab-pane>
+            <el-tab-pane label="DETAIL ITEM">
+                <table class="table table-sm table-bordered">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th class="text-center">Kategori</th>
                             <th class="text-center">Material</th>
                             <th class="text-center">Material Description</th>
                             <th class="text-center">Berat (kg)</th>
@@ -46,6 +69,7 @@
                     <tbody>
                         <tr v-for="(item, index) in data.items_wp" :key="index">
                             <td>{{index+1}}.</td>
+                            <td>{{item.kategori}}</td>
                             <td>{{item.material_id}}</td>
                             <td>{{item.material_description}}</td>
                             <td class="text-right">{{item.berat | formatNumber}} kg</td>
@@ -68,8 +92,14 @@ import Pembayaran from './Pembayaran'
 export default {
     components: { Pembayaran },
     props: ['data'],
+    watch: {
+        'data.id'(v, o) {
+            this.requestData()
+        }
+    },
     data() {
         return {
+            items: [],
             statuses: [
                 {type: 'info', label: 'Draft', value: 0},
                 {type: 'warning', label: 'Submitted', value: 1},
@@ -81,9 +111,29 @@ export default {
                 {type: 'success', label: 'Paid', value: 2},
             ]
         }
+    },
+    methods: {
+        requestData() {
+            axios.get('penjualan/getItemWpSummary/' + this.data.id).then(r => {
+                this.items = r.data
+            }).catch(e => console.log(e))
+        }
+    },
+    mounted() {
+        this.requestData()
     }
 }
 </script>
 
 <style scoped>
+.td-label {
+    width: 150px;
+    background-color: #333c58;
+    font-weight: bold;
+    color: #fff;
+}
+
+.td-value {
+    background-color: #efefef;
+}
 </style>

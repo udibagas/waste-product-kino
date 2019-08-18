@@ -62,6 +62,7 @@ Route::get('pengeluaran/getLastRecord', 'PengeluaranController@getLastRecord');
 Route::resource('pengeluaran', 'PengeluaranController')->only(['index', 'store', 'update', 'destroy']);
 Route::delete('pengeluaranItem/{pengeluaranItem}', 'PengeluaranItemController@destroy');
 Route::get('penjualan/{penjualan}/printSlip', 'PenjualanController@printSlip');
+Route::get('penjualan/getItemWpSummary/{penjualan}', 'PenjualanController@getItemWpSummary');
 Route::get('penjualan/getLastRecord','PenjualanController@getLastRecord');
 Route::resource('penjualan','PenjualanController')->only(['index', 'store', 'update', 'destroy']);
 Route::resource('pembayaran','PembayaranController')->only(['store']);
