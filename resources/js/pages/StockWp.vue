@@ -50,23 +50,33 @@
             sortable="custom">
             </el-table-column>
 
-            <el-table-column prop="posting_date" label="Posting Date" width="120" sortable="custom"></el-table-column>
-            <el-table-column prop="mat_doc" label="Mat. Doc" width="100" sortable="custom"></el-table-column>
-            <el-table-column prop="material" label="Material" width="170" sortable="custom"></el-table-column>
-            <el-table-column prop="material_description" show-overflow-tooltip min-width="350" label="Material Description" sortable="custom"></el-table-column>
+            <!-- <el-table-column prop="posting_date" label="Posting Date" width="120" sortable="custom"></el-table-column> -->
+            <!-- <el-table-column prop="mat_doc" label="Mat. Doc" width="100" sortable="custom"></el-table-column> -->
+
             <el-table-column
+            prop="kategori"
+            label="Kategori"
+            min-width="100"
+            column-key="kategori"
+            :filters="$store.state.kategoriBarangList.filter(k => k.jenis == 'WP').map(l => { return {value: l.nama, text: l.nama } })"
+            sortable="custom">
+            </el-table-column>
+
+            <el-table-column prop="material" label="Material" width="170" sortable="custom"></el-table-column>
+            <el-table-column prop="material_description" show-overflow-tooltip min-width="250" label="Material Description" sortable="custom"></el-table-column>
+            <!-- <el-table-column
             prop="mat"
             label="Mat"
             min-width="90"
             column-key="mat"
             :filters="$store.state.matList.map(l => { return {value: l, text: l } })"
             sortable="custom">
-            </el-table-column>
+            </el-table-column> -->
 
-            <el-table-column prop="doc_date" label="Doc. Date" width="110" sortable="custom"></el-table-column>
-            <el-table-column prop="entry_date" label="Entry Date" width="110" sortable="custom"></el-table-column>
-            <el-table-column prop="time" label="Time" width="75" sortable="custom"></el-table-column>
-            <el-table-column prop="bun" label="Bun" width="70" sortable="custom"></el-table-column>
+            <!-- <el-table-column prop="doc_date" label="Doc. Date" width="110" sortable="custom"></el-table-column> -->
+            <!-- <el-table-column prop="entry_date" label="Entry Date" width="110" sortable="custom"></el-table-column> -->
+            <!-- <el-table-column prop="time" label="Time" width="75" sortable="custom"></el-table-column> -->
+            <!-- <el-table-column prop="bun" label="Bun" width="70" sortable="custom"></el-table-column> -->
             <!-- <el-table-column prop="quantity" label="Qty" width="70" sortable="custom" align="right" header-align="right">
                 <template slot-scope="scope">
                     {{ scope.row.quantity | formatNumber }}
@@ -74,9 +84,22 @@
             </el-table-column> -->
             <el-table-column prop="stock" label="Stock (kg)" width="120" sortable="custom" align="right" header-align="right">
                 <template slot-scope="scope">
-                    {{ (scope.row.stock/1000) }}
+                    {{ (scope.row.stock/1000).toFixed(4) | formatNumber }}
                 </template>
             </el-table-column>
+
+            <el-table-column align="right" header-align="right" prop="price_per_unit" label="Price Per Unit" width="120">
+                <template slot-scope="scope">
+                    Rp {{ scope.row.price_per_unit | formatNumber }}
+                </template>
+            </el-table-column>
+
+            <el-table-column align="right" header-align="right" label="Value" width="120">
+                <template slot-scope="scope">
+                    Rp {{ (scope.row.stock / 1000 * scope.row.price_per_unit).toFixed(0) | formatNumber }}
+                </template>
+            </el-table-column>
+
         </el-table>
 
         <br>
@@ -286,6 +309,7 @@ export default {
         this.$store.commit('getMvtList')
         this.$store.commit('getMatList')
         this.$store.commit('getLocationList')
+        this.$store.commit('getKategoriBarangList')
         let _this = this
         $('body').on('change', '#file-upload', function(ev) {
             _this.readFile(ev);

@@ -19,13 +19,18 @@ class StockWpController extends Controller
         $sort = $request->sort ? $request->sort : 'plant';
         $order = $request->order == 'ascending' ? 'asc' : 'desc';
 
-        return StockWp::when($request->keyword, function ($q) use ($request) {
-            return $q->where('material', 'LIKE', '%' . $request->keyword . '%')
-                ->orWhere('material_description', 'LIKE', '%' . $request->keyword . '%')
-                ->orWhere('plant', 'LIKE', '%' . $request->keyword . '%')
-                ->orWhere('sloc', 'LIKE', '%' . $request->keyword . '%')
-                ->orWhere('mvt', 'LIKE', '%' . $request->keyword . '%')
-                ->orWhere('mat_doc', 'LIKE', '%' . $request->keyword . '%');
+        return StockWp::selectRaw('stock_wps.*, konversi_berats.kategori_jual AS [kategori], kategori_barangs.harga AS [price_per_unit]')
+        ->join('konversi_berats', 'konversi_berats.material_id', '=', 'stock_wps.material')
+        ->join('kategori_barangs', 'kategori_barangs.nama', '=', 'konversi_berats.kategori_jual')
+        ->when($request->keyword, function ($q) use ($request) {
+            return $q->where('stock_wps.material', 'LIKE', '%' . $request->keyword . '%')
+                ->orWhere('stock_wps.material_description', 'LIKE', '%' . $request->keyword . '%');
+                // ->orWhere('plant', 'LIKE', '%' . $request->keyword . '%')
+                // ->orWhere('sloc', 'LIKE', '%' . $request->keyword . '%')
+                // ->orWhere('mvt', 'LIKE', '%' . $request->keyword . '%')
+                // ->orWhere('mat_doc', 'LIKE', '%' . $request->keyword . '%');
+        })->when($request->kategori, function($q) use ($request) {
+            return $q->whereIn('kategori_barangs.nama', $request->kategori);
         })->when($request->plant, function($q) use ($request) {
             return $q->whereIn('plant', $request->plant);
         })->when($request->sloc, function($q) use ($request) {
