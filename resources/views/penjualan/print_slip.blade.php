@@ -48,11 +48,13 @@
 
     <br><br>
 
+    @if ($penjualan->jenis == 'BB')
     <table class="table table-striped table-bordered table-sm">
         <thead>
             <tr>
                 <th>Nama Kategori</th>
                 <th class="text-right">Berat Timbangan Manual</th>
+                <th class="text-right">Harga/Kg</th>
                 <th class="text-right">Value Penjualan</th>
             </tr>
         </thead>
@@ -60,7 +62,8 @@
             @foreach ($penjualan->itemsBb as $i)
             <tr>
                 <td>{{$i->kategori->nama}}</td>
-                <td class="text-right">{{$i->timbangan_manual}} kg</td>
+                <td class="text-right">{{number_format($i->timbangan_manual, 4)}} kg</td>
+                <td class="text-right">Rp {{number_format($i->price_per_kg)}}</td>
                 <td class="text-right">Rp {{number_format($i->value, 0)}}</td>
             </tr>
             @endforeach
@@ -81,6 +84,46 @@
             </tr>
         </tfoot>
     </table>
+    @endif
+
+    @if ($penjualan->jenis == 'WP')
+    <table class="table table-striped table-bordered table-sm">
+        <thead>
+            <tr>
+                <th>Nama Kategori</th>
+                <th class="text-right">Berat Timbangan Manual</th>
+                <th class="text-right">Harga/Kg</th>
+                <th class="text-right">Value Penjualan</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($penjualan->summaryItems as $i)
+            <tr>
+                <td>{{$i->kategori}}</td>
+                <td class="text-right">{{number_format($i->berat, 4)}} kg</td>
+                <td class="text-right">Rp {{number_format($i->price_per_unit)}}</td>
+                <td class="text-right">Rp {{number_format($i->value, 0)}}</td>
+            </tr>
+            @endforeach
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>TOTAL</th>
+                <th class="text-right">
+                    {{ number_format(array_reduce($penjualan->summaryItems, function($total, $current) {
+                        return $total + $current->berat;
+                    }, 0), 4) }} kg
+                </th>
+                <th>&nbsp;</th>
+                <th class="text-right">
+                    Rp {{ number_format(array_reduce($penjualan->summaryItems, function($total, $current) {
+                        return $total + $current->value;
+                    }, 0), 0) }}
+                </th>
+            </tr>
+        </tfoot>
+    </table>
+    @endif
 
     <table class="table table-bordered table-sm" style="margin-top:100px">
         <thead>

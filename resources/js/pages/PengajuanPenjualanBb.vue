@@ -133,7 +133,7 @@
         :total="paginatedData.total">
         </el-pagination>
 
-        <el-dialog center :visible.sync="showForm" :title="formTitle" width="900px" v-loading="loading" :close-on-click-modal="false">
+        <el-dialog top="60px" center :visible.sync="showForm" :title="formTitle" width="90%" v-loading="loading" :close-on-click-modal="false">
             <el-alert type="error" title="ERROR"
                 :description="error.message + '\n' + error.file + ':' + error.line"
                 v-show="error.message"
@@ -214,9 +214,11 @@
 
         <!-- DIALOG UNTUK SEARCH CATEGORY -->
         <el-dialog center
+        append-to-body
+        top="60px"
         :visible.sync="showCategoryList"
         title="Select Category"
-        width="900px"
+        width="500px"
         v-loading="loading"
         :close-on-click-modal="false">
             <el-input prefix-icon="el-icon-search" v-model="categoryKeyword" placeholder="Search Category"></el-input>

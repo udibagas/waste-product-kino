@@ -1,34 +1,44 @@
 <template>
     <div>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr><td class="td-label">Tanggal</td><td class="td-value">{{data.tanggal | readableDate}}</td></tr>
-                <tr><td class="td-label">No. Surat Jalan</td><td class="td-value">{{data.no_sj}}</td></tr>
-                <tr><td class="td-label">No. Pengajuan</td><td class="td-value">{{data.no_aju}}</td></tr>
-                <tr><td class="td-label">User</td><td class="td-value">{{data.user}}</td></tr>
-                <tr><td class="td-label">Plant</td><td class="td-value">{{data.location.plant}} - {{data.location.nama}}</td></tr>
-                <tr><td class="td-label">Pembeli</td><td class="td-value">{{data.pembeli.nama}} - {{data.pembeli.kontak}}</td></tr>
-                <tr><td class="td-label">Jembatan Timbang</td><td class="td-value">{{data.jembatan_timbang | formatNumber}} Kg</td></tr>
-                <tr><td class="td-label">Value</td><td class="td-value">Rp {{data.value | formatNumber}}</td></tr>
-                <tr><td class="td-label">Terbayar</td><td class="td-value">Rp {{data.terbayar | formatNumber}}</td></tr>
-                <tr><td class="td-label">Outstanding</td><td class="td-value">Rp {{data.value - data.terbayar | formatNumber}}</td></tr>
-                <tr><td class="td-label">TOP Date</td><td class="td-value">{{data.top_date | readableDate}}</td></tr>
-                <tr>
-                    <td class="td-label">Status</td>
-                    <td class="td-value">
-                        <el-tag size="small" :type="statuses[data.status].type">{{statuses[data.status].label}}</el-tag>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="td-label"> Status Pembayaran</td>
-                    <td class="td-value">
-                        <el-tag size="small" :type="statuses_pembayaran[data.status_pembayaran].type">
-                            {{statuses_pembayaran[data.status_pembayaran].label}}
-                        </el-tag>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <el-row :gutter="15">
+            <el-col :span="12">
+                <table class="table table-sm table-bordered">
+                    <tbody>
+                        <tr><td class="td-label">Tanggal</td><td class="td-value">{{data.tanggal | readableDate}}</td></tr>
+                        <tr><td class="td-label">No. Surat Jalan</td><td class="td-value">{{data.no_sj}}</td></tr>
+                        <tr><td class="td-label">No. Pengajuan</td><td class="td-value">{{data.no_aju}}</td></tr>
+                        <tr><td class="td-label">User</td><td class="td-value">{{data.user}}</td></tr>
+                        <tr><td class="td-label">Plant</td><td class="td-value">{{data.location.plant}} - {{data.location.name}}</td></tr>
+                        <tr><td class="td-label">Pembeli</td><td class="td-value">{{data.pembeli.nama}} - {{data.pembeli.kontak}}</td></tr>
+                        <tr><td class="td-label">TOP Date</td><td class="td-value">{{data.top_date | readableDate}}</td></tr>
+                    </tbody>
+                </table>
+            </el-col>
+            <el-col :span="12">
+                <table class="table table-sm table-bordered">
+                    <tbody>
+                        <tr><td class="td-label">Jembatan Timbang</td><td class="td-value">{{data.jembatan_timbang | formatNumber}} Kg</td></tr>
+                        <tr><td class="td-label">Value</td><td class="td-value">Rp {{data.value | formatNumber}}</td></tr>
+                        <tr><td class="td-label">Terbayar</td><td class="td-value">Rp {{data.terbayar | formatNumber}}</td></tr>
+                        <tr><td class="td-label">Outstanding</td><td class="td-value">Rp {{data.value - data.terbayar | formatNumber}}</td></tr>
+                        <tr>
+                            <td class="td-label">Status</td>
+                            <td class="td-value">
+                                <el-tag size="small" :type="statuses[data.status].type">{{statuses[data.status].label}}</el-tag>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td-label"> Status Pembayaran</td>
+                            <td class="td-value">
+                                <el-tag size="small" :type="statuses_pembayaran[data.status_pembayaran].type">
+                                    {{statuses_pembayaran[data.status_pembayaran].label}}
+                                </el-tag>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </el-col>
+        </el-row>
 
         <el-tabs type="border-card">
             <el-tab-pane label="SUMMARY ITEM">
@@ -43,7 +53,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(item, index) in items" :key="index">
+                        <tr v-for="(item, index) in data.summaryItems" :key="index">
                             <td>{{index+1}}.</td>
                             <td>{{item.kategori}}</td>
                             <td class="text-right">{{item.berat.toFixed(4) | formatNumber}} kg</td>
@@ -92,14 +102,8 @@ import Pembayaran from './Pembayaran'
 export default {
     components: { Pembayaran },
     props: ['data'],
-    watch: {
-        'data.id'(v, o) {
-            this.requestData()
-        }
-    },
     data() {
         return {
-            items: [],
             statuses: [
                 {type: 'info', label: 'Draft', value: 0},
                 {type: 'warning', label: 'Submitted', value: 1},
@@ -111,16 +115,6 @@ export default {
                 {type: 'success', label: 'Paid', value: 2},
             ]
         }
-    },
-    methods: {
-        requestData() {
-            axios.get('penjualan/getItemWpSummary/' + this.data.id).then(r => {
-                this.items = r.data
-            }).catch(e => console.log(e))
-        }
-    },
-    mounted() {
-        this.requestData()
     }
 }
 </script>

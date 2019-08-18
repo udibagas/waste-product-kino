@@ -235,8 +235,8 @@
                             <div class="el-form-item__error" v-if="formErrors.top_date">{{formErrors.top_date[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Jembatan Timbang" :class="formErrors.jembatan_timbang ? 'is-error' : ''">
-                            <el-input type="number" placeholder="Jembatan Timbang" v-model="formModel.jembatan_timbang"></el-input>
+                        <el-form-item label="Jembatan Timbang (Kg)" :class="formErrors.jembatan_timbang ? 'is-error' : ''">
+                            <el-input type="number" placeholder="Jembatan Timbang (Kg)" v-model="formModel.jembatan_timbang"></el-input>
                             <div class="el-form-item__error" v-if="formErrors.jembatan_timbang">{{formErrors.jembatan_timbang[0]}}</div>
                         </el-form-item>
 
@@ -266,14 +266,14 @@
                                         <td>{{i + 1}}.</td>
                                         <td>{{m.kategori}}</td>
                                         <td class="text-right">{{m.berat}} kg</td>
-                                        <td class="text-right"><input type="number" v-model="m.price_per_unit"></td>
+                                        <td class="text-right"><input @keypress="updatePrice(m.kategori, $event)" type="number" v-model="m.price_per_unit"></td>
                                         <td class="text-right">Rp {{ (m.berat * m.price_per_unit).toFixed(0) | formatNumber }}</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </el-tab-pane>
-                    <el-tab-pane label="DETAIL ITEM PENGAJUAN">
+                    <el-tab-pane label="DETAIL ITEM">
                         <div class="table-responsive">
                             <table class="table table-sm table-striped table-hover" v-if="formModel.items_wp.length > 0">
                                 <thead>
@@ -283,7 +283,7 @@
                                         <th>Material ID</th>
                                         <th>Material Name</th>
                                         <th class="text-right">Berat</th>
-                                        <th class="text-right">Price/Kg (Rp)</th>
+                                        <th class="text-right">Price/Kg</th>
                                         <th class="text-right">Value</th>
                                     </tr>
                                 </thead>
@@ -295,7 +295,7 @@
                                         <td>{{m.material_description}}</td>
                                         <td class="text-right">{{m.berat}} kg</td>
                                         <td class="text-right">Rp {{m.price_per_unit | formatNumber}}</td>
-                                        <td class="text-right">Rp {{ (m.berat * m.price_per_unit).toFixed(0) | formatNumber }}</td>
+                                        <td class="text-right">Rp {{m.value | formatNumber}}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -379,6 +379,14 @@ export default {
         }
     },
     methods: {
+        updatePrice(kategori, $event) {
+            setTimeout(() => {
+                this.formModel.items_wp.filter(i => i.kategori == kategori).forEach(i => {
+                    i.price_per_unit = $event.target.value
+                    i.value = ($event.target.value * i.berat).toFixed(0)
+                })
+            }, 100)
+        },
         printSlipJual(id) {
             window.open(BASE_URL + '/penjualan/' + id + '/printSlip', '_blank')
         },

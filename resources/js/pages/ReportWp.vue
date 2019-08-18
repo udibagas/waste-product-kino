@@ -40,8 +40,8 @@
                             <InOutStockWpDetail :plant="plant" :date_range="dateRange" :material="scope.row.material" />
                         </template>
                     </el-table-column>
-                    <el-table-column prop="material" label="Material ID" min-width="150px"> </el-table-column>
-                    <el-table-column prop="material_description" label="Material Description" min-width="150px"> </el-table-column>
+                    <el-table-column prop="material" label="Material ID" min-width="150px" show-overflow-tooltip> </el-table-column>
+                    <el-table-column prop="material_description" label="Material Description" min-width="150px" show-overflow-tooltip> </el-table-column>
                     <el-table-column label="Qty (pcs)" header-align="center">
                         <el-table-column prop="qty_in" min-width="100" label="IN" align="center" header-align="center">
                             <template slot-scope="scope">

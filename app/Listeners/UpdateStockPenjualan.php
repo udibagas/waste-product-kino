@@ -79,13 +79,11 @@ class UpdateStockPenjualan
         {
             foreach($event->penjualan->itemsWp as $item)
             {
-                $stock = StockWp::where('plant', $event->penjualan->location->plant)
-                    ->where('material', $item->material_id)->first();
-
-                if ($stock) {
-                    $stock->stock = $stock->stock - $item->berat;
-                    $stock->save();
-                }
+                DB::update('UPDATE stock_wps SET stock -= :berat WHERE plant = :plant AND material = :material', [
+                    ':berat' => $item->berat * 1000,
+                    ':plant' => $event->penjualan->location->plant,
+                    'material' => $item->material_id
+                ]);
 
                 DB::table('in_out_stock_wps')->insert([
                     'tanggal' => date('Y-m-d'),

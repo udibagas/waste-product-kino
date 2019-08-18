@@ -7,6 +7,7 @@ use App\Http\Requests\PenjualanRequest;
 use App\Penjualan;
 use App\Events\PenjualanSubmitted;
 use App\PenjualanItemBb;
+use App\PenjualanItemWp;
 
 class PenjualanController extends Controller
 {
@@ -66,6 +67,10 @@ class PenjualanController extends Controller
 
         foreach ($request->items_bb as $i) {
             PenjualanItemBb::find($i['id'])->update($i);
+        }
+
+        foreach ($request->items_wp as $i) {
+            PenjualanItemWp::find($i['id'])->update($i);
         }
 
         if ($request->status == Penjualan::STATUS_SUBMITTED) {

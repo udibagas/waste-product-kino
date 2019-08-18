@@ -144,7 +144,7 @@
 
         <br>
 
-         <el-pagination
+        <el-pagination
         @current-change="(p) => { page = p; requestData(); }"
         @size-change="(s) => { pageSize = s; requestData(); }"
         :page-size="pageSize"
@@ -156,6 +156,7 @@
 
         <!-- FORM PEMBAYARAN -->
         <el-dialog
+        top="60px"
         center
         :visible.sync="showFormPembayaran"
         :title="!!formModelPembayaran.id ? 'Input Pembayaran' : 'Edit Pembayaran'"
@@ -169,7 +170,7 @@
         </el-dialog>
 
         <!-- FORM INPUT/EDIT PENJUALAN -->
-        <el-dialog center :visible.sync="showForm" :title="formTitle" width="950px" v-loading="loading" :close-on-click-modal="false">
+        <el-dialog top="60px" center :visible.sync="showForm" :title="formTitle" width="90%" v-loading="loading" :close-on-click-modal="false">
             <el-alert type="error" title="ERROR"
                 :description="error.message + '\n' + error.file + ':' + error.line"
                 v-show="error.message"

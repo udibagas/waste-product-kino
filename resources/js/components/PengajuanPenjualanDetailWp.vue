@@ -1,38 +1,48 @@
 <template>
     <div>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr><td class="td-label">Tanggal</td><td class="td-value">{{data.tanggal | readableDate}}</td></tr>
-                <tr><td class="td-label">No. Pengajuan</td><td class="td-value">{{data.no_aju}}</td></tr>
-                <tr><td class="td-label">Plant</td><td class="td-value">{{data.location.plant}} - {{data.location.plant}}</td></tr>
-                <tr><td class="td-label">Periode</td><td class="td-value">{{data.period_from | readableDate}} - {{data.period_to | readableDate}}</td></tr>
-                <tr><td class="td-label">MVT Type</td><td class="td-value">{{data.mvt_type}}</td></tr>
-                <tr><td class="td-label">Sloc</td><td class="td-value">{{data.sloc}}</td></tr>
-                <tr><td class="td-label">Yang mengajukan</td><td class="td-value">{{data.user.name}}</td></tr>
-                <tr>
-                    <td class="td-label"> Approval 1</td>
-                    <td class="td-value">
-                        <el-tag size="small" :type="approval_statuses[data.approval1_status].type">
-                            {{approval_statuses[data.approval1_status].label}}
-                        </el-tag>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="td-label"> Approval 2</td>
-                    <td class="td-value">
-                        <el-tag size="small" :type="approval_statuses[data.approval2_status].type">
-                            {{approval_statuses[data.approval2_status].label}}
-                        </el-tag>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="td-label">Status</td>
-                    <td class="td-value">
-                        <el-tag size="small" :type="statuses[data.status].type">{{statuses[data.status].label}}</el-tag>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <el-row :gutter="15">
+            <el-col :span="12">
+                <table class="table table-sm table-bordered">
+                    <tbody>
+                        <tr><td class="td-label">Tanggal</td><td class="td-value">{{data.tanggal | readableDate}}</td></tr>
+                        <tr><td class="td-label">No. Pengajuan</td><td class="td-value">{{data.no_aju}}</td></tr>
+                        <tr><td class="td-label">Plant</td><td class="td-value">{{data.location.plant}} - {{data.location.name}}</td></tr>
+                        <tr><td class="td-label">Periode</td><td class="td-value">{{data.period_from | readableDate}} - {{data.period_to | readableDate}}</td></tr>
+                        <tr><td class="td-label">MVT Type</td><td class="td-value">{{data.mvt_type}}</td></tr>
+                    </tbody>
+                </table>
+            </el-col>
+            <el-col :span="12">
+                <table class="table table-sm table-bordered">
+                    <tbody>
+                        <tr><td class="td-label">Sloc</td><td class="td-value">{{data.sloc}}</td></tr>
+                        <tr><td class="td-label">Yang mengajukan</td><td class="td-value">{{data.user.name}}</td></tr>
+                        <tr>
+                            <td class="td-label"> Approval 1</td>
+                            <td class="td-value">
+                                <el-tag size="small" :type="approval_statuses[data.approval1_status].type">
+                                    {{approval_statuses[data.approval1_status].label}}
+                                </el-tag>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td-label"> Approval 2</td>
+                            <td class="td-value">
+                                <el-tag size="small" :type="approval_statuses[data.approval2_status].type">
+                                    {{approval_statuses[data.approval2_status].label}}
+                                </el-tag>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td-label">Status</td>
+                            <td class="td-value">
+                                <el-tag size="small" :type="statuses[data.status].type">{{statuses[data.status].label}}</el-tag>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </el-col>
+        </el-row>
 
         <el-tabs type="border-card">
             <el-tab-pane label="SUMMARY ITEM">
