@@ -8,7 +8,7 @@ class PenjualanItemWp extends Model
 {
     protected $fillable = [
         'penjualan_id', 'material_id', 'material_description',
-        'price_per_unit', 'value', 'berat'
+        'price_per_unit', 'value', 'berat', 'kategori'
     ];
 
     protected $casts = [

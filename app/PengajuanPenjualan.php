@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class PengajuanPenjualan extends Model
 {
@@ -62,5 +63,20 @@ class PengajuanPenjualan extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function summaryItems()
+    {
+        $sql = "SELECT
+            kategori,
+            SUM(stock) / 1000 AS [stock],
+            SUM(berat) AS [berat],
+            AVG(price_per_unit) AS [price_per_unit],
+            (SUM(berat) * AVG(price_per_unit)) AS [value]
+        FROM pengajuan_penjualan_item_wps
+        WHERE pengajuan_penjualan_id = :id
+        GROUP BY kategori";
+
+        return DB::select($sql, [':id' => $this->id]);
     }
 }

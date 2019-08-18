@@ -79,6 +79,7 @@ class PengajuanPenjualanController extends Controller
         {
             $items = array_map(function($i) {
                 return [
+                    'kategori' => $i['kategori'],
                     'material_id' => $i['material'],
                     'material_description' => $i['material_description'],
                     'divisi' => '-',
@@ -128,6 +129,7 @@ class PengajuanPenjualanController extends Controller
                     PengajuanPenjualanItemWp::find($i['id'])->update($i);
                 } else {
                     $pengajuanPenjualan->itemsWp()->create([
+                        'kategori' => $i['kategori'],
                         'material_id' => $i['material'],
                         'material_description' => $i['material_description'],
                         'divisi' => '-',
@@ -279,5 +281,10 @@ class PengajuanPenjualanController extends Controller
     {
         return PengajuanPenjualan::whereRaw('YEAR(tanggal) = ? ', [$request->tahun])
             ->orderBy('id', 'DESC')->first();
+    }
+
+    public function getItemWpSummary(PengajuanPenjualan $pengajuanPenjualan)
+    {
+        return $pengajuanPenjualan->summaryItems();
     }
 }

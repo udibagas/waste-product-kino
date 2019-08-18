@@ -4,17 +4,17 @@
             <tr>
                 <th class="text-center">Time</th>
                 <th class="text-center">Level</th>
-                <th>Note</th>
                 <th>Approver</th>
+                <th>Note</th>
                 <th class="text-center">Status</th>
             </tr>
         </thead>
         <tbody>
             <tr v-for="a in approval_histories" :key="a.id">
-                <td class="text-center">{{a.created_at}}</td>
+                <td class="text-center">{{a.created_at | readableDateTime }}</td>
                 <td class="text-center">{{a.level}}</td>
-                <td>{{a.note}}</td>
                 <td>{{a.user.name}}</td>
+                <td>{{a.note}}</td>
                 <td class="text-center">
                     <el-tag size="small" :type="statuses[a.status].type">
                         {{statuses[a.status].label}}
@@ -28,6 +28,11 @@
 <script>
 export default {
     props: ['pengajuan'],
+    watch: {
+        pengajuan(v, o) {
+            this.getApprovalHistory()
+        }
+    },
     data() {
         return {
             approval_histories: [],
@@ -45,7 +50,7 @@ export default {
             }).then(e => console.log(e))
         }
     },
-    created() {
+    mounted() {
         this.getApprovalHistory()
     }
 }

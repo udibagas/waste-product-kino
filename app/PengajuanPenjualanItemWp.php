@@ -8,7 +8,7 @@ class PengajuanPenjualanItemWp extends Model
 {
     protected $fillable = [
         'pengajuan_penjualan_id', 'material_id', 'material_description', 'divisi',
-        'unit', 'qty_reject', 'price_per_unit', 'value', 'stock', 'berat'
+        'unit', 'qty_reject', 'price_per_unit', 'value', 'stock', 'berat', 'kategori'
     ];
 
     protected $casts = [

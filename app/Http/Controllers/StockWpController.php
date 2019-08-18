@@ -126,13 +126,16 @@ class StockWpController extends Controller
 
     public function getList(Request $request)
     {
-        return StockWp::where('stock', '>', 0)
+        return StockWp::selectRaw('stock_wps.*, konversi_berats.kategori_jual AS [kategori], kategori_barangs.harga AS [price_per_unit]')
+        ->join('konversi_berats', 'konversi_berats.material_id', '=', 'stock_wps.material')
+        ->join('kategori_barangs', 'kategori_barangs.nama', '=', 'konversi_berats.kategori_jual')
+        ->where('stock_wps.stock', '>', 0)
         ->when($request->plant, function ($q) use ($request) {
-            return $q->where('plant', $request->plant);
+            return $q->where('stock_wps.plant', $request->plant);
         })->when($request->mvt_type, function ($q) use ($request) {
-            return $q->whereIn('mvt', $request->mvt_type);
+            return $q->whereIn('stock_wps.mvt', $request->mvt_type);
         })->when($request->sloc, function ($q) use ($request) {
-            return $q->where('sloc', $request->sloc);
-        })->orderBy('material', 'asc')->get();
+            return $q->where('stock_wps.sloc', $request->sloc);
+        })->orderBy('stock_wps.material', 'asc')->get();
     }
 }

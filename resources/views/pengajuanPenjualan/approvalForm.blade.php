@@ -119,10 +119,35 @@
                     @endif
 
                     @if ($data->jenis == "WP")
+                    <strong>SUMMARY ITEM</strong>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="text-center">#</th>
+                                <th class="text-center">Kategori</th>
+                                <th class="text-center">Berat</th>
+                                <th class="text-center">Price Per Unit</th>
+                                <th class="text-center">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($data->summaryItems() as $index => $item)
+                            <tr>
+                                <td>{{$index+1}}.</td>
+                                <td>{{$item->kategori}}</td>
+                                <td class="text-right">{{number_format($item->berat, 4)}} KG</td>
+                                <td class="text-right">Rp {{number_format($item->price_per_unit, 0)}}</td>
+                                <td class="text-right">Rp {{number_format($item->value, 0)}}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    <strong>DETAIL ITEM</strong>
                     <table class="table table-sm table-bordered">
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th class="text-center">Kategori</th>
                                 <th class="text-center">Material</th>
                                 <th class="text-center">Material Description</th>
                                 <th class="text-center">Berat</th>
@@ -134,6 +159,7 @@
                             @foreach ($data->itemsWp as $index => $item)
                             <tr>
                                 <td>{{$index+1}}.</td>
+                                <td>{{$item->kategori}}</td>
                                 <td>{{$item->material_id}}</td>
                                 <td>{{$item->material_description}}</td>
                                 <td class="text-right">{{number_format($item->berat, 4)}} KG</td>
@@ -143,6 +169,7 @@
                             @endforeach
                         </tbody>
                     </table>
+
                     @endif
 
                     <div v-show="!approval_success && !busy">

@@ -40,6 +40,7 @@ Route::get('location/getList', 'LocationController@getList');
 Route::get('navigation/refresh', 'NavigationController@store'); // untuk generate link
 Route::get('navigation', 'NavigationController@index');
 Route::get('pembeli/getList', 'PembeliController@getList');
+Route::get('pengajuanPenjualan/getItemWpSummary/{pengajuanPenjualan}', 'PengajuanPenjualanController@getItemWpSummary');
 Route::get('pengajuanPenjualan/getList', 'PengajuanPenjualanController@getList');
 Route::get('pengeluaran/getList', 'PengeluaranController@getList');
 Route::get('user/getList', 'UserController@getList');

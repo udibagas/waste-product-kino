@@ -58,11 +58,21 @@ KLIK DI SINI UNTUK PROSES LEBIH LANJUT
 @endif
 
 @if ($pengajuanPenjualan->jenis == 'WP')
+<strong>SUMMARY ITEM</strong>
 @component('mail::table')
-|Material ID | Material Description | Berat | Price per Unit | Value
-| :--- | :--- | ---: | ---: | ---: |
+|Kategori | Berat | Price per Unit | Value
+| :--- | :--- | :--- | ---: | ---: | ---: |
+@foreach ($pengajuanPenjualan->summaryItems() as $item)
+| {{$item->kategori}} | {{number_format($item->berat)}} KG | Rp {{number_format($item->price_per_unit, 0)}} | Rp {{number_format($item->value, 0)}} |
+@endforeach
+@endcomponent
+
+<strong>DETAIL ITEM</strong>
+@component('mail::table')
+|Kategori | Material ID | Material Description | Berat | Price per Unit | Value
+| :--- | :--- | :--- | ---: | ---: | ---: |
 @foreach ($pengajuanPenjualan->itemsWp as $item)
-| {{$item->material_id}} | {{$item->material_description}} | {{number_format($item->berat)}} KG | Rp {{number_format($item->price_per_unit)}} | Rp {{number_format($item->value, 0)}} |
+| {{$item->kategori}} | {{$item->material_id}} | {{$item->material_description}} | {{number_format($item->berat)}} KG | Rp {{number_format($item->price_per_unit, 0)}} | Rp {{number_format($item->value, 0)}} |
 @endforeach
 @endcomponent
 

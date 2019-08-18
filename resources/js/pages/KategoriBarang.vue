@@ -33,7 +33,7 @@
             </el-table-column>
             <el-table-column prop="status" label="Status" sortable="custom" width="100" align="center" header-align="center">
                 <template slot-scope="scope">
-                    <el-tag :type="statuses[scope.row.status].type">{{statuses[scope.row.status].label}}</el-tag>
+                    <el-tag size="mini" :type="statuses[scope.row.status].type">{{statuses[scope.row.status].label}}</el-tag>
                 </template>
             </el-table-column>
 

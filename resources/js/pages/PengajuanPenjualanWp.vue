@@ -15,24 +15,20 @@
         </el-form>
 
         <el-table :data="paginatedData.data" stripe
+        @row-dblclick="(row, column, event) =>  { pengajuanPenjualan = row; showDetailDialog = true }"
         height="calc(100vh - 330px)"
         :default-sort = "{prop: 'tanggal', order: 'descending'}"
         v-loading="loading"
         style="border-top:1px solid #eee;"
         @filter-change="filterChange"
         @sort-change="sortChange">
-            <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
-            <el-table-column type="expand" width="20px">
-                <template slot-scope="scope">
-                    <PengajuanPenjualanDetailWp :data="scope.row" />
-                </template>
-            </el-table-column>
-            <el-table-column prop="tanggal" min-width="100" label="Tanggal" sortable="custom">
+            <el-table-column fixed="left" type="index" width="50" :index="paginatedData.from"> </el-table-column>
+            <el-table-column fixed="left" prop="tanggal" min-width="100" label="Tanggal" sortable="custom">
                 <template slot-scope="scope">
                     {{ scope.row.tanggal | readableDate }}
                 </template>
             </el-table-column>
-            <el-table-column prop="no_aju" label="No. Pengajuan" sortable="custom" min-width="150"></el-table-column>
+            <el-table-column fixed="left" prop="no_aju" label="No. Pengajuan" sortable="custom" min-width="150"></el-table-column>
             <el-table-column
             min-width="150"
             prop="location_id"
@@ -56,6 +52,7 @@
             <el-table-column prop="user.name" label="Yang Mengajukan" min-width="150"></el-table-column>
 
             <el-table-column
+            fixed="right"
             prop="approval1_status"
             min-width="130"
             align="center"
@@ -72,6 +69,7 @@
             </el-table-column>
 
             <el-table-column
+            fixed="right"
             prop="approval2_status"
             min-width="130"
             align="center"
@@ -88,6 +86,7 @@
             </el-table-column>
 
             <el-table-column
+            fixed="right"
             prop="status"
             min-width="100"
             align="center"
@@ -103,13 +102,14 @@
 
             <el-table-column fixed="right" width="40px">
                 <template slot-scope="scope">
-                    <el-dropdown v-if="scope.row.approval2_status != 1">
+                    <el-dropdown>
                         <span class="el-dropdown-link">
                             <i class="el-icon-more"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
                             <!-- bisa diedit kalau status draft atau rejected -->
                             <el-dropdown-item v-if="scope.row.status == 0 || scope.row.status == 3" @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
+                            <el-dropdown-item @click.native.prevent="() => { pengajuanPenjualan = scope.row; showDetailDialog = true;}"><i class="el-icon-zoom-in"></i> Show Detail</el-dropdown-item>
                             <!-- bisa dihapus kalau status draft -->
                             <el-dropdown-item v-if="scope.row.status == 0" @click.native.prevent="deleteData(scope.row.id)"><i class="el-icon-delete"></i> Hapus</el-dropdown-item>
                             <!-- bisa diapprove kalau status submitted -->
@@ -135,7 +135,7 @@
         </el-pagination>
 
         <!-- DIALOG UNTUK FORM -->
-        <el-dialog center :visible.sync="showForm" :title="formTitle" width="900px" v-loading="loading" :close-on-click-modal="false">
+        <el-dialog top="60px" center :visible.sync="showForm" :title="formTitle" width="90%" v-loading="loading" :close-on-click-modal="false">
             <el-alert type="error" title="ERROR"
                 :description="error.message + '\n' + error.file + ':' + error.line"
                 v-show="error.message"
@@ -212,27 +212,25 @@
                     <thead>
                         <tr>
                             <th>#</th>
+                            <th>Kategori</th>
                             <th>Material ID</th>
-                            <th>Material Name</th>
-                            <!-- <th class="text-center">Unit</th> -->
-                            <!-- <th class="text-center">Qty</th> -->
+                            <th>Material Description</th>
                             <th class="text-right">Stock</th>
                             <th class="text-center">Diajukan (kg)</th>
-                            <th>Price/Unit (Rp)</th>
-                            <th>Value</th>
+                            <th class="text-right">Price/Unit (Rp)</th>
+                            <th class="text-right">Value</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(m, i) in formModel.items_wp" :key="i">
+                        <tr v-for="(m, i) in formModel.items_wp" :key="i" :class="parseFloat(m.diajukan) > parseFloat((m.stock / 1000).toFixed(4)) ? 'table-danger' : ''">
                             <td>{{i + 1}}.</td>
+                            <td>{{m.kategori}}</td>
                             <td>{{m.material}}</td>
                             <td>{{m.material_description}}</td>
-                            <!-- <td class="text-center">{{m.bun}}</td> -->
-                            <!-- <td class="text-center">{{m.quantity}}</td> -->
                             <td class="text-right">{{(m.stock / 1000).toFixed(4) | formatNumber}} kg</td>
                             <td><input type="number" step="any" class="my-input" v-model="m.diajukan" placeholder="Diajukan"></td>
-                            <td><input type="number" class="my-input" v-model="m.price_per_unit" placeholder="Price/Unit"></td>
+                            <td class="text-right">Rp. {{m.price_per_unit | formatNumber}}</td>
                             <td class="text-right">Rp {{ (m.diajukan * m.price_per_unit).toFixed(0) | formatNumber }}</td>
                             <td><a href="#" @click="deleteItem(i)" class="icon-bg"><i class="el-icon-delete"></i></a></td>
                         </tr>
@@ -247,8 +245,13 @@
             </span>
         </el-dialog>
 
+        <!-- DIALOG UNTUK DETAIL -->
+        <el-dialog center v-if="!!pengajuanPenjualan" top="60px" title="DETAIL PENGAJUAN PENJUALAN" width="90%" :visible.sync="showDetailDialog">
+            <PengajuanPenjualanDetailWp :data="pengajuanPenjualan" />
+        </el-dialog>
+
         <!-- DIALOG UNTUK SEARCH MATERIAL -->
-        <el-dialog center
+        <el-dialog top="60px" center
         :visible.sync="showMaterialList"
         title="Select Material"
         width="900px"
@@ -260,22 +263,22 @@
                     <thead>
                         <tr>
                             <th>#</th>
+                            <th>Kategori</th>
                             <th>Material ID</th>
-                            <th>Material Name</th>
-                            <!-- <th class="text-center">Unit</th> -->
-                            <!-- <th class="text-center">Qty</th> -->
-                            <th class="text-right">Stock (kg)</th>
+                            <th>Material Description</th>
+                            <th class="text-right">Stock</th>
+                            <th class="text-right">Price per Kg</th>
                             <th style="width:80px"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="(m, i) in filteredMaterial.slice((materialPage - 1) * 10, materialPage * 10)" :key="i">
                             <td>{{(i + 1) + ((materialPage - 1) * 10)}}.</td>
+                            <td>{{m.kategori}}</td>
                             <td>{{m.material}}</td>
                             <td>{{m.material_description}}</td>
-                            <!-- <td class="text-center">{{m.bun}}</td> -->
-                            <!-- <td class="text-center">{{m.quantity}}</td> -->
-                            <td class="text-right">{{(m.stock / 1000).toFixed(4) | formatNumber}}</td>
+                            <td class="text-right">{{(m.stock / 1000).toFixed(4) | formatNumber}} kg</td>
+                            <td class="text-right">Rp. {{m.price_per_unit | formatNumber}}</td>
                             <td class="text-center"><input type="checkbox" :value="m" v-model="selectedMaterial"></td>
                         </tr>
                     </tbody>
@@ -333,7 +336,7 @@ export default {
         filteredMaterial() {
             let keyword = this.materialKeyword.toLowerCase();
             return this.materials
-                .filter(m => m.stock > 0 && (m.material.toLowerCase().includes(keyword) || m.material_description.toLowerCase().includes(keyword)))
+                .filter(m => m.stock > 0 && (m.kategori.toLowerCase().includes(keyword) || m.material.toLowerCase().includes(keyword) || m.material_description.toLowerCase().includes(keyword)))
                 .filter(m => this.formModel.items_wp.findIndex(i => i.material == m.material) == -1)
         }
     },
@@ -372,7 +375,9 @@ export default {
             materials: [],
             selectedMaterial: [],
             materialKeyword: '',
-            materialPage: 1
+            materialPage: 1,
+            showDetailDialog: false,
+            pengajuanPenjualan: {}
         }
     },
     methods: {
@@ -401,10 +406,12 @@ export default {
             this.showMaterialList = false
             this.selectedMaterial.forEach(m => {
                 let exists = this.formModel.items_wp.find(i => i.material == m.material)
+
                 if (!exists) {
                     this.formModel.items_wp.push({
                         diajukan: (m.stock / 1000).toFixed(4),
-                        price_per_unit: 0,
+                        price_per_unit: m.price_per_unit,
+                        kategori: m.kategori,
                         material: m.material,
                         material_description: m.material_description,
                         stock: m.stock
@@ -493,22 +500,25 @@ export default {
             }).catch(e => console.log(e))
         },
         save() {
-            let invalid = this.formModel.items_wp.filter(i => i.diajukan > i.stock / 1000)
-            if (invalid.length > 0) {
+            let invalid = this.formModel.items_wp.find(i => parseFloat(i.diajukan) > parseFloat((i.stock / 1000).toFixed(4)))
+            if (invalid) {
+                console.log(parseFloat((invalid.stock / 1000).toFixed(4)), invalid.diajukan)
                 this.$message({
-                    message: 'Jumlah diajukan melebihi stock.',
+                    message: 'Jumlah diajukan melebihi stock untuk material ' + invalid.material,
                     type: 'error',
-                    showClose: true
+                    showClose: true,
+                    duration: 10000
                 });
                 return
             }
 
-            let invalid_price = this.formModel.items_wp.filter(i => !i.price_per_unit)
-            if (invalid_price.length > 0) {
+            let invalid1 = this.formModel.items_wp.find(i => parseFloat(i.diajukan) == 0)
+            if (invalid1) {
                 this.$message({
-                    message: 'Masukkan Price/Unit.',
+                    message: 'Jumlah diajukan tidak boleh 0 untuk material ' + invalid1.material,
                     type: 'error',
-                    showClose: true
+                    showClose: true,
+                    duration: 10000
                 });
                 return
             }
@@ -613,6 +623,7 @@ export default {
             this.formModel.items_wp = data.items_wp.map(i => {
                 return {
                     id: i.id,
+                    kategori: i.kategori,
                     material: i.material_id,
                     material_description: i.material_description,
                     diajukan: i.berat,
@@ -677,6 +688,7 @@ export default {
         this.$store.commit('getLocationList');
         this.$store.commit('getSlocList');
         this.$store.commit('getMvtList');
+        this.$store.commit('getKategoriBarangList');
     }
 }
 </script>
