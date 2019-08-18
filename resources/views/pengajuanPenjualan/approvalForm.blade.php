@@ -131,7 +131,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($data->summaryItems() as $index => $item)
+                            @foreach ($data->summaryItems as $index => $item)
                             <tr>
                                 <td>{{$index+1}}.</td>
                                 <td>{{$item->kategori}}</td>

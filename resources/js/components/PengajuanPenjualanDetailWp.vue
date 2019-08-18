@@ -49,7 +49,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(item, index) in items" :key="index">
+                        <tr v-for="(item, index) in data.summaryItems" :key="index">
                             <td>{{index+1}}.</td>
                             <td>{{item.kategori}}</td>
                             <td class="text-right">{{item.stock.toFixed(4) | formatNumber}} kg</td>
@@ -105,11 +105,6 @@ import ApprovalHistory from './ApprovalHistory'
 export default {
     components: { ApprovalHistory },
     props: ['data'],
-    watch: {
-        'data.id'(v, o) {
-            this.requestData()
-        }
-    },
     data() {
         return {
             statuses: [
@@ -124,18 +119,7 @@ export default {
                 {type: 'success', label: 'Approved', value: 1},
                 {type: 'danger', label: 'Rejected', value: 2},
             ],
-            items: []
         }
-    },
-    methods: {
-        requestData() {
-            axios.get('pengajuanPenjualan/getItemWpSummary/' + this.data.id).then(r => {
-                this.items = r.data
-            }).catch(e => console.log(e))
-        }
-    },
-    mounted() {
-        this.requestData()
     }
 }
 </script>

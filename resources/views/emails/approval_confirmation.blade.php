@@ -62,8 +62,8 @@ KLIK DI SINI UNTUK PROSES LEBIH LANJUT
 @component('mail::table')
 |Kategori | Berat | Price per Unit | Value
 | :--- | :--- | :--- | ---: | ---: | ---: |
-@foreach ($pengajuanPenjualan->summaryItems() as $item)
-| {{$item->kategori}} | {{number_format($item->berat)}} KG | Rp {{number_format($item->price_per_unit, 0)}} | Rp {{number_format($item->value, 0)}} |
+@foreach ($pengajuanPenjualan->summaryItems as $item)
+| {{$item->kategori}} | {{number_format($item->berat, 4)}} KG | Rp {{number_format($item->price_per_unit, 0)}} | Rp {{number_format($item->value, 0)}} |
 @endforeach
 @endcomponent
 
@@ -72,7 +72,7 @@ KLIK DI SINI UNTUK PROSES LEBIH LANJUT
 |Kategori | Material ID | Material Description | Berat | Price per Unit | Value
 | :--- | :--- | :--- | ---: | ---: | ---: |
 @foreach ($pengajuanPenjualan->itemsWp as $item)
-| {{$item->kategori}} | {{$item->material_id}} | {{$item->material_description}} | {{number_format($item->berat)}} KG | Rp {{number_format($item->price_per_unit, 0)}} | Rp {{number_format($item->value, 0)}} |
+| {{$item->kategori}} | {{$item->material_id}} | {{$item->material_description}} | {{number_format($item->berat, 4)}} KG | Rp {{number_format($item->price_per_unit, 0)}} | Rp {{number_format($item->value, 0)}} |
 @endforeach
 @endcomponent
 

@@ -147,12 +147,13 @@
         </el-pagination>
 
         <!-- DIALOG UNTUK DETAIL -->
-        <el-dialog center v-if="!!penjualan" top="60px" title="DETAIL PENGAJUAN PENJUALAN" width="90%" :visible.sync="showDetailDialog">
+        <el-dialog center v-if="!!penjualan" top="60px" title="DETAIL PENJUALAN" width="90%" :visible.sync="showDetailDialog">
             <PenjualanDetailWp :data="penjualan" />
         </el-dialog>
 
         <!-- FORM PEMBAYARAN -->
         <el-dialog
+        top="60px"
         center
         :visible.sync="showFormPembayaran"
         :title="!!formModelPembayaran.id ? 'Input Pembayaran' : 'Edit Pembayaran'"
@@ -166,7 +167,7 @@
         </el-dialog>
 
         <!-- FORM INPUT/EDIT PENJUALAN -->
-        <el-dialog center :visible.sync="showForm" :title="formTitle" width="950px" v-loading="loading" :close-on-click-modal="false">
+        <el-dialog top="60px" center :visible.sync="showForm" :title="formTitle" width="950px" v-loading="loading" :close-on-click-modal="false">
             <el-alert type="error" title="ERROR"
                 :description="error.message + '\n' + error.file + ':' + error.line"
                 v-show="error.message"
@@ -247,30 +248,60 @@
                     </el-col>
                 </el-row>
 
-                <div class="table-responsive">
-                    <table class="table table-sm table-striped table-hover" v-if="formModel.items_wp.length > 0">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Material ID</th>
-                                <th>Material Name</th>
-                                <th class="text-center">Berat (kg)</th>
-                                <th>Price/Unit (Rp)</th>
-                                <th>Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(m, i) in formModel.items_wp" :key="i">
-                                <td>{{i + 1}}.</td>
-                                <td>{{m.material_id}}</td>
-                                <td>{{m.material_description}}</td>
-                                <td>{{m.berat}}</td>
-                                <td>{{m.price_per_unit}}</td>
-                                <td class="text-right">Rp {{ m.value | formatNumber }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <el-tabs type="border-card">
+                    <el-tab-pane label="SUMMARY ITEM">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped table-hover" v-if="formModel.summaryItems.length > 0">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Kategori</th>
+                                        <th class="text-right">Berat</th>
+                                        <th class="text-right">Price/Kg (Rp)</th>
+                                        <th class="text-right">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(m, i) in formModel.summaryItems" :key="i">
+                                        <td>{{i + 1}}.</td>
+                                        <td>{{m.kategori}}</td>
+                                        <td class="text-right">{{m.berat}} kg</td>
+                                        <td class="text-right"><input type="number" v-model="m.price_per_unit"></td>
+                                        <td class="text-right">Rp {{ (m.berat * m.price_per_unit).toFixed(0) | formatNumber }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </el-tab-pane>
+                    <el-tab-pane label="DETAIL ITEM PENGAJUAN">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped table-hover" v-if="formModel.items_wp.length > 0">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Kategori</th>
+                                        <th>Material ID</th>
+                                        <th>Material Name</th>
+                                        <th class="text-right">Berat</th>
+                                        <th class="text-right">Price/Kg (Rp)</th>
+                                        <th class="text-right">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(m, i) in formModel.items_wp" :key="i">
+                                        <td>{{i + 1}}.</td>
+                                        <td>{{m.kategori}}</td>
+                                        <td>{{m.material_id}}</td>
+                                        <td>{{m.material_description}}</td>
+                                        <td class="text-right">{{m.berat}} kg</td>
+                                        <td class="text-right">Rp {{m.price_per_unit | formatNumber}}</td>
+                                        <td class="text-right">Rp {{ (m.berat * m.price_per_unit).toFixed(0) | formatNumber }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </el-tab-pane>
+                </el-tabs>
             </el-form>
 
             <span slot="footer" class="dialog-footer">
@@ -286,6 +317,7 @@
 import moment from 'moment'
 import PenjualanDetailWp from '../components/PenjualanDetailWp'
 import FormPembayaran from '../components/FormPembayaran'
+import lodash from 'lodash'
 
 export default {
     components: { PenjualanDetailWp, FormPembayaran },
@@ -310,6 +342,7 @@ export default {
 
             if (!!pengajuan) {
                 this.formModel.items_wp = pengajuan.items_wp
+                this.formModel.summaryItems = pengajuan.summaryItems
             }
 
         }
@@ -324,7 +357,7 @@ export default {
             formTitle: '',
             formErrors: {},
             error: {},
-            formModel: { jenis: 'WP', items_wp: [] },
+            formModel: { jenis: 'WP', items_wp: [], summaryItems: [] },
             formModelPembayaran: {},
             keyword: '',
             page: 1,
@@ -440,7 +473,8 @@ export default {
                 tanggal: moment().format('YYYY-MM-DD'),
                 top_date: moment().add(30, 'days').format('YYYY-MM-DD'),
                 status: 0,
-                items_wp: []
+                items_wp: [],
+                summaryItems: []
             }
 
             axios.get('/penjualan/getLastRecord', {
