@@ -209,6 +209,34 @@
                 <p> <el-button type="primary" @click="searchMaterial" icon="el-icon-search">SEARCH MATERIAL</el-button> </p>
 
                 <el-tabs type="border-card">
+                    <el-tab-pane label="SUMMARY ITEM">
+                        <table class="table table-sm table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Kategori</th>
+                                    <th class="text-right">Stock</th>
+                                    <th class="text-right">Diajukan (kg)</th>
+                                    <th class="text-right">Selisih</th>
+                                    <th class="text-right">Price/Kg</th>
+                                    <th class="text-right">Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(m, i) in summaryItems" :key="i" :class="parseFloat(m.diajukan) > parseFloat((m.stock / 1000)) ? 'table-danger' : ''">
+                                    <td>{{i + 1}}.</td>
+                                    <td>{{m.kategori}}</td>
+                                    <td class="text-right">{{(m.stock / 1000).toFixed(4) | formatNumber}} kg</td>
+                                    <td class="text-right">
+                                        <input @change="updateDiajukan(m.kategori, $event)" type="number" step="any" class="my-input" v-model="m.diajukan">
+                                    </td>
+                                    <td class="text-right">{{(m.stock / 1000 - m.diajukan).toFixed(4) | formatNumber}} kg</td>
+                                    <td class="text-right">Rp. {{m.price_per_unit | formatNumber}}</td>
+                                    <td class="text-right">Rp {{ (m.diajukan * m.price_per_unit).toFixed(0) | formatNumber }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </el-tab-pane>
                     <el-tab-pane label="DETAIL ITEM">
                         <table class="table table-sm table-striped table-hover">
                             <thead>
@@ -218,51 +246,25 @@
                                     <th>Material ID</th>
                                     <th>Material Description</th>
                                     <th class="text-right">Stock</th>
-                                    <th class="text-center">Diajukan (kg)</th>
-                                    <th class="text-center">Selisih</th>
-                                    <th class="text-right">Price/Unit (Rp)</th>
+                                    <th class="text-right">Diajukan</th>
+                                    <th class="text-right">Selisih</th>
+                                    <th class="text-right">Price/Kg</th>
                                     <th class="text-right">Value</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(m, i) in formModel.items_wp" :key="i" :class="parseFloat(m.diajukan) > parseFloat((m.stock / 1000).toFixed(4)) ? 'table-danger' : ''">
+                                <tr v-for="(m, i) in formModel.items_wp" :key="i" :class="m.diajukan == 0 ? 'table-danger' : ''">
                                     <td>{{i + 1}}.</td>
                                     <td>{{m.kategori}}</td>
                                     <td>{{m.material}}</td>
                                     <td>{{m.material_description}}</td>
                                     <td class="text-right">{{(m.stock / 1000).toFixed(4) | formatNumber}} kg</td>
-                                    <td><input type="number" step="any" class="my-input" v-model="m.diajukan" placeholder="Diajukan"></td>
+                                    <td class="text-right">{{parseFloat(m.diajukan).toFixed(4) | formatNumber}} kg</td>
                                     <td class="text-right">{{(m.stock / 1000 - m.diajukan).toFixed(4) | formatNumber}} kg</td>
                                     <td class="text-right">Rp. {{m.price_per_unit | formatNumber}}</td>
-                                    <td class="text-right">Rp {{ (m.diajukan * m.price_per_unit).toFixed(0) | formatNumber }}</td>
+                                    <td class="text-right">Rp. {{ (m.diajukan * m.price_per_unit).toFixed(0) | formatNumber }}</td>
                                     <td><a href="#" @click="deleteItem(i)" class="icon-bg"><i class="el-icon-delete"></i></a></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </el-tab-pane>
-                    <el-tab-pane label="SUMMARY ITEM">
-                        <table class="table table-sm table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Kategori</th>
-                                    <th class="text-right">Stock</th>
-                                    <th class="text-right">Diajukan</th>
-                                    <th class="text-right">Selisih</th>
-                                    <th class="text-right">Price/Unit</th>
-                                    <th class="text-right">Value</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(m, i) in summaryItems" :key="i" :class="parseFloat(m.diajukan) > parseFloat((m.stock / 1000).toFixed(4)) ? 'table-danger' : ''">
-                                    <td>{{i + 1}}.</td>
-                                    <td>{{m.kategori}}</td>
-                                    <td class="text-right">{{(m.stock / 1000).toFixed(4) | formatNumber}} kg</td>
-                                    <td class="text-right">{{m.diajukan | formatNumber}} kg</td>
-                                    <td class="text-right">{{(m.stock / 1000 - m.diajukan).toFixed(4) | formatNumber}} kg</td>
-                                    <td class="text-right">Rp. {{m.price_per_unit | formatNumber}}</td>
-                                    <td class="text-right">Rp {{ (m.diajukan * m.price_per_unit).toFixed(0) | formatNumber }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -353,16 +355,19 @@ export default {
 
             if (v != o && !this.formModel.id) {
                 this.formModel.items_wp = []
+                this.summaryItems = []
             }
         },
         'formModel.sloc'(v, o) {
             if (v != o && !this.formModel.id) {
                 this.formModel.items_wp = []
+                this.summaryItems = []
             }
         },
         'formModel.mvt_type'(v, o) {
             if (v != o && !this.formModel.id) {
                 this.formModel.items_wp = []
+                this.summaryItems = []
             }
         }
     },
@@ -370,23 +375,9 @@ export default {
         filteredMaterial() {
             let keyword = this.materialKeyword.toLowerCase();
             return this.materials
-                .filter(m => m.stock > 0 && (m.kategori.toLowerCase().includes(keyword) || m.material.toLowerCase().includes(keyword) || m.material_description.toLowerCase().includes(keyword)))
+                .filter(m => parseFloat(m.stock) > 0)
+                .filter(m => m.kategori.toLowerCase().includes(keyword) || m.material.toLowerCase().includes(keyword) || m.material_description.toLowerCase().includes(keyword))
                 .filter(m => this.formModel.items_wp.findIndex(i => i.material == m.material) == -1)
-        },
-        summaryItems() {
-            let groupedItems = lodash.groupBy(this.formModel.items_wp, 'kategori')
-            let summaries = [];
-
-            for (let i in groupedItems) {
-                summaries.push({
-                    kategori: i,
-                    stock: groupedItems[i].reduce((t, c) => parseFloat(c.stock) + t, 0),
-                    diajukan: groupedItems[i].reduce((t, c) => parseFloat(c.diajukan) + t, 0),
-                    price_per_unit: groupedItems[i][0].price_per_unit,
-                })
-            }
-
-            return summaries;
         }
     },
     data: function() {
@@ -426,10 +417,48 @@ export default {
             materialKeyword: '',
             materialPage: 1,
             showDetailDialog: false,
-            pengajuanPenjualan: {}
+            pengajuanPenjualan: {},
+            summaryItems: []
         }
     },
     methods: {
+        updateDiajukan(kategori, $event) {
+            let row = this.summaryItems.find(s => s.kategori == kategori)
+
+            if ($event.target.value > row.stock/1000) {
+                this.$message({ message: 'Pengajuan melebihi stock', showClose: true, type: 'error' });
+                return
+            }
+
+            let totalDiajukan = $event.target.valueAsNumber;
+
+            this.formModel.items_wp.filter(i => i.kategori == kategori).forEach(i => {
+                if (totalDiajukan >= (i.stock/1000)) {
+                    totalDiajukan -= (i.stock/1000)
+                    i.diajukan = i.stock/1000
+                }
+
+                if (totalDiajukan < (i.stock/1000)) {
+                    i.diajukan = totalDiajukan
+                    totalDiajukan = 0
+                }
+            })
+        },
+        groupItem() {
+            let groupedItems = lodash.groupBy(this.formModel.items_wp, 'kategori')
+            let summaries = [];
+
+            for (let i in groupedItems) {
+                summaries.push({
+                    kategori: i,
+                    stock: groupedItems[i].reduce((t, c) => parseFloat(c.stock) + t, 0),
+                    diajukan: groupedItems[i].reduce((t, c) => parseFloat(c.diajukan) + t, 0),
+                    price_per_unit: groupedItems[i][0].price_per_unit,
+                })
+            }
+
+            this.summaryItems = summaries;
+        },
         searchMaterial() {
             if (!this.formModel.location_id) {
                 this.$message({ message: 'Mohon pilih Plant', showClose: true, type: 'error' });
@@ -458,7 +487,8 @@ export default {
 
                 if (!exists) {
                     this.formModel.items_wp.push({
-                        diajukan: (m.stock / 1000).toFixed(4),
+                        // diajukan: (m.stock / 1000).toFixed(4),
+                        diajukan: 0,
                         price_per_unit: m.price_per_unit,
                         kategori: m.kategori,
                         material: m.material,
@@ -467,6 +497,8 @@ export default {
                     })
                 }
             })
+
+            this.groupItem()
         },
         approve(data, status) {
             // kalau reject harus pake note
@@ -530,6 +562,7 @@ export default {
 
             if (!items[index].id) {
                 items.splice(index, 1)
+                this.groupItem()
                 return
             }
 
@@ -541,6 +574,7 @@ export default {
                 axios.delete('/pengajuanPenjualanItemWp/' + items[index].id).then(r => {
                     this.$message({ message: 'Item berhasil dihapus', showClose: true, type: 'success' });
                     items.splice(index, 1);
+                    this.groupItem()
                     this.requestData()
                 }).catch(e => {
                     this.$message({ message: 'Item gagal dihapus', showClose: true, type: 'error' });
