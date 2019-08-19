@@ -56,7 +56,7 @@
             <el-table-column
             prop="kategori"
             label="Kategori"
-            min-width="100"
+            min-width="120"
             column-key="kategori"
             :filters="$store.state.kategoriBarangList.filter(k => k.jenis == 'WP').map(l => { return {value: l.nama, text: l.nama } })"
             sortable="custom">
