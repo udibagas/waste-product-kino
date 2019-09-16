@@ -78,7 +78,7 @@ Route::get('stockBb', 'StockBbController@index');
 
 // MASTER DATA
 Route::resource('kategoriBarang', 'KategoriBarangController')->only(['index', 'store', 'update', 'destroy']);
-Route::resource('konversiBerat', 'KonversiBeratController')->only(['index', 'store']);
+Route::resource('konversiBerat', 'KonversiBeratController')->only(['index', 'store', 'update', 'destroy']);
 Route::resource('location', 'LocationController')->only(['index', 'store', 'update', 'destroy']);
 Route::resource('pembeli', 'PembeliController')->only(['index', 'store', 'update', 'destroy']);
 Route::resource('skemaApprovalPenjualan', 'SkemaApprovalPenjualanController')->only(['index', 'store', 'update', 'destroy']);
