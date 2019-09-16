@@ -45,10 +45,10 @@
 
 @if ($pengajuanPenjualan->jenis == 'BB')
 @component('mail::table')
-|Kategori | Jumlah | Berat |
+|Kategori | Berat/Qty | Satuan |
 | :--- | ---: | ---: |
 @foreach ($pengajuanPenjualan->itemsBb as $item)
-| {{$item->kategori->jenis}} : {{$item->kategori->kode}} - {{$item->kategori->nama}} | {{number_format($item->jumlah)}} {{$item->eun}} | {{number_format($item->timbangan_manual)}} KG |
+| {{$item->kategori->jenis}} : {{$item->kategori->kode}} - {{$item->kategori->nama}} | {{number_format($item->timbangan_manual)}} | {{$item->eun}} |
 @endforeach
 @endcomponent
 

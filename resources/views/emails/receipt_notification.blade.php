@@ -36,10 +36,10 @@ Pengeluaran barang bekas dengan nomor {{ $penerimaan->no_sj_keluar }} telah dite
 @endcomponent
 
 @component('mail::table')
-|Kategori | Jumlah Kirim | Jumlah Terima | Selisih Jumlah | Timbangan Kirim | Timbangan Terima | Selisih Timbangan | Keterangan |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+|Kategori | Berat/Qty Kirim | Berat/Qty Terima | Selisih | Satuan | Keterangan |
+| :--- | :---: | :---: | :---: | :---: | :---: |
 @foreach ($penerimaan->items as $i)
-| {{$i->barang->jenis}} : {{$i->barang->kode}} - {{$i->barang->nama}} | {{number_format($i->qty_kirim)}} | {{number_format($i->qty_terima)}} | {{number_format($i->qty_terima - $i->qty_kirim)}} | {{number_format($i->timbangan_manual_kirim)}} kg | {{number_format($i->timbangan_manual_terima)}} kg | {{number_format($i->timbangan_manual_terima - $i->timbangan_manual_kirim)}} kg | {{$i->keterangan}} |
+| {{$i->barang->jenis}} : {{$i->barang->kode}} - {{$i->barang->nama}} | {{number_format($i->timbangan_manual_kirim)}} | {{number_format($i->timbangan_manual_terima)}} | {{number_format($i->timbangan_manual_terima - $i->timbangan_manual_kirim)}} | {{$i->eun}} | {{$i->keterangan}} |
 @endforeach
 @endcomponent
 
