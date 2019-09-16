@@ -7,14 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class PengeluaranItem extends Model
 {
     protected $fillable = [
-        'pengeluaran_id', 'kategori_barang_id', 'qty',
+        'pengeluaran_id', 'kategori_barang_id',
         'eun', 'timbangan_manual'
     ];
 
     protected $casts = [
         'pengeluaran_id' => 'integer',
         'kategori_barang_id' => 'integer',
-        'qty' => 'integer',
         'timbangan_manual' => 'float'
     ];
 
