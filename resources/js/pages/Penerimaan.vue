@@ -19,14 +19,10 @@
         :default-sort = "{prop: 'tanggal', order: 'descending'}"
         v-loading="loading"
         style="border-top:1px solid #eee;"
+        @row-dblclick="(row, column, event) =>  { selectedData = row; showDetail = true }"
         @filter-change="filterChange"
         @sort-change="sortChange">
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
-            <el-table-column type="expand" width="20px">
-                <template slot-scope="scope">
-                    <PenerimaanDetail :data="scope.row" />
-                </template>
-            </el-table-column>
             <el-table-column prop="tanggal" min-width="100" label="Tanggal" sortable="custom">
                 <template slot-scope="scope">
                     {{ scope.row.tanggal | readableDate }}
@@ -73,13 +69,14 @@
 
             <el-table-column fixed="right" width="40px">
                 <template slot-scope="scope">
-                    <el-dropdown v-if="scope.row.status == 0">
+                    <el-dropdown>
                         <span class="el-dropdown-link">
                             <i class="el-icon-more"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
-                            <el-dropdown-item @click.native.prevent="deleteData(scope.row.id)"><i class="el-icon-delete"></i> Hapus</el-dropdown-item>
+                            <el-dropdown-item @click.native.prevent="() => { selectedData = scope.row; showDetail = true; }"><i class="el-icon-zoom-in"></i> Show Detail</el-dropdown-item>
+                            <el-dropdown-item v-if="scope.row.status == 0" @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
+                            <el-dropdown-item v-if="scope.row.status == 0" @click.native.prevent="deleteData(scope.row.id)"><i class="el-icon-delete"></i> Hapus</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </template>
@@ -88,7 +85,7 @@
 
         <br>
 
-         <el-pagination
+        <el-pagination
         @current-change="(p) => { page = p; requestData(); }"
         @size-change="(s) => { pageSize = s; requestData(); }"
         :page-size="pageSize"
@@ -98,16 +95,20 @@
         :total="paginatedData.total">
         </el-pagination>
 
-        <el-dialog center :visible.sync="showForm" :title="formTitle" width="1000px" v-loading="loading" :close-on-click-modal="false">
+        <el-dialog top="60px" width="750px" center title="DETAIL PENERIMAAN" :visible.sync="showDetail" v-if="!!selectedData.id">
+            <PenerimaanDetail :data="selectedData" />
+        </el-dialog>
+
+        <el-dialog top="60px" center :visible.sync="showForm" :title="formTitle" width="800px" v-loading="loading" :close-on-click-modal="false">
             <el-alert type="error" title="ERROR"
                 :description="error.message + '\n' + error.file + ':' + error.line"
                 v-show="error.message"
                 style="margin-bottom:15px;">
             </el-alert>
 
-            <el-form label-width="170px">
+            <el-form label-width="170px" label-position="left">
 
-                <el-row :gutter="15">
+                <el-row :gutter="30">
                     <el-col :span="12">
                         <el-form-item label="Tanggal" :class="formErrors.tanggal ? 'is-error' : ''">
                             <el-date-picker v-model="formModel.tanggal" type="date" format="dd-MMM-yyyy" value-format="yyyy-MM-dd" placeholder="Tanggal" style="width:100%;"> </el-date-picker>
@@ -152,34 +153,24 @@
                 <table class="table table-sm table-bordered" v-if="formModel.items.length > 0">
                     <thead>
                         <tr>
-                            <th rowspan="2">#</th>
-                            <th rowspan="2">Kategori</th>
-                            <th colspan="3" class="text-center">Qty</th>
-                            <th rowspan="2" class="text-center">Eun</th>
-                            <th colspan="3" class="text-center">Timbangan Manual (kg)</th>
-                            <th rowspan="2">Keterangan</th>
-                        </tr>
-                        <tr>
-                            <th class="text-center" style="width:90px;">Kirim</th>
-                            <th class="text-center" style="width:90px;">Terima</th>
-                            <th class="text-center" style="width:90px;">Selisih</th>
-                            <th class="text-center" style="width:90px;">Kirim</th>
-                            <th class="text-center" style="width:90px;">Terima</th>
-                            <th class="text-center" style="width:90px;">Selisih</th>
+                            <th>#</th>
+                            <th>Kategori</th>
+                            <th class="text-center" style="width:100px">Kirim</th>
+                            <th class="text-center" style="width:100px">Terima</th>
+                            <th class="text-center" style="width:100px">Selisih</th>
+                            <th class="text-center">Satuan</th>
+                            <th>Keterangan</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="(item, index) in formModel.items" :key="index">
                             <td>{{index+1}}.</td>
-                            <td>{{formModel.items[index].barang.jenis}} : {{formModel.items[index].barang.kode}} - {{formModel.items[index].barang.nama}}</td>
-                            <td class="text-center">{{formModel.items[index].qty_kirim | formatNumber}}</td>
-                            <td><input type="number" v-model="formModel.items[index].qty_terima" class="my-input" placeholder="Terima"></td>
-                            <td class="text-center">{{formModel.items[index].qty_kirim - formModel.items[index].qty_terima | formatNumber}}</td>
-                            <td class="text-center">{{formModel.items[index].eun}}</td>
-                            <td class="text-center">{{formModel.items[index].timbangan_manual_kirim | formatNumber}}</td>
-                            <td><input type="number" v-model="formModel.items[index].timbangan_manual_terima" class="my-input" placeholder="Terima"> </td>
-                            <td class="text-center">{{formModel.items[index].timbangan_manual_kirim - formModel.items[index].timbangan_manual_terima | formatNumber}}</td>
-                            <td><input v-model="formModel.items[index].keterangan" class="my-input" placeholder="Keterangan"></td>
+                            <td>{{item.barang.jenis}} : {{item.barang.kode}} - {{item.barang.nama}}</td>
+                            <td class="text-center">{{item.timbangan_manual_kirim | formatNumber}}</td>
+                            <td><input type="number" v-model="item.timbangan_manual_terima" class="my-input" placeholder="Terima"> </td>
+                            <td class="text-center">{{item.timbangan_manual_kirim - item.timbangan_manual_terima | formatNumber}}</td>
+                            <td class="text-center">{{item.eun}}</td>
+                            <td><input v-model="item.keterangan" class="my-input" placeholder="Keterangan"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -241,6 +232,8 @@ export default {
             order: 'descending',
             filters: {},
             paginatedData: {},
+            selectedData: {},
+            showDetail: false,
             statuses: [
                 {type: 'info', label: 'Draft', value: 0},
                 {type: 'success', label: 'Submitted', value: 1}
@@ -263,24 +256,17 @@ export default {
         },
         save() {
             // validasi item
-            let invalid = this.formModel.items.filter(i => !i.qty_terima || !i.timbangan_manual_terima).length
+            let invalid = this.formModel.items.filter(i => !i.timbangan_manual_terima).length
 
             if (invalid) {
                 this.$message({ message: 'Mohon lengkapi data barang.', showClose: true, type: 'error' });
                 return
             }
 
-            let invalid2 = this.formModel.items.filter(i => i.qty_terima > i.qty_kirim).length
-
-            if (invalid2) {
-                this.$message({ message: 'Jumlah terima melebihi jumlah kirim', showClose: true, type: 'error' });
-                return
-            }
-
             let invalid3 = this.formModel.items.filter(i => i.timbangan_manual_terima > i.timbangan_manual_kirim).length
 
             if (invalid3) {
-                this.$message({ message: 'Berat terima melebihi berat kirim', showClose: true, type: 'error' });
+                this.$message({ message: 'Berat/Qty terima melebihi berat/qty kirim', showClose: true, type: 'error' });
                 return
             }
 
@@ -304,15 +290,13 @@ export default {
         store: function() {
             this.loading = true;
             axios.post('/penerimaan', this.formModel).then(r => {
-                this.loading = false;
                 this.showForm = false;
                 this.$message({
-                    message: 'Data BERHASIL disimpan.',
+                    message: 'Data berhasil disimpan.',
                     type: 'success'
                 });
                 this.requestData();
             }).catch(e => {
-                this.loading = false;
                 if (e.response.status == 422) {
                     this.error = {}
                     this.formErrors = e.response.data.errors;
@@ -322,20 +306,20 @@ export default {
                     this.formErrors = {}
                     this.error = e.response.data;
                 }
+            }).finally(() => {
+                this.loading = false;
             })
         },
         update: function() {
             this.loading = true;
             axios.put('/penerimaan/' + this.formModel.id, this.formModel).then(r => {
-                this.loading = false;
                 this.showForm = false
                 this.$message({
-                    message: 'Data BERHASIL disimpan.',
+                    message: 'Data berhasil disimpan.',
                     type: 'success'
                 });
                 this.requestData()
             }).catch(e => {
-                this.loading = false;
                 if (e.response.status == 422) {
                     this.error = {}
                     this.formErrors = e.response.data.errors;
@@ -345,6 +329,8 @@ export default {
                     this.formErrors = {}
                     this.error = e.response.data;
                 }
+            }).finally(() => {
+                this.loading = false;
             })
         },
         addData: function() {
@@ -376,7 +362,7 @@ export default {
                 axios.delete('/penerimaan/' + id).then(r => {
                     this.requestData();
                     this.$message({
-                        message: 'Data BERHASIL dihapus.',
+                        message: 'Data berhasil dihapus.',
                         type: 'success'
                     });
                 }).catch(e => {
@@ -397,18 +383,16 @@ export default {
             }
             this.loading = true;
 
-            axios.get('/penerimaan', {params: Object.assign(params, this.filters)})
-                .then(r => {
-                    this.loading = false;
-                    this.paginatedData = r.data
-                })
-                .catch(e => {
-                    this.loading = false;
-                    this.$message({
-                        message: e.response.data.message || e.response.message,
-                        type: 'error'
-                    });
-                })
+            axios.get('/penerimaan', {params: Object.assign(params, this.filters)}).then(r => {
+                this.paginatedData = r.data
+            }).catch(e => {
+                this.$message({
+                    message: e.response.data.message || e.response.message,
+                    type: 'error'
+                });
+            }).finally(() => {
+                this.loading = false;
+            })
         }
     },
     created: function() {
