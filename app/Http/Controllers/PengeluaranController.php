@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\PengeluaranRequest;
 use App\Pengeluaran;
-use App\PengeluaranItem;
 use App\Events\PengeluaranSubmitted;
+use Illuminate\Support\Facades\DB;
 
 class PengeluaranController extends Controller
 {
@@ -40,36 +40,79 @@ class PengeluaranController extends Controller
 
     public function store(PengeluaranRequest $request)
     {
-        $input = $request->all();
-        $input['user_id'] = $request->user()->id;
-        $pengeluaran = Pengeluaran::create($input);
-        $pengeluaran->items()->createMany($request->items);
+        try {
+            DB::transaction(function () use ($request) {
+                // header
+                $id = DB::table('pengeluarans')->insertGetId([
+                    'tanggal' => $request->tanggal,
+                    'no_sj' => $request->no_sj,
+                    'jembatan_timbang' => $request->jembatan_timbang,
+                    'lokasi_asal_id' => $request->lokasi_asal_id,
+                    'lokasi_terima_id' => $request->lokasi_terima_id,
+                    'lokasi_asal' => $request->lokasi_asal,
+                    'lokasi_terima' => $request->lokasi_terima,
+                    'status' => $request->status,
+                    'user_id' => $request->user()->id
+                ]);
 
-        if ($request->status == Pengeluaran::STATUS_SUBMITTED) {
-            event(new PengeluaranSubmitted($pengeluaran));
+                // item
+                DB::table('pengeluaran_items')->insert(array_map(function($item) use ($id) {
+                    return [
+                        'pengeluaran_id' => $id,
+                        'kategori_barang_id' => $item['kategori_barang_id'],
+                        'eun' => $item['eun'],
+                        'timbangan_manual' => $item['timbangan_manual']
+                    ];
+                }, $request->items));
+
+                $pengeluaran = Pengeluaran::find($id);
+
+                if ($request->status == Pengeluaran::STATUS_SUBMITTED) {
+                    event(new PengeluaranSubmitted($pengeluaran));
+                }
+
+                return $pengeluaran;
+            });
+        } catch (\Exception $e) {
+            return response(['message' => 'Data gagal disimpan. '.$e->getMessage()], 500);
         }
-
-        return $pengeluaran;
     }
 
     public function update(PengeluaranRequest $request, Pengeluaran $pengeluaran)
     {
-        $pengeluaran->update($request->all());
+        try {
+            DB::transaction(function () use ($request, $pengeluaran) {
+                // header
+                DB::table('pengeluarans')->where('id', $pengeluaran->id)->update([
+                    'tanggal' => $request->tanggal,
+                    'jembatan_timbang' => $request->jembatan_timbang,
+                    'lokasi_terima_id' => $request->lokasi_terima_id,
+                    'lokasi_terima' => $request->lokasi_terima,
+                    'status' => $request->status,
+                ]);
 
-        foreach ($request->items as $i)
-        {
-            if (isset($i['id'])) {
-                PengeluaranItem::find($i['id'])->update($i);
-            } else {
-                $pengeluaran->items()->create($i);
-            }
+                // drop item first
+                DB::table('pengeluaran_items')->where('pengeluaran_id', $pengeluaran->id)->delete();
+
+                // add new item
+                DB::table('pengeluaran_items')->insert(array_map(function($item) use ($pengeluaran) {
+                    return [
+                        'pengeluaran_id' => $pengeluaran->id,
+                        'kategori_barang_id' => $item['kategori_barang_id'],
+                        'eun' => $item['eun'],
+                        'timbangan_manual' => $item['timbangan_manual']
+                    ];
+                }, $request->items));
+
+                if ($request->status == Pengeluaran::STATUS_SUBMITTED) {
+                    event(new PengeluaranSubmitted($pengeluaran));
+                }
+
+                return $pengeluaran;
+            });
+        } catch (\Exception $e) {
+            return response(['message' => 'Data gagal disimpan. '.$e->getMessage()], 500);
         }
-
-        if ($request->status == Pengeluaran::STATUS_SUBMITTED) {
-            event(new PengeluaranSubmitted($pengeluaran));
-        }
-
-        return $pengeluaran;
     }
 
     public function destroy(Pengeluaran $pengeluaran)
