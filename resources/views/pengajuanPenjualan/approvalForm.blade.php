@@ -56,7 +56,7 @@
                                 </tr>
                                 <tr>
                                     <th>Approval 1</th>
-                                    <td>:
+                                    <td>
                                         @if ($data->approval1_status == 0)
                                         <span>Pending</span>
                                         @elseif ($data->approval1_status == 1)
@@ -68,7 +68,7 @@
                                 </tr>
                                 <tr>
                                     <th>Approval 2</th>
-                                    <td>:
+                                    <td>
                                         @if ($data->approval2_status == 0)
                                         <span>Pending</span>
                                         @elseif ($data->approval2_status == 1)
@@ -87,17 +87,12 @@
                         <table class="table table-sm table-bordered">
                             <thead>
                                 <tr>
-                                    <th rowspan="2" class="text-center">#</th>
-                                    <th rowspan="2">Kategori</th>
-                                    <th colspan="2" class="text-center">Stock</th>
-                                    <th rowspan="2" class="text-center">Jumlah Diajukan</th>
-                                    <th rowspan="2" class="text-center">Selisih</th>
-                                    <th rowspan="2" class="text-center">Eun</th>
-                                    <th rowspan="2" class="text-center">Timbangan Manual (kg)</th>
-                                </tr>
-                                <tr>
-                                    <th style="width:100px" class="text-center">Qty</th>
-                                    <th style="width:100px" class="text-center">Berat (kg)</th>
+                                    <th class="text-center">#</th>
+                                    <th>Kategori</th>
+                                    <th class="text-center">Stock</th>
+                                    <th class="text-center">Diajukan</th>
+                                    <th class="text-center">Selisih</th>
+                                    <th class="text-center">Unit</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -105,12 +100,10 @@
                                 <tr>
                                     <td class="text-center">{{$index + 1}}</td>
                                     <td>{{$item->kategori->kode}} - {{$item->kategori->nama}}</td>
-                                    <td class="text-center">{{number_format($item->stock_qty)}}</td>
                                     <td class="text-center">{{number_format($item->stock_berat)}}</td>
-                                    <td class="text-center">{{number_format($item->jumlah)}}</td>
-                                    <td class="text-center">{{number_format($item->stock_qty - $item->jumlah)}}</td>
-                                    <td class="text-center">{{$item->eun}}</td>
                                     <td class="text-center">{{number_format($item->timbangan_manual)}}</td>
+                                    <td class="text-center">{{number_format($item->stock_berat - $item->timbangan_manual)}}</td>
+                                    <td class="text-center">{{$item->eun}}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
