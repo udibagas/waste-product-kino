@@ -62,8 +62,8 @@
                         <tr v-for="(item, index) in data.summaryItems" :key="index">
                             <td>{{index+1}}.</td>
                             <td>{{item.kategori}}</td>
-                            <td class="text-right">{{item.stock.toFixed(4) | formatNumber}} kg</td>
-                            <td class="text-right">{{item.berat.toFixed(4) | formatNumber}} kg</td>
+                            <td class="text-right">{{parseFloat(item.stock).toFixed(4) | formatNumber}} kg</td>
+                            <td class="text-right">{{parseFloat(item.berat).toFixed(4) | formatNumber}} kg</td>
                             <td class="text-right">{{(item.stock - item.berat).toFixed(4) | formatNumber}} kg</td>
                             <td class="text-right">Rp {{item.price_per_unit | formatNumber}}</td>
                             <td class="text-right">Rp {{item.value | formatNumber}}</td>

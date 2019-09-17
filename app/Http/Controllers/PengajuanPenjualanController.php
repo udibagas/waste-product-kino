@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 use App\Http\Requests\PengajuanPenjualanRequest;
 use App\PengajuanPenjualan;
 use App\Events\PengajuanPenjualanSubmitted;
-use App\PengajuanPenjualanItemBb;
-use App\PengajuanPenjualanItemWp;
 use Carbon\Carbon;
 use App\Events\PengajuanPenjualanApproved1;
 use App\Events\PengajuanPenjualanApproved2;
@@ -15,6 +13,7 @@ use App\Events\PengajuanPenjualanRejected1;
 use App\Events\PengajuanPenjualanRejected2;
 use App\SkemaApprovalPenjualan;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PengajuanPenjualanController extends Controller
 {
@@ -52,103 +51,124 @@ class PengajuanPenjualanController extends Controller
 
     public function store(PengajuanPenjualanRequest $request)
     {
-        $input = $request->all();
-        $input['user_id'] = $request->user()->id;
+        try {
+            DB::transaction(function () use ($request) {
+                $id = DB::table('pengajuan_penjualans')->insertGetId([
+                    'tanggal' => $request->tanggal,
+                    'no_aju' => $request->no_aju,
+                    'period_from' => $request->period_from ? $request->period_from : date('Y-m-d'),
+                    'period_to' => $request->period_to ? $request->period_to : date('Y-m-d'),
+                    'jenis' => $request->jenis,
+                    'mvt_type' => is_array($request->mvt_type) ? implode(',', $request->mvt_type) : '',
+                    'sloc' => $request->sloc,
+                    'user_id' => $request->user()->id,
+                    'location_id' => $request->location_id,
+                    'status' => $request->status,
+                ]);
 
-        if (!$request->period_from) {
-            $input['period_from'] = date('Y-m-d');
+                if ($request->jenis == 'BB') {
+                    DB::table('pengajuan_penjualan_item_bbs')->insert(array_map(function($item) use ($id) {
+                        return [
+                            'pengajuan_penjualan_id' => $id,
+                            'kategori_barang_id' => $item['kategori_barang_id'],
+                            'eun' => $item['eun'],
+                            'timbangan_manual' => $item['timbangan_manual'],
+                            'stock_berat' => $item['stock_berat'],
+                        ];
+                    }, $request->items_bb));
+                }
+
+                if ($request->jenis == 'WP') {
+                    DB::table('pengajuan_penjualan_item_wps')->insert(array_map(function($item) use ($id) {
+                        return [
+                            'pengajuan_penjuaan_id' => $id,
+                            'kategori' => $item['kategori'],
+                            'material_id' => $item['material'],
+                            'material_description' => $item['material_description'],
+                            'divisi' => '-',
+                            'unit' => '-',
+                            'qty_reject' => 0,
+                            'price_per_unit' => $item['price_per_unit'],
+                            'value' => (int) ((float) $item['diajukan'] * (int) $item['price_per_unit']),
+                            'berat' => (float) $item['diajukan'],
+                            'stock' => (float) $item['stock'],
+                        ];
+                    }, $request->items_wp));
+                }
+
+                $pengajuanPenjualan = PengajuanPenjualan::find($id);
+
+                if ($request->status == PengajuanPenjualan::STATUS_SUBMITTED) {
+                    event(new PengajuanPenjualanSubmitted($pengajuanPenjualan));
+                }
+
+                return $pengajuanPenjualan;
+            });
+        } catch (\Exception $e) {
+            return response(['message' => 'Data gagal disimpan.'. $e->getMessage()], 500);
         }
-
-        if (!$request->period_to) {
-            $input['period_to'] = date('Y-m-d');
-        }
-
-        if (is_array($request->mvt_type)) {
-            $input['mvt_type'] = implode(',', $request->mvt_type);
-        } else {
-            $input['mvt_type'] = '';
-        }
-
-        $pengajuanPenjualan = PengajuanPenjualan::create($input);
-
-        if ($request->jenis == 'BB') {
-            $pengajuanPenjualan->itemsBb()->createMany($request->items_bb);
-        }
-
-        if ($request->jenis == 'WP')
-        {
-            $items = array_map(function($i) {
-                return [
-                    'kategori' => $i['kategori'],
-                    'material_id' => $i['material'],
-                    'material_description' => $i['material_description'],
-                    'divisi' => '-',
-                    'unit' => '-',
-                    'qty_reject' => 0,
-                    'price_per_unit' => $i['price_per_unit'],
-                    'value' => (int) ((float) $i['diajukan'] * (int) $i['price_per_unit']),
-                    'berat' => (float) $i['diajukan'],
-                    'stock' => (float) $i['stock'],
-
-                ];
-            }, $request->items_wp);
-
-            $pengajuanPenjualan->itemsWp()->createMany($items);
-        }
-
-        if ($request->status == PengajuanPenjualan::STATUS_SUBMITTED) {
-            event(new PengajuanPenjualanSubmitted($pengajuanPenjualan));
-        }
-
-        return $pengajuanPenjualan;
     }
 
     public function update(PengajuanPenjualanRequest $request, PengajuanPenjualan $pengajuanPenjualan)
     {
-        $input = $request->all();
+        try {
+            DB::transaction(function () use ($request, $pengajuanPenjualan) {
+                DB::table('pengajuan_penjualans')->where('id', $pengajuanPenjualan->id)->update([
+                    'tanggal' => $request->tanggal,
+                    'period_from' => $request->period_from ? $request->period_from : date('Y-m-d'),
+                    'period_to' => $request->period_to ? $request->period_to : date('Y-m-d'),
+                    'status' => $request->status,
+                ]);
 
-        if ($request->mvt_type) {
-            $input['mvt_type'] = implode(',', $request->mvt_type);
-        }
+                if ($request->jenis == 'BB')
+                {
+                    DB::table('pengajuan_penjualan_item_bbs')
+                        ->where('pengajuan_penjualan_id', $pengajuanPenjualan->id)
+                        ->delete();
 
-        $pengajuanPenjualan->update($input);
-
-        if ($pengajuanPenjualan->jenis == 'BB') {
-            foreach ($request->items_bb as $i) {
-                if (isset($i['id'])) {
-                    PengajuanPenjualanItemBb::find($i['id'])->update($i);
-                } else {
-                    $pengajuanPenjualan->itemsBb()->create($i);
+                    DB::table('pengajuan_penjualan_item_bbs')->insert(array_map(function($item) use ($pengajuanPenjualan) {
+                        return [
+                            'pengajuan_penjualan_id' => $pengajuanPenjualan->id,
+                            'kategori_barang_id' => $item['kategori_barang_id'],
+                            'eun' => $item['eun'],
+                            'timbangan_manual' => $item['timbangan_manual'],
+                            'stock_berat' => $item['stock_berat'],
+                        ];
+                    }, $request->items_bb));
                 }
-            }
-        }
 
-        if ($pengajuanPenjualan->jenis == 'WP') {
-            foreach ($request->items_wp as $i) {
-                if (isset($i['id'])) {
-                    PengajuanPenjualanItemWp::find($i['id'])->update($i);
-                } else {
-                    $pengajuanPenjualan->itemsWp()->create([
-                        'kategori' => $i['kategori'],
-                        'material_id' => $i['material'],
-                        'material_description' => $i['material_description'],
-                        'divisi' => '-',
-                        'unit' => '-',
-                        'qty_reject' => 0,
-                        'price_per_unit' => $i['price_per_unit'],
-                        'value' => (int) ((float) $i['diajukan'] * (int) $i['price_per_unit']),
-                        'berat' => (float) $i['diajukan'],
-                        'stock' => (float) $i['stock'],
-                    ]);
+                if ($request->jenis == 'WP')
+                {
+                    DB::table('pengajuan_penjualan_item_wps')
+                        ->where('pengajuan_penjualan_id', $pengajuanPenjualan->id)
+                        ->delete();
+
+                    DB::table('pengajuan_penjualan_item_wps')->insert(array_map(function($item) use ($pengajuanPenjualan) {
+                        return [
+                            'pengajuan_penjuaan_id' => $pengajuanPenjualan->id,
+                            'kategori' => $item['kategori'],
+                            'material_id' => $item['material'],
+                            'material_description' => $item['material_description'],
+                            'divisi' => '-',
+                            'unit' => '-',
+                            'qty_reject' => 0,
+                            'price_per_unit' => $item['price_per_unit'],
+                            'value' => (int) ((float) $item['diajukan'] * (int) $item['price_per_unit']),
+                            'berat' => (float) $item['diajukan'],
+                            'stock' => (float) $item['stock'],
+                        ];
+                    }, $request->items_wp));
                 }
-            }
-        }
 
-        if ($request->status == PengajuanPenjualan::STATUS_SUBMITTED) {
-            event(new PengajuanPenjualanSubmitted($pengajuanPenjualan));
-        }
+                if ($request->status == PengajuanPenjualan::STATUS_SUBMITTED) {
+                    event(new PengajuanPenjualanSubmitted($pengajuanPenjualan));
+                }
 
-        return $pengajuanPenjualan;
+                return $pengajuanPenjualan;
+            });
+        } catch (\Exception $e) {
+            return response(['message' => 'Data gagal disimpan.'. $e->getMessage()], 500);
+        }
     }
 
     public function destroy(PengajuanPenjualan $pengajuanPenjualan)

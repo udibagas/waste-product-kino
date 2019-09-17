@@ -15,6 +15,7 @@
         </el-form>
 
         <el-table :data="paginatedData.data" stripe
+        @row-dblclick="(row, column, event) =>  { selectedData = row; showDetail = true }"
         height="calc(100vh - 330px)"
         :default-sort = "{prop: 'tanggal', order: 'descending'}"
         v-loading="loading"
@@ -22,18 +23,6 @@
         @filter-change="filterChange"
         @sort-change="sortChange">
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
-            <el-table-column type="expand" width="20px">
-                <template slot-scope="scope">
-                    <el-tabs type="border-card">
-                        <el-tab-pane label="Items">
-                            <PengajuanPenjualanItemBb :data="scope.row" />
-                        </el-tab-pane>
-                        <el-tab-pane label="Approval History">
-                            <ApprovalHistory :pengajuan="scope.row.id" />
-                        </el-tab-pane>
-                    </el-tabs>
-                </template>
-            </el-table-column>
             <el-table-column prop="tanggal" width="100" label="Tanggal" sortable="custom">
                 <template slot-scope="scope">
                     {{ scope.row.tanggal | readableDate }}
@@ -102,11 +91,12 @@
 
             <el-table-column fixed="right" width="40px">
                 <template slot-scope="scope">
-                    <el-dropdown v-if="scope.row.approval2_status != 1">
+                    <el-dropdown>
                         <span class="el-dropdown-link">
                             <i class="el-icon-more"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item @click.native.prevent="() => { showDetail = true; selectedData = scope.row; }"><i class="el-icon-zoom-in"></i> Show Detail</el-dropdown-item>
                             <!-- bisa diedit kalau status draft atau rejected -->
                             <el-dropdown-item v-if="scope.row.status == 0 || scope.row.status == 3" @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
                             <!-- bisa dihapus kalau status draft -->
@@ -133,14 +123,37 @@
         :total="paginatedData.total">
         </el-pagination>
 
-        <el-dialog top="60px" center :visible.sync="showForm" :title="formTitle" width="90%" v-loading="loading" :close-on-click-modal="false">
+        <!-- DETAIL DIALOG -->
+        <el-dialog top="60px" width="750px" center title="DETAIL PENGAJUAN PENJUALAN BARANG BEKAS" :visible.sync="showDetail" v-if="!!selectedData.id">
+            <table class="table table-sm table-bordered">
+                <tbody>
+                    <tr><td class="td-label">Tanggal</td><td class="td-value">{{selectedData.tanggal | readableDate}}</td></tr>
+                    <tr><td class="td-label">No. Pengajuan</td><td class="td-value">{{selectedData.no_aju}}</td></tr>
+                    <tr><td class="td-label">Plant</td><td class="td-value">{{selectedData.location.plant}} - {{selectedData.location.name}}</td></tr>
+                    <tr><td class="td-label">User</td><td class="td-value">{{selectedData.user.name}}</td></tr>
+                    <tr><td class="td-label">Approval 1</td><td class="td-value"><el-tag size="small" :type="approval_statuses[selectedData.approval1_status].type">{{approval_statuses[selectedData.approval1_status].label}}</el-tag></td></tr>
+                    <tr><td class="td-label">Approval 2</td><td class="td-value"><el-tag size="small" :type="approval_statuses[selectedData.approval2_status].type">{{approval_statuses[selectedData.approval2_status].label}}</el-tag></td></tr>
+                    <tr><td class="td-label">Status</td><td class="td-value"><el-tag size="small" :type="statuses[selectedData.status].type">{{statuses[selectedData.status].label}}</el-tag></td></tr>
+                </tbody>
+            </table>
+            <el-tabs type="border-card">
+                <el-tab-pane label="Items">
+                    <PengajuanPenjualanItemBb :data="selectedData" />
+                </el-tab-pane>
+                <el-tab-pane label="Approval History">
+                    <ApprovalHistory :pengajuan="selectedData.id" />
+                </el-tab-pane>
+            </el-tabs>
+        </el-dialog>
+
+        <el-dialog top="60px" center :visible.sync="showForm" :title="formTitle" width="650px" v-loading="loading" :close-on-click-modal="false">
             <el-alert type="error" title="ERROR"
                 :description="error.message + '\n' + error.file + ':' + error.line"
                 v-show="error.message"
                 style="margin-bottom:15px;">
             </el-alert>
 
-            <el-form label-width="170px">
+            <el-form label-width="130px" label-position="left">
                 <el-form-item label="Tanggal" :class="formErrors.tanggal ? 'is-error' : ''">
                     <el-date-picker v-model="formModel.tanggal" type="date" format="dd-MMM-yyyy" value-format="yyyy-MM-dd" placeholder="Tanggal" style="width:100%;"> </el-date-picker>
                     <div class="el-form-item__error" v-if="formErrors.tanggal">{{formErrors.tanggal[0]}}</div>
@@ -152,7 +165,7 @@
                 </el-form-item>
 
                 <el-form-item label="Plant" :class="formErrors.location_id ? 'is-error' : ''">
-                    <el-select :disabled="user.role == 0" v-model="formModel.location_id" style="width:100%" placeholder="Plant">
+                    <el-select :disabled="user.role == 0 || !!formModel.id" v-model="formModel.location_id" style="width:100%" placeholder="Plant">
                         <el-option
                         v-for="item in $store.state.locationList"
                         :key="item.id"
@@ -168,33 +181,21 @@
                 <table class="table table-sm table-bordered">
                     <thead>
                         <tr>
-                            <th rowspan="2">#</th>
-                            <th rowspan="2">Kategori</th>
-                            <th colspan="2" class="text-center">Stock</th>
-                            <th colspan="2" class="text-center">Pengajuan</th>
-                            <th colspan="2" class="text-center">Selisih</th>
-                            <th rowspan="2" class="text-center">Eun</th>
-                            <th rowspan="2" class="text-center">
-                            </th>
-                        </tr>
-                        <tr>
-                            <th style="width:80px" class="text-center">Qty</th>
-                            <th style="width:80px" class="text-center">Berat (kg)</th>
-                            <th style="width:80px" class="text-center">Qty</th>
-                            <th style="width:80px" class="text-center">Berat (kg)</th>
-                            <th style="width:80px" class="text-center">Qty</th>
-                            <th style="width:80px" class="text-center">Berat (kg)</th>
+                            <th>#</th>
+                            <th>Kategori</th>
+                            <th class="text-center" style="width:100px">Stock</th>
+                            <th class="text-center" style="width:100px">Pengajuan</th>
+                            <th class="text-center" style="width:100px">Selisih</th>
+                            <th class="text-center">Satuan</th>
+                            <th class="text-center"> </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="(item, index) in formModel.items_bb" :key="index">
                             <td>{{index+1}}.</td>
                             <td>{{item.kategori.kode}} - {{item.kategori.nama}}</td>
-                            <td class="text-center">{{item.stock_qty | formatNumber}}</td>
                             <td class="text-center">{{item.stock_berat | formatNumber}}</td>
-                            <td><input type="number" v-model="item.jumlah" class="my-input" placeholder="Qty"></td>
                             <td><input type="number" v-model="item.timbangan_manual" class="my-input" placeholder="Berat"></td>
-                            <td class="text-center">{{item.stock_qty - item.jumlah | formatNumber}}</td>
                             <td class="text-center">{{item.stock_berat - item.timbangan_manual | formatNumber}}</td>
                             <td class="text-center"> {{item.eun}} </td>
                             <td class="text-center">
@@ -228,8 +229,8 @@
                         <tr>
                             <th>#</th>
                             <th>Kategori</th>
-                            <th class="text-right">Jumlah</th>
-                            <th class="text-right">Berat</th>
+                            <th class="text-right">Stock</th>
+                            <th class="text-center">Satuan</th>
                             <th style="width:80px"></th>
                         </tr>
                     </thead>
@@ -237,8 +238,8 @@
                         <tr v-for="(m, i) in filteredCategory.slice((categoryPage - 1) * 10, categoryPage * 10)" :key="i">
                             <td>{{(i + 1) + ((categoryPage - 1) * 10)}}.</td>
                             <td>{{ m.kategori.kode }} - {{ m.kategori.nama }}</td>
-                            <td class="text-right">{{ m.qty | formatNumber }} {{m.unit}}</td>
-                            <td class="text-right">{{ m.stock | formatNumber }} KG</td>
+                            <td class="text-right">{{ m.stock | formatNumber }}</td>
+                            <td class="text-center">{{ m.unit }}</td>
                             <td class="text-center"><input type="checkbox" :value="m" v-model="selectedCategory"></td>
                         </tr>
                     </tbody>
@@ -316,6 +317,8 @@ export default {
             order: 'descending',
             filters: {},
             paginatedData: {},
+            showDetail: false,
+            selectedData: {},
             statuses: [
                 {type: 'info', label: 'Draft', value: 0},
                 {type: 'warning', label: 'Submitted', value: 1},
@@ -347,10 +350,8 @@ export default {
                     this.formModel.items_bb.push({
                     kategori: c.kategori,
                     kategori_barang_id: c.kategori_barang_id,
-                    stock_qty: c.qty,
                     stock_berat: c.stock,
                     eun: c.kategori.unit,
-                    jumlah: 0,
                     timbangan_manual: 0
                 })
                 }
@@ -441,16 +442,9 @@ export default {
                 return
             }
 
-            let invalid = this.formModel.items_bb.filter(i => !i.jumlah || !i.timbangan_manual).length
+            let invalid = this.formModel.items_bb.filter(i => !i.timbangan_manual).length
             if (invalid) {
                 this.$message({ message: 'Mohon lengkapi data barang.', showClose: true, type: 'error' });
-                return
-            }
-
-            // pengajuan melebihi stock
-            let invalid_qty = this.formModel.items_bb.filter(i => parseInt(i.jumlah) > parseInt(i.stock_qty)).length
-            if (invalid_qty) {
-                this.$message({ message: 'Jumlah pengajuan melebihi stock', showClose: true, type: 'error' });
                 return
             }
 
@@ -627,5 +621,16 @@ input[type=checkbox] {
 
 .icon-bg {
     font-size: 20px;
+}
+
+.td-label {
+    width: 150px;
+    background-color: #333c58;
+    font-weight: bold;
+    color: #fff;
+}
+
+.td-value {
+    background-color: #efefef;
 }
 </style>

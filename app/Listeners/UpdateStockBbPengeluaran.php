@@ -28,7 +28,7 @@ class UpdateStockBbPengeluaran
      */
     public function handle(PengeluaranSubmitted $event)
     {
-        foreach ($event->pengeluaran->items as $item) 
+        foreach ($event->pengeluaran->items as $item)
         {
             InOutStockBb::create([
                 'tanggal' => $event->pengeluaran->tanggal,
@@ -39,8 +39,6 @@ class UpdateStockBbPengeluaran
                 'eun' => $item->eun,
                 'stock_in' => 0,
                 'stock_out' => $item->timbangan_manual,
-                'qty_in' => 0,
-                'qty_out' => $item->qty,
                 'no_sj' => $event->pengeluaran->no_sj
             ]);
 
@@ -50,16 +48,14 @@ class UpdateStockBbPengeluaran
 
             if ($stock) {
                 $stock->stock = $stock->stock - $item->timbangan_manual;
-                $stock->qty = $stock->qty - $item->qty;
                 $stock->save();
             }
-            
+
             else {
                 StockBb::create([
                     'kategori_barang_id' => $item->kategori_barang_id,
                     'location_id' => $event->pengeluaran->lokasi_asal_id,
                     'lokasi' => $event->pengeluaran->lokasi_asal,
-                    'qty' => 0,
                     'stock' => 0,
                     'unit' => $item->eun
                 ]);

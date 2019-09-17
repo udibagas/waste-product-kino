@@ -45,8 +45,6 @@ class UpdateStockBbPenerimaan
                 'eun' => $item->eun,
                 'stock_out' => 0,
                 'stock_in' => $item->timbangan_manual_terima,
-                'qty_out' => 0,
-                'qty_in' => $item->qty_terima,
                 'no_sj' => $event->penerimaan->no_sj_keluar
             ]);
 
@@ -56,7 +54,6 @@ class UpdateStockBbPenerimaan
 
             if ($stock) {
                 $stock->stock = $stock->stock + $item->timbangan_manual_terima;
-                $stock->qty = $stock->qty + $item->qty_terima;
                 $stock->save();
             } else {
                 StockBb::create([
@@ -64,7 +61,6 @@ class UpdateStockBbPenerimaan
                     'location_id' => $event->penerimaan->lokasi_terima_id,
                     'lokasi' => $event->penerimaan->lokasi_terima,
                     'stock' => $item->timbangan_manual_terima,
-                    'qty' => $item->qty_terima,
                     'unit' => $item->eun
                 ]);
             }

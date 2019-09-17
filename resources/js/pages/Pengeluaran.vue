@@ -15,6 +15,7 @@
         </el-form>
 
         <el-table :data="paginatedData.data" stripe
+        @row-dblclick="(row, column, event) =>  { selectedData = row; showDetail = true }"
         height="calc(100vh - 330px)"
         :default-sort = "{prop: 'tanggal', order: 'descending'}"
         v-loading="loading"
@@ -22,11 +23,6 @@
         @filter-change="filterChange"
         @sort-change="sortChange">
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
-            <el-table-column type="expand" width="20px">
-                <template slot-scope="scope">
-                    <PengeluaranDetail :data="scope.row" />
-                </template>
-            </el-table-column>
             <el-table-column prop="tanggal" width="100" label="Tanggal" sortable="custom">
                 <template slot-scope="scope">
                     {{ scope.row.tanggal | readableDate }}
@@ -54,9 +50,9 @@
             </el-table-column>
 
             <el-table-column prop="penerima" label="Penerima" sortable="custom" min-width="120"></el-table-column>
-            <el-table-column prop="jembatan_timbang" label="Jembatan Timbang" min-width="170" sortable="custom" align="right" header-align="right">
+            <el-table-column prop="jembatan_timbang" label="Jembatan Timbang" min-width="160" sortable="custom" align="right" header-align="right">
                 <template slot-scope="scope">
-                    {{ scope.row.jembatan_timbang | formatNumber }} kg
+                    {{ scope.row.jembatan_timbang | formatNumber }} KG
                 </template>
             </el-table-column>
 
@@ -76,13 +72,14 @@
 
             <el-table-column fixed="right" width="40px">
                 <template slot-scope="scope">
-                    <el-dropdown v-if="scope.row.status === 0">
+                    <el-dropdown>
                         <span class="el-dropdown-link">
                             <i class="el-icon-more"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
-                            <el-dropdown-item @click.native.prevent="deleteData(scope.row.id)"><i class="el-icon-delete"></i> Hapus</el-dropdown-item>
+                            <el-dropdown-item @click.native.prevent="() => { selectedData = scope.row; showDetail = true; }"><i class="el-icon-zoom-in"></i> Show Detail</el-dropdown-item>
+                            <el-dropdown-item v-if="scope.row.status === 0" @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
+                            <el-dropdown-item v-if="scope.row.status === 0" @click.native.prevent="deleteData(scope.row.id)"><i class="el-icon-delete"></i> Hapus</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </template>
@@ -101,16 +98,20 @@
         :total="paginatedData.total">
         </el-pagination>
 
-        <el-dialog center :visible.sync="showForm" :title="formTitle" width="900px" v-loading="loading" :close-on-click-modal="false">
+        <el-dialog top="60px" center title="DETAIL PENGELUARAN" :visible.sync="showDetail" v-if="!!selectedData.id">
+            <PengeluaranDetail :data="selectedData" />
+        </el-dialog>
+
+        <el-dialog top="60px" center :visible.sync="showForm" :title="formTitle" width="800px" v-loading="loading" :close-on-click-modal="false">
             <el-alert type="error" title="ERROR"
                 :description="error.message + '\n' + error.file + ':' + error.line"
                 v-show="error.message"
                 style="margin-bottom:15px;">
             </el-alert>
 
-            <el-form label-width="170px">
+            <el-form label-width="160px" label-position="left">
 
-                <el-row :gutter="15">
+                <el-row :gutter="30">
                     <el-col :span="12">
                         <el-form-item label="Tanggal" :class="formErrors.tanggal ? 'is-error' : ''">
                             <el-date-picker v-model="formModel.tanggal" type="date" format="dd-MMM-yyyy" value-format="yyyy-MM-dd" placeholder="Tanggal" style="width:100%;"> </el-date-picker>
@@ -122,7 +123,7 @@
                             <div class="el-form-item__error" v-if="formErrors.no_sj">{{formErrors.no_sj[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Jembatan Timbang (kg)" :class="formErrors.jembatan_timbang ? 'is-error' : ''">
+                        <el-form-item label="Jembatan Timbang (KG)" :class="formErrors.jembatan_timbang ? 'is-error' : ''">
                             <el-input type="number" placeholder="Jembatan Timbang (kg)" v-model="formModel.jembatan_timbang"></el-input>
                             <div class="el-form-item__error" v-if="formErrors.jembatan_timbang">{{formErrors.jembatan_timbang[0]}}</div>
                         </el-form-item>
@@ -159,33 +160,23 @@
                 <table class="table table-sm table-bordered">
                     <thead>
                         <tr>
-                            <th rowspan="2">#</th>
-                            <th rowspan="2">Kategori</th>
-                            <th colspan="2" class="text-center">Stock</th>
-                            <th colspan="2" class="text-center">Dikeluarkan</th>
-                            <th colspan="2" class="text-center">Selisih</th>
-                            <th rowspan="2" class="text-center">
-                            </th>
-                        </tr>
-                        <tr>
-                            <th style="width:100px" class="text-center">Jumlah</th>
-                            <th style="width:100px" class="text-center">Berat</th>
-                            <th style="width:100px" class="text-center">Jumlah (PCS)</th>
-                            <th style="width:100px" class="text-center">Berat (KG)</th>
-                            <th style="width:100px" class="text-center">Jumlah</th>
-                            <th style="width:100px" class="text-center">Berat</th>
+                            <th>#</th>
+                            <th>Kategori</th>
+                            <th class="text-center">Stock</th>
+                            <th class="text-center" style="width:100px">Dikeluarkan</th>
+                            <th class="text-center">Selisih</th>
+                            <th class="text-center">Satuan</th>
+                            <th class="text-center"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="(item, index) in formModel.items" :key="index">
                             <td>{{index+1}}.</td>
                             <td>{{ item.kategori.kode }} - {{ item.kategori.nama }}</td>
-                            <td class="text-right">{{item.stock_jumlah | formatNumber}} {{item.kategori.unit}}</td>
-                            <td class="text-right">{{item.stock_berat | formatNumber}} KG</td>
-                            <td> <input type="number" v-model="item.qty" class="my-input" placeholder="Jumlah"> </td>
+                            <td class="text-right">{{item.stock_berat | formatNumber}}</td>
                             <td> <input type="number" v-model="item.timbangan_manual" class="my-input" placeholder="Timbangan Manual"> </td>
-                            <td class="text-right">{{item.stock_jumlah - item.qty | formatNumber}} {{item.kategori.unit}}</td>
-                            <td class="text-right">{{item.stock_berat - item.timbangan_manual | formatNumber}} KG</td>
+                            <td class="text-right">{{item.stock_berat - item.timbangan_manual | formatNumber}}</td>
+                            <td class="text-center">{{ item.kategori.unit }}</td>
                             <td class="text-center">
                                 <a href="#" @click="deleteItem(index)" class="icon-bg"><i class="el-icon-delete"></i></a>
                             </td>
@@ -205,7 +196,7 @@
         <el-dialog center
         :visible.sync="showCategoryList"
         title="Select Category"
-        width="900px"
+        width="500px"
         v-loading="loading"
         :close-on-click-modal="false">
             <el-input prefix-icon="el-icon-search" v-model="categoryKeyword" placeholder="Search Category"></el-input>
@@ -215,8 +206,8 @@
                         <tr>
                             <th>#</th>
                             <th>Kategori</th>
-                            <th class="text-right">Jumlah</th>
-                            <th class="text-right">Berat</th>
+                            <th class="text-right">Stock</th>
+                            <th class="text-center">Satuan</th>
                             <th style="width:80px"></th>
                         </tr>
                     </thead>
@@ -224,8 +215,8 @@
                         <tr v-for="(m, i) in filteredCategory.slice((categoryPage - 1) * 10, categoryPage * 10)" :key="i">
                             <td>{{(i + 1) + ((categoryPage - 1) * 10)}}.</td>
                             <td>{{ m.kategori.kode }} - {{ m.kategori.nama }}</td>
-                            <td class="text-right">{{ m.qty | formatNumber }} {{m.unit}}</td>
-                            <td class="text-right">{{ m.stock | formatNumber }} KG</td>
+                            <td class="text-right">{{ m.stock | formatNumber }}</td>
+                            <td class="text-center">{{m.unit}}</td>
                             <td class="text-center"><input type="checkbox" :value="m" v-model="selectedCategory"></td>
                         </tr>
                     </tbody>
@@ -283,7 +274,7 @@ export default {
     },
     data: function() {
         return {
-            number: '00015',
+            number: '00000',
             stock: [],
             showCategoryList: false,
             categoryKeyword: '',
@@ -302,6 +293,8 @@ export default {
             order: 'descending',
             filters: {},
             paginatedData: {},
+            showDetail: false,
+            selectedData: {},
             statuses: [
                 {type: 'info', label: 'Draft', value: 0},
                 {type: 'warning', label: 'Submitted', value: 1},
@@ -327,9 +320,7 @@ export default {
                         kategori_barang_id: c.kategori_barang_id,
                         kategori: c.kategori,
                         eun: c.kategori.unit,
-                        stock_jumlah: c.qty,
                         stock_berat: c.stock,
-                        qty: 0,
                         timbangan_manual: 0
                     })
                 }
@@ -376,7 +367,7 @@ export default {
                 return
             }
 
-            let invalid = this.formModel.items.filter(i => !i.qty || !i.timbangan_manual).length
+            let invalid = this.formModel.items.filter(i => !i.timbangan_manual).length
 
             if (invalid) {
                 this.$message({ message: 'Mohon lengkapi data barang.', showClose: true, type: 'error' });
@@ -384,13 +375,6 @@ export default {
             }
 
             if (this.$store.state.locationList.find(l => l.id == this.formModel.lokasi_asal_id).is_dummy == false) {
-                let invalid2 = this.formModel.items.filter(i => i.qty > i.stock_jumlah).length
-
-                if (invalid2) {
-                    this.$message({ message: 'Jumlah melebihi stock', showClose: true, type: 'error' });
-                    return
-                }
-
                 let invalid3 = this.formModel.items.filter(i => parseFloat(i.timbangan_manual) > parseFloat(i.stock_berat)).length
 
                 if (invalid3) {

@@ -6,17 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class PenjualanItemBb extends Model
 {
+    // NOTE : jembatan_timbang = jumlah aktual dijual
     protected $fillable = [
-        'kategori_barang_id', 'qty', 'jembatan_timbang', 'price', 'timbangan_manual',
-        'price_per_kg', 'value', 'keterangan', 'penjualan_id',
-        'stock_berat', 'stock_qty'
+        'kategori_barang_id', 'timbangan_manual',
+        'price_per_kg', 'value', 'penjualan_id',
+        'stock_berat', 'jembatan_timbang'
     ];
 
     protected $casts = [
         'penjualan_id' => 'integer',
         'kategori_barang_id' => 'integer',
-        'qty' => 'integer',
-        'stock_qty' => 'integer',
+        'jembatan_timbang' => 'float'
     ];
 
     protected $with = ['kategori'];

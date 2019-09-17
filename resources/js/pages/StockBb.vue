@@ -1,6 +1,6 @@
 <template>
     <el-card>
-        <h4>STOCK BB</h4>
+        <h4>STOCK BARANG BEKAS</h4>
         <hr>
 
         <el-form :inline="true" class="form-right" @submit.native.prevent="() => { return }">
@@ -41,16 +41,12 @@
                     {{ scope.row.kategori.kode }} - {{ scope.row.kategori.nama }}
                 </template>
             </el-table-column>
-            <el-table-column prop="qty" min-width="200" label="Jumlah" sortable="custom" align="right" header-align="right">
+            <el-table-column prop="stock" min-width="200" label="Stock" sortable="custom" align="right" header-align="right">
                 <template slot-scope="scope">
-                    {{ scope.row.qty | formatNumber }} {{scope.row.unit}}
+                    {{ scope.row.stock | formatNumber }}
                 </template>
             </el-table-column>
-            <el-table-column prop="stock" min-width="200" label="Berat" sortable="custom" align="right" header-align="right">
-                <template slot-scope="scope">
-                    {{ scope.row.stock | formatNumber }} KG
-                </template>
-            </el-table-column>
+            <el-table-column prop="unit" label="Satuan" min-width="100" header-align="center" align="center"></el-table-column>
             <el-table-column prop="stock_bbs.updated_at" min-width="150" label="Waktu Update" sortable="custom" align="center" header-align="center">
                 <template slot-scope="scope">
                     {{ scope.row.updated_at | readableDateTime }}

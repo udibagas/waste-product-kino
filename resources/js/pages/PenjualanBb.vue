@@ -19,21 +19,10 @@
         :default-sort = "{prop: 'tanggal', order: 'descending'}"
         v-loading="loading"
         style="border-top:1px solid #eee;"
+        @row-dblclick="(row, column, event) =>  { selectedData = row; showDetail = true }"
         @filter-change="filterChange"
         @sort-change="sortChange">
             <el-table-column type="index" width="50" :index="paginatedData.from"> </el-table-column>
-            <el-table-column type="expand" width="20px">
-                <template slot-scope="scope">
-                    <el-tabs type="border-card">
-                        <el-tab-pane label="Items">
-                            <PenjualanItemBb :data="scope.row" />
-                        </el-tab-pane>
-                        <el-tab-pane label="Pembayaran">
-                            <Pembayaran :data="scope.row.pembayaran" />
-                        </el-tab-pane>
-                    </el-tabs>
-                </template>
-            </el-table-column>
             <el-table-column prop="tanggal" width="100" label="Tanggal" sortable="custom">
                 <template slot-scope="scope">
                     {{ scope.row.tanggal | readableDate }}
@@ -127,11 +116,12 @@
 
             <el-table-column fixed="right" width="40px">
                 <template slot-scope="scope">
-                    <el-dropdown v-if="scope.row.status === 0 || scope.row.status_pembayaran !== 2">
+                    <el-dropdown>
                         <span class="el-dropdown-link">
                             <i class="el-icon-more"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item @click.native.prevent="() => { selectedData = scope.row; showDetail = true; }"><i class="el-icon-zoom-in"></i> Show Detail</el-dropdown-item>
                             <el-dropdown-item v-if="scope.row.status === 0" @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
                             <el-dropdown-item v-if="scope.row.status === 0" @click.native.prevent="deleteData(scope.row.id)"><i class="el-icon-delete"></i> Hapus</el-dropdown-item>
                             <el-dropdown-item v-if="scope.row.status === 1" @click.native.prevent="printSlipJual(scope.row.id)"><i class="el-icon-printer"></i> Print Slip Jual</el-dropdown-item>
@@ -153,6 +143,44 @@
         :page-sizes="[10,25,50,100]"
         :total="paginatedData.total">
         </el-pagination>
+
+        <el-dialog top="60px" width="95%" center title="DETAIL PENJUALAN" :visible.sync="showDetail" v-if="!!selectedData.id">
+            <el-row>
+                <el-col :span="12">
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                            <tr><td class="td-label">Tanggal</td><td class="td-value">{{selectedData.tanggal | readableDate}}</td></tr>
+                            <tr><td class="td-label">No. Surat Jalan</td><td class="td-value">{{selectedData.no_sj}}</td></tr>
+                            <tr><td class="td-label">No. Pengajuan</td><td class="td-value">{{selectedData.no_aju}}</td></tr>
+                            <tr><td class="td-label">User</td><td class="td-value">{{selectedData.user}}</td></tr>
+                            <tr><td class="td-label">Plant</td><td class="td-value">{{selectedData.location.plant}} - {{selectedData.location.name}}</td></tr>
+                            <tr><td class="td-label">Pembeli</td><td class="td-value">{{selectedData.pembeli.nama}} ({{selectedData.pembeli.kontak}})</td></tr>
+                        </tbody>
+                    </table>
+                </el-col>
+                <el-col :span="12">
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                            <tr><td class="td-label">Value</td><td class="td-value">Rp {{selectedData.value | formatNumber}}</td></tr>
+                            <tr><td class="td-label">Terbayar</td><td class="td-value">Rp {{selectedData.terbayar | formatNumber}}</td></tr>
+                            <tr><td class="td-label">Outstanding</td><td class="td-value">Rp {{selectedData.value - selectedData.terbayar | formatNumber}}</td></tr>
+                            <tr><td class="td-label">TOP Date</td><td class="td-value">{{selectedData.top_date | readableDate}}</td></tr>
+                            <tr><td class="td-label">Status</td><td class="td-value"><el-tag size="mini" :type="statuses[selectedData.status].type">{{statuses[selectedData.status].label}}</el-tag></td></tr>
+                            <tr><td class="td-label">Status Pembayaran</td><td class="td-value"><el-tag size="mini" :type="statuses_pembayaran[selectedData.status].type">{{statuses_pembayaran[selectedData.status].label}}</el-tag></td></tr>
+                        </tbody>
+                    </table>
+                </el-col>
+            </el-row>
+
+            <el-tabs type="border-card">
+                <el-tab-pane label="Items">
+                    <PenjualanItemBb :data="selectedData" />
+                </el-tab-pane>
+                <el-tab-pane label="Pembayaran">
+                    <Pembayaran :data="selectedData.pembayaran" />
+                </el-tab-pane>
+            </el-tabs>
+        </el-dialog>
 
         <!-- FORM PEMBAYARAN -->
         <el-dialog
@@ -177,8 +205,8 @@
                 style="margin-bottom:15px;">
             </el-alert>
 
-            <el-form label-width="170px">
-                <el-row :gutter="15">
+            <el-form label-width="170px" label-position="left">
+                <el-row :gutter="30">
                     <el-col :span="12">
                         <el-form-item label="Tanggal" :class="formErrors.tanggal ? 'is-error' : ''">
                             <el-date-picker v-model="formModel.tanggal" type="date" format="dd-MMM-yyyy" value-format="yyyy-MM-dd" placeholder="Tanggal" style="width:100%;"> </el-date-picker>
@@ -238,8 +266,8 @@
                             <div class="el-form-item__error" v-if="formErrors.top_date">{{formErrors.top_date[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Jembatan Timbang" :class="formErrors.jembatan_timbang ? 'is-error' : ''">
-                            <el-input type="number" placeholder="Jembatan Timbang" v-model="formModel.jembatan_timbang"></el-input>
+                        <el-form-item label="Jembatan Timbang (KG)" :class="formErrors.jembatan_timbang ? 'is-error' : ''">
+                            <el-input type="number" placeholder="Jembatan Timbang (KG)" v-model="formModel.jembatan_timbang"></el-input>
                             <div class="el-form-item__error" v-if="formErrors.jembatan_timbang">{{formErrors.jembatan_timbang[0]}}</div>
                         </el-form-item>
 
@@ -257,20 +285,18 @@
                             <tr>
                                 <th rowspan="2" class="text-center">#</th>
                                 <th rowspan="2" class="text-center">Kategori</th>
-                                <th colspan="2" class="text-center">Stock</th>
-                                <th colspan="4" class="text-center">Pengajuan</th>
+                                <th rowspan="2" class="text-center">Stock</th>
+                                <th rowspan="2" class="text-center">Satuan</th>
+                                <th colspan="3" class="text-center">Pengajuan</th>
                                 <th colspan="3" class="text-center">Aktual</th>
                             </tr>
                             <tr>
-                                <th class="text-center">Berat (kg)</th>
-                                <th class="text-center">Qty</th>
-                                <th class="text-center">Timbangan Manual (kg)</th>
-                                <th class="text-center">Qty</th>
-                                <th class="text-center">Harga/Kg Sistem (Rp)</th>
-                                <th class="text-center">Value Jual Sistem (Rp)</th>
-                                <th class="text-center">Jembatan Timbang (kg)</th>
-                                <th class="text-center">Harga/Kg Aktual (Rp)</th>
-                                <th class="text-center">Value Jual Aktual (Rp)</th>
+                                <th class="text-center">Berat/Qty</th>
+                                <th class="text-center">Harga/Satuan Sistem</th>
+                                <th class="text-center">Value Jual Sistem</th>
+                                <th class="text-center">Berat/Qty</th>
+                                <th class="text-center">Harga/Satuan Aktual (Rp)</th>
+                                <th class="text-center">Value Jual Aktual</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -278,11 +304,10 @@
                                 <td class="text-center">{{index+1}}</td>
                                 <td class="text-center">{{item.kategori.kode}} - {{item.kategori.nama}}</td>
                                 <td class="text-center">{{item.stock_berat | formatNumber}}</td>
-                                <td class="text-center">{{item.stock_qty | formatNumber}}</td>
+                                <td class="text-center">{{item.kategori.unit}}</td>
                                 <td class="text-center">{{item.timbangan_manual | formatNumber}}</td>
-                                <td class="text-center">{{item.qty | formatNumber}}</td>
-                                <td class="text-center">{{item.kategori.harga | formatNumber}}</td>
-                                <td class="text-center">{{item.kategori.harga * item.timbangan_manual | formatNumber}}</td>
+                                <td class="text-center">Rp. {{item.kategori.harga | formatNumber}}</td>
+                                <td class="text-center">Rp. {{item.kategori.harga * item.timbangan_manual | formatNumber}}</td>
                                 <td class="text-center"><input type="text" v-model="item.jembatan_timbang" class="my-input" placeholder="Jembatan Timbang"></td>
                                 <td class="text-center"><input type="text" v-model="item.price_per_kg" class="my-input" placeholder="Harga per Kg"></td>
                                 <td class="text-center">Rp {{item.jembatan_timbang * item.price_per_kg | formatNumber}}</td>
@@ -365,6 +390,8 @@ export default {
             order: 'descending',
             filters: {},
             paginatedData: {},
+            selectedData: {},
+            showDetail: false,
             statuses: [
                 {type: 'info', label: 'Draft', value: 0},
                 {type: 'warning', label: 'Submitted', value: 1},
@@ -563,5 +590,16 @@ export default {
 
 .icon-bg {
     font-size: 20px;
+}
+
+.td-label {
+    width: 150px;
+    background-color: #333c58;
+    font-weight: bold;
+    color: #fff;
+}
+
+.td-value {
+    background-color: #efefef;
 }
 </style>

@@ -6,8 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\PenjualanRequest;
 use App\Penjualan;
 use App\Events\PenjualanSubmitted;
-use App\PenjualanItemBb;
-use App\PenjualanItemWp;
+use Illuminate\Support\Facades\DB;
 
 class PenjualanController extends Controller
 {
@@ -42,42 +41,115 @@ class PenjualanController extends Controller
 
     public function store(PenjualanRequest $request)
     {
-        $input = $request->all();
-        $input['user_id'] = $request->user()->id;
-        $penjualan = Penjualan::create($input);
+        try {
+            DB::transaction(function () use ($request) {
+                $id = DB::table('penjualans')->insertGetId([
+                    'tanggal' => $request->tanggal,
+                    'no_aju' => $request->no_aju,
+                    'pembeli_id' => $request->pembeli_id,
+                    'no_sj' => $request->no_sj,
+                    'value' => $request->value,
+                    'top_date' => $request->top_date,
+                    'jembatan_timbang' => $request->jembatan_timbang,
+                    'user_id' => $request->user()->id,
+                    'status' => $request->status,
+                    'jenis' => $request->jenis,
+                    'location_id' => $request->location_id,
+                ]);
 
-        if ($request->jenis == 'BB') {
-            $penjualan->itemsBb()->createMany($request->items_bb);
+                if ($request->jenis == 'BB')
+                {
+                    DB::table('penjualan_item_bbs')->insert(array_map(function($item) use ($id) {
+                        return [
+                            'penjualan_id' => $id,
+                            'kategori_barang_id' => $item['kategori_barang_id'],
+                            'timbangan_manual' => $item['timbangan_manual'],
+                            'jembatan_timbang' => $item['jembatan_timbang'],
+                            'price_per_kg' => $item['price_per_kg'],
+                            'value' => $item['value'],
+                            'stock_berat' => $item['stock_berat'],
+                        ];
+                    }, $request->items_bb));
+                }
+
+                if ($request->jenis == 'WP')
+                {
+                    DB::table('penjualan_item_wps')->insert(array_map(function($item) use ($id) {
+                        return [
+                            'penjualan_id' => $id,
+                            'material_id' => $item['material_id'],
+                            'material_description' => $item['material_description'],
+                            'price_per_unit' => $item['price_per_unit'],
+                            'value' => $item['value'],
+                            'berat' => $item['berat'],
+                            'kategori' => $item['kategori'],
+                        ];
+                    }, $request->items_wp));
+                }
+
+                $penjualan = Penjualan::find($id);
+
+                if ($request->status == Penjualan::STATUS_SUBMITTED) {
+                    event(new PenjualanSubmitted($penjualan));
+                }
+            });
+        } catch (\Exception $e) {
+            return response(['message' => 'Data gagal disimpan. '. $e->getMessage()], 500);
         }
-
-        if ($request->jenis == 'WP') {
-            $penjualan->itemsWp()->createMany($request->items_wp);
-        }
-
-        if ($request->status == Penjualan::STATUS_SUBMITTED) {
-            event(new PenjualanSubmitted($penjualan));
-        }
-
-        return $penjualan;
     }
 
     public function update(PenjualanRequest $request, Penjualan $penjualan)
     {
-        $penjualan->update($request->all());
+        try {
+            DB::transaction(function () use ($request, $penjualan) {
+                DB::table('penjualans')->where('id', $penjualan->id)->update([
+                    'tanggal' => $request->tanggal,
+                    'pembeli_id' => $request->pembeli_id,
+                    'value' => $request->value,
+                    'top_date' => $request->top_date,
+                    'jembatan_timbang' => $request->jembatan_timbang,
+                    'status' => $request->status,
+                ]);
 
-        foreach ($request->items_bb as $i) {
-            PenjualanItemBb::find($i['id'])->update($i);
+                if ($request->jenis == 'BB')
+                {
+                    DB::table('penjualan_item_bbs')->where('penjualan_id', $penjualan->id)->delete();
+                    DB::table('penjualan_item_bbs')->insert(array_map(function($item) use ($penjualan) {
+                        return [
+                            'penjualan_id' => $penjualan->id,
+                            'kategori_barang_id' => $item['kategori_barang_id'],
+                            'timbangan_manual' => $item['timbangan_manual'],
+                            'jembatan_timbang' => $item['jembatan_timbang'],
+                            'price_per_kg' => $item['price_per_kg'],
+                            'value' => $item['value'],
+                            'stock_berat' => $item['stock_berat'],
+                        ];
+                    }, $request->items_bb));
+                }
+
+                if ($request->jenis == 'WP')
+                {
+                    DB::table('penjualan_item_wps')->where('penjualan_id', $penjualan->id)->delete();
+                    DB::table('penjualan_item_wps')->insert(array_map(function($item) use ($penjualan) {
+                        return [
+                            'penjualan_id' => $penjualan->id,
+                            'material_id' => $item['material_id'],
+                            'material_description' => $item['material_description'],
+                            'price_per_unit' => $item['price_per_unit'],
+                            'value' => $item['value'],
+                            'berat' => $item['berat'],
+                            'kategori' => $item['kategori'],
+                        ];
+                    }, $request->items_wp));
+                }
+
+                if ($request->status == Penjualan::STATUS_SUBMITTED) {
+                    event(new PenjualanSubmitted($penjualan));
+                }
+            });
+        } catch (\Exception $e) {
+            return response(['message' => 'Data gagal disimpan. '. $e->getMessage()], 500);
         }
-
-        foreach ($request->items_wp as $i) {
-            PenjualanItemWp::find($i['id'])->update($i);
-        }
-
-        if ($request->status == Penjualan::STATUS_SUBMITTED) {
-            event(new PenjualanSubmitted($penjualan));
-        }
-
-        return $penjualan;
     }
 
     public function destroy(Penjualan $penjualan)

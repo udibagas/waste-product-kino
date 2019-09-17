@@ -13,7 +13,6 @@ class StockBb extends Model
     protected $casts = [
         'kategori_barang_id' => 'integer',
         'location_id' => 'integer',
-        'qty' => 'integer'
     ];
 
     protected $with = ['kategori', 'location'];

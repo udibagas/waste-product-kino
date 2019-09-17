@@ -9,7 +9,6 @@ use App\InOutStockBb;
 use App\StockBb;
 use DB;
 use App\PengajuanPenjualan;
-use App\StockWp;
 
 class UpdateStockPenjualan
 {
@@ -48,9 +47,7 @@ class UpdateStockPenjualan
                     'kategori_barang_id' => $item->kategori_barang_id,
                     'eun' => $item->kategori->unit,
                     'stock_in' => 0,
-                    'stock_out' => $item->timbangan_manual,
-                    'qty_in' => 0,
-                    'qty_out' => $item->qty,
+                    'stock_out' => $item->jembatan_timbang,
                     'no_sj' => $event->penjualan->no_sj
                 ]);
 
@@ -59,15 +56,13 @@ class UpdateStockPenjualan
                     ->first();
 
                 if ($stock) {
-                    $stock->stock = $stock->stock - $item->timbangan_manual;
-                    $stock->qty = $stock->qty - $item->qty;
+                    $stock->stock = $stock->stock - $item->jembatan_timbang;
                     $stock->save();
                 } else {
                     StockBb::create([
                         'kategori_barang_id' => $item->kategori_barang_id,
                         'location_id' => $event->penjualan->location_id,
                         'lokasi' => $event->penjualan->location->name,
-                        'qty' => 0,
                         'stock' => 0,
                         'unit' => $item->kategori->unit,
                     ]);

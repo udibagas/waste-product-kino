@@ -93,7 +93,10 @@
                 </el-form-item>
 
                 <el-form-item label="Unit" :class="formErrors.unit ? 'is-error' : ''">
-                    <el-input placeholder="Unit" v-model="formModel.unit"></el-input>
+                    <el-select placeholder="Jenis" v-model="formModel.unit" style="width:100%;">
+                        <el-option value="PCS" label="PCS"></el-option>
+                        <el-option value="KG" label="KG"></el-option>
+                    </el-select>
                     <div class="el-form-item__error" v-if="formErrors.unit">{{formErrors.unit[0]}}</div>
                 </el-form-item>
 
@@ -223,7 +226,7 @@ export default {
             this.showForm = true
         },
         deleteData(id) {
-            this.$confirm('Anda yakin akan menghapus user ini?', 'Warning', {
+            this.$confirm('Anda yakin akan menghapus data ini?', 'Warning', {
                 type: 'warning',
                 confirmButtonText: 'Ya',
                 cancelButtonText: 'Tidak'
