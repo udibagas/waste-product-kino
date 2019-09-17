@@ -53,8 +53,9 @@
         <thead>
             <tr>
                 <th>Nama Kategori</th>
-                <th class="text-right">Berat Timbangan Manual</th>
-                <th class="text-right">Harga/Kg</th>
+                <th class="text-right">Berat/Qty</th>
+                <th class="text-center">Satuan</th>
+                <th class="text-right">Harga/Unit</th>
                 <th class="text-right">Value Penjualan</th>
             </tr>
         </thead>
@@ -62,23 +63,22 @@
             @foreach ($penjualan->itemsBb as $i)
             <tr>
                 <td>{{$i->kategori->nama}}</td>
-                <td class="text-right">{{number_format($i->timbangan_manual, 4)}} kg</td>
+                <td class="text-right">{{number_format($i->jembatan_timbang, 4)}}</td>
+                <td class="text-center">{{$i->kategori->unit}}</td>
                 <td class="text-right">Rp {{number_format($i->price_per_kg)}}</td>
-                <td class="text-right">Rp {{number_format($i->value, 0)}}</td>
+                <td class="text-right">Rp {{number_format($i->jembatan_timbang * $i->price_per_kg, 0)}}</td>
             </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr>
                 <th>TOTAL</th>
-                <th class="text-right">
-                    {{ number_format(array_reduce($penjualan->itemsBb->toArray(), function($total, $current) {
-                        return $total + $current['timbangan_manual'];
-                    }, 0), 4) }} kg
-                </th>
+                <th></th>
+                <th></th>
+                <th></th>
                 <th class="text-right">
                     Rp {{ number_format(array_reduce($penjualan->itemsBb->toArray(), function($total, $current) {
-                        return $total + $current['value'];
+                        return $total + ($current['jembatan_timbang'] * $current['price_per_kg']);
                     }, 0), 0) }}
                 </th>
             </tr>
