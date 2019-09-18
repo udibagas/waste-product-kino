@@ -63,26 +63,17 @@
                 </template>
             </el-table-column>
 
-            <el-table-column prop="qty_in" min-width="110" label="Qty In" sortable="custom" align="right" header-align="right">
-                <template slot-scope="scope">
-                    {{ scope.row.qty_in | formatNumber }} {{scope.row.eun}}
-                </template>
-            </el-table-column>
-            <el-table-column prop="qty_out" min-width="110" label="Qty Out" sortable="custom" align="right" header-align="right">
-                <template slot-scope="scope">
-                    {{ scope.row.qty_out | formatNumber }} {{scope.row.eun}}
-                </template>
-            </el-table-column>
             <el-table-column prop="stock_in" min-width="110" label="Stock In" sortable="custom" align="right" header-align="right">
                 <template slot-scope="scope">
-                    {{ scope.row.stock_in | formatNumber }} kg
+                    {{ scope.row.stock_in | formatNumber }}
                 </template>
             </el-table-column>
             <el-table-column prop="stock_out" min-width="110" label="Stock Out" sortable="custom" align="right" header-align="right">
                 <template slot-scope="scope">
-                    {{ scope.row.stock_out | formatNumber }} kg
+                    {{ scope.row.stock_out | formatNumber }}
                 </template>
             </el-table-column>
+            <el-table-column prop="eun" label="Satuan" header-align="center" align="center"></el-table-column>
         </el-table>
 
         <br>

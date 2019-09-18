@@ -47,40 +47,25 @@
                             {{ getKategori(scope.row.kategori_id) }}
                         </template>
                     </el-table-column>
-                    <el-table-column label="Qty (pcs)" header-align="center">
-                        <el-table-column prop="qty_in" min-width="100" label="IN" align="center" header-align="center">
-                            <template slot-scope="scope">
-                                {{ scope.row.qty_in | formatNumber }}
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="qty_out" min-width="100" label="OUT" align="center" header-align="center">
-                            <template slot-scope="scope">
-                                {{ scope.row.qty_out | formatNumber }}
-                            </template>
-                        </el-table-column>
-                        <el-table-column min-width="100" label="Selisih" align="center" header-align="center">
-                            <template slot-scope="scope">
-                                {{ (scope.row.qty_in - scope.row.qty_out) | formatNumber }}
-                            </template>
-                        </el-table-column>
+                    <el-table-column prop="stock_in" min-width="100" label="IN" align="center" header-align="center">
+                        <template slot-scope="scope">
+                            {{ scope.row.stock_in | formatNumber }}
+                        </template>
                     </el-table-column>
-
-                    <el-table-column label="Berat (kg)" header-align="center">
-                        <el-table-column prop="stock_in" min-width="100" label="IN" align="center" header-align="center">
-                            <template slot-scope="scope">
-                                {{ scope.row.stock_in | formatNumber }}
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="stock_out" min-width="100" label="OUT" align="center" header-align="center">
-                            <template slot-scope="scope">
-                                {{ scope.row.stock_out | formatNumber }}
-                            </template>
-                        </el-table-column>
-                        <el-table-column min-width="100" label="Selisih" align="center" header-align="center">
-                            <template slot-scope="scope">
-                                {{ (scope.row.stock_in - scope.row.stock_out).toFixed(4) | formatNumber }}
-                            </template>
-                        </el-table-column>
+                    <el-table-column prop="stock_out" min-width="100" label="OUT" align="center" header-align="center">
+                        <template slot-scope="scope">
+                            {{ scope.row.stock_out | formatNumber }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column min-width="100" label="Selisih" align="center" header-align="center">
+                        <template slot-scope="scope">
+                            {{ (scope.row.stock_in - scope.row.stock_out).toFixed(4) | formatNumber }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Satuan" align="center" header-align="center" min-width="100px">
+                        <template slot-scope="scope">
+                            {{ getUnit(scope.row.kategori_id) }}
+                        </template>
                     </el-table-column>
                 </el-table>
             </el-tab-pane>
