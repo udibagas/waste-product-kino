@@ -31,6 +31,11 @@
                     Rp {{scope.row.harga | formatNumber }}
                 </template>
             </el-table-column>
+            <el-table-column prop="toleransi_penjualan" align="center" header-align="center" label="Toleransi Penjualan" sortable="custom" min-width="170">
+                <template slot-scope="scope">
+                    {{scope.row.toleransi_penjualan }} %
+                </template>
+            </el-table-column>
             <el-table-column prop="status" label="Status" sortable="custom" width="100" align="center" header-align="center">
                 <template slot-scope="scope">
                     <el-tag size="mini" :type="statuses[scope.row.status].type">{{statuses[scope.row.status].label}}</el-tag>
@@ -66,14 +71,14 @@
         :total="paginatedData.total">
         </el-pagination>
 
-        <el-dialog center :visible.sync="showForm" :title="formTitle" width="400px" v-loading="loading" :close-on-click-modal="false">
+        <el-dialog center :visible.sync="showForm" :title="formTitle" width="500px" v-loading="loading" :close-on-click-modal="false">
             <el-alert type="error" title="ERROR"
                 :description="error.message + '\n' + error.file + ':' + error.line"
                 v-show="error.message"
                 style="margin-bottom:15px;">
             </el-alert>
 
-            <el-form label-width="100px">
+            <el-form label-width="150px" label-position="left">
                 <el-form-item label="Jenis" :class="formErrors.jenis ? 'is-error' : ''">
                     <el-select placeholder="Jenis" v-model="formModel.jenis" style="width:100%;">
                         <el-option value="BB" label="BB"></el-option>
@@ -93,7 +98,7 @@
                 </el-form-item>
 
                 <el-form-item label="Unit" :class="formErrors.unit ? 'is-error' : ''">
-                    <el-select placeholder="Jenis" v-model="formModel.unit" style="width:100%;">
+                    <el-select placeholder="Unit" v-model="formModel.unit" style="width:100%;">
                         <el-option value="PCS" label="PCS"></el-option>
                         <el-option value="KG" label="KG"></el-option>
                     </el-select>
@@ -103,6 +108,11 @@
                 <el-form-item label="Harga" :class="formErrors.harga ? 'is-error' : ''">
                     <el-input type="number" placeholder="Harga" v-model="formModel.harga"></el-input>
                     <div class="el-form-item__error" v-if="formErrors.harga">{{formErrors.harga[0]}}</div>
+                </el-form-item>
+
+                <el-form-item label="Toleransi Penjualan (%)" :class="formErrors.toleransi_penjualan ? 'is-error' : ''">
+                    <el-input type="number" placeholder="Toleransi Penjualan" v-model="formModel.toleransi_penjualan"></el-input>
+                    <div class="el-form-item__error" v-if="formErrors.toleransi_penjualan">{{formErrors.toleransi_penjualan[0]}}</div>
                 </el-form-item>
             </el-form>
 
