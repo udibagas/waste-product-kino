@@ -28,7 +28,8 @@ class PenjualanRequest extends FormRequest
             'no_sj' => 'required',
             'top_date' => 'required|date',
             'pembeli_id' => 'required',
-            'jembatan_timbang' => 'required'
+            'jembatan_timbang' => 'required',
+            'value' => 'required|numeric'
 
         ];
     }
@@ -38,7 +39,10 @@ class PenjualanRequest extends FormRequest
         return [
             'tanggal' => 'Tanggal',
             'no_sj' => 'Nomor Surat Jalan',
-            'top_date' => 'TOP Date'
+            'top_date' => 'TOP Date',
+            'customer_id' => 'Customer',
+            'jembatan_timbang' => 'Jembatan Timbang',
+            'value' => 'Value'
         ];
     }
 }
