@@ -288,10 +288,11 @@
                                 <th rowspan="2" class="text-center">Stock</th>
                                 <th rowspan="2" class="text-center">Satuan</th>
                                 <th colspan="3" class="text-center">Pengajuan</th>
-                                <th colspan="3" class="text-center">Aktual</th>
+                                <th colspan="4" class="text-center">Aktual</th>
                             </tr>
                             <tr>
                                 <th class="text-center">Berat/Qty</th>
+                                <th class="text-center">Toleransi</th>
                                 <th class="text-center">Harga/Satuan Sistem</th>
                                 <th class="text-center">Value Jual Sistem</th>
                                 <th class="text-center">Berat/Qty</th>
@@ -300,12 +301,15 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(item, index) in formModel.items_bb" :key="index">
+                            <tr
+                            :class=" item.jembatan_timbang > item.timbangan_manual * (item.kategori.toleransi_penjualan + 100) / 100 ? 'table-danger' : ''"
+                            v-for="(item, index) in formModel.items_bb" :key="index">
                                 <td class="text-center">{{index+1}}</td>
-                                <td class="text-center">{{item.kategori.kode}} - {{item.kategori.nama}}</td>
+                                <td>{{item.kategori.kode}} - {{item.kategori.nama}}</td>
                                 <td class="text-center">{{item.stock_berat | formatNumber}}</td>
                                 <td class="text-center">{{item.kategori.unit}}</td>
                                 <td class="text-center">{{item.timbangan_manual | formatNumber}}</td>
+                                <td class="text-center">{{item.kategori.toleransi_penjualan | formatNumber}}%</td>
                                 <td class="text-center">Rp. {{item.kategori.harga | formatNumber}}</td>
                                 <td class="text-center">Rp. {{item.kategori.harga * item.timbangan_manual | formatNumber}}</td>
                                 <td class="text-center"><input type="text" v-model="item.jembatan_timbang" class="my-input" placeholder="Jembatan Timbang"></td>
@@ -426,6 +430,20 @@ export default {
             this.requestData();
         },
         save() {
+            // cek item aktual maximum 10%
+            let invalid = this.formModel.items_bb.find(i => {
+                return i.jembatan_timbang > (i.timbangan_manual * i.kategori.toleransi_penjualan/100) + i.timbangan_manual;
+            });
+
+            if (invalid) {
+                this.$message({
+                    message: 'Penjualan melebihi toleransi',
+                    type: 'error',
+                    showClose: true
+                });
+                return
+            }
+
             if (!!this.formModel.id) {
                 this.update()
             } else {
@@ -449,7 +467,7 @@ export default {
                 this.loading = false;
                 this.showForm = false;
                 this.$message({
-                    message: 'Data BERHASIL disimpan.',
+                    message: 'Data berhasil disimpan.',
                     type: 'success'
                 });
                 this.requestData();
@@ -472,7 +490,7 @@ export default {
                 this.loading = false;
                 this.showForm = false
                 this.$message({
-                    message: 'Data BERHASIL disimpan.',
+                    message: 'Data berhasil disimpan.',
                     type: 'success'
                 });
                 this.requestData()
@@ -535,12 +553,12 @@ export default {
                 axios.delete('/penjualan/' + id).then(r => {
                     this.requestData();
                     this.$message({
-                        message: 'Data BERHASIL dihapus.',
+                        message: 'Data berhasil dihapus.',
                         type: 'success'
                     });
                 }).catch(e => {
                     this.$message({
-                        message: 'Data GAGAL dihapus. ' + e.response.data.message,
+                        message: 'Data gagal dihapus. ' + e.response.data.message,
                         type: 'error'
                     });
                 })
