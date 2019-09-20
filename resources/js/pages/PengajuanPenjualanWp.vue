@@ -142,8 +142,8 @@
                 style="margin-bottom:15px;">
             </el-alert>
 
-            <el-form label-width="170px">
-                <el-row :gutter="15">
+            <el-form label-width="170px" label-position="left">
+                <el-row :gutter="30">
                     <el-col :span="12">
                         <el-form-item label="Tanggal" :class="formErrors.tanggal ? 'is-error' : ''">
                             <el-date-picker v-model="formModel.tanggal" type="date" format="dd-MMM-yyyy" value-format="yyyy-MM-dd" placeholder="Tanggal" style="width:100%;"> </el-date-picker>
@@ -425,6 +425,7 @@ export default {
         updateDiajukan(kategori, $event) {
             let row = this.summaryItems.find(s => s.kategori == kategori)
 
+            // this part is OK
             if ($event.target.value > row.stock/1000) {
                 this.$message({ message: 'Pengajuan melebihi stock', showClose: true, type: 'error' });
                 return
@@ -432,6 +433,7 @@ export default {
 
             let totalDiajukan = $event.target.valueAsNumber;
 
+            // this part need check
             this.formModel.items_wp.filter(i => i.kategori == kategori).forEach(i => {
                 if (totalDiajukan >= (i.stock/1000)) {
                     totalDiajukan -= (i.stock/1000)

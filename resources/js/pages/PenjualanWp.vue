@@ -174,8 +174,8 @@
                 style="margin-bottom:15px;">
             </el-alert>
 
-            <el-form label-width="170px">
-                <el-row :gutter="15">
+            <el-form label-width="170px" label-position="left">
+                <el-row :gutter="30">
                     <el-col :span="12">
                         <el-form-item label="Tanggal" :class="formErrors.tanggal ? 'is-error' : ''">
                             <el-date-picker v-model="formModel.tanggal" type="date" format="dd-MMM-yyyy" value-format="yyyy-MM-dd" placeholder="Tanggal" style="width:100%;"> </el-date-picker>
@@ -218,17 +218,17 @@
                                 <el-option
                                 v-for="item in $store.state.pembeliList"
                                 :key="item.id"
-                                :label="item.nama"
+                                :label="item.nama + ' - ' + item.kontak"
                                 :value="item.id">
                                 </el-option>
                             </el-select>
                             <div class="el-form-item__error" v-if="formErrors.pembeli_id">{{formErrors.pembeli_id[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Kontak Pembeli" :class="formErrors.kontak_pembeli ? 'is-error' : ''">
+                        <!-- <el-form-item label="Kontak Pembeli" :class="formErrors.kontak_pembeli ? 'is-error' : ''">
                             <el-input disabled placeholder="Kontak Pembeli" v-model="formModel.kontak_pembeli"></el-input>
                             <div class="el-form-item__error" v-if="formErrors.kontak_pembeli">{{formErrors.kontak_pembeli[0]}}</div>
-                        </el-form-item>
+                        </el-form-item> -->
 
                         <el-form-item label="TOP Date" :class="formErrors.top_date ? 'is-error' : ''">
                             <el-date-picker placeholder="TOP Date" v-model="formModel.top_date" format="dd-MMM-yyyy" value-format="yyyy-MM-dd" style="width:100%;"></el-date-picker>
@@ -257,6 +257,7 @@
                                         <th>#</th>
                                         <th>Kategori</th>
                                         <th class="text-right">Berat</th>
+                                        <!-- <th class="text-right">Berat Dijual (KG)</th> -->
                                         <th class="text-right">Price/Kg (Rp)</th>
                                         <th class="text-right">Value</th>
                                     </tr>
@@ -265,8 +266,9 @@
                                     <tr v-for="(m, i) in formModel.summaryItems" :key="i">
                                         <td>{{i + 1}}.</td>
                                         <td>{{m.kategori}}</td>
-                                        <td class="text-right">{{m.berat}} kg</td>
-                                        <td class="text-right"><input @keypress="updatePrice(m.kategori, $event)" type="number" v-model="m.price_per_unit"></td>
+                                        <td class="text-right">{{m.berat}} KG</td>
+                                        <!-- <td class="text-right"><input class="my-input" type="number" step="any" v-model="m.berat_dijual"></td> -->
+                                        <td class="text-right"><input class="my-input" @keypress="updatePrice(m.kategori, $event)" type="number" v-model="m.price_per_unit"></td>
                                         <td class="text-right">Rp {{ (m.berat * m.price_per_unit).toFixed(0) | formatNumber }}</td>
                                     </tr>
                                 </tbody>
@@ -349,6 +351,7 @@ export default {
     },
     data: function() {
         return {
+            number: '0001',
             loading: false,
             showForm: false,
             showFormPembayaran: false,
@@ -566,7 +569,7 @@ export default {
 .my-input {
     border: none;
     width: 100%;
-    padding: 5px;
+    padding: 5px 0 5px 10px;
     background-color: #eee;
 }
 
