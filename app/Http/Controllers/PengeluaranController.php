@@ -40,12 +40,19 @@ class PengeluaranController extends Controller
 
     public function store(PengeluaranRequest $request)
     {
+        $no_sj = 0;
+        $lastRecord = Pengeluaran::whereRaw('YEAR(tanggal) = ? ', [date('Y')])->orderBy('id', 'DESC')->first();
+
+        if ($lastRecord) {
+            $no_sj = (int) substr($lastRecord->no_sj, 0, 4);
+        }
+
         try {
-            DB::transaction(function () use ($request) {
+            DB::transaction(function () use ($request, $no_sj) {
                 // header
                 $id = DB::table('pengeluarans')->insertGetId([
                     'tanggal' => $request->tanggal,
-                    'no_sj' => $request->no_sj,
+                    'no_sj' => str_pad($no_sj + 1, 4, "0", STR_PAD_LEFT).date('/m/Y').'/OUT/BB',
                     'jembatan_timbang' => $request->jembatan_timbang,
                     'lokasi_asal_id' => $request->lokasi_asal_id,
                     'lokasi_terima_id' => $request->lokasi_terima_id,

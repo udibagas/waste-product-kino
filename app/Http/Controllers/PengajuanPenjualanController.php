@@ -51,11 +51,19 @@ class PengajuanPenjualanController extends Controller
 
     public function store(PengajuanPenjualanRequest $request)
     {
+        // validasi nomor aju dulu
+        $no_aju = 0;
+        $lastRecord = PengajuanPenjualan::whereRaw('YEAR(tanggal) = ? ', [date('Y')])->orderBy('id', 'DESC')->first();
+
+        if ($lastRecord) {
+            $no_aju = (int) substr($lastRecord->no_aju, 0, 4);
+        }
+
         try {
-            DB::transaction(function () use ($request) {
+            DB::transaction(function () use ($request, $no_aju) {
                 $id = DB::table('pengajuan_penjualans')->insertGetId([
                     'tanggal' => $request->tanggal,
-                    'no_aju' => $request->no_aju,
+                    'no_aju' => str_pad($no_aju + 1, 4, "0", STR_PAD_LEFT).date('/m/Y').'/AJU',
                     'period_from' => $request->period_from ? $request->period_from : date('Y-m-d'),
                     'period_to' => $request->period_to ? $request->period_to : date('Y-m-d'),
                     'jenis' => $request->jenis,

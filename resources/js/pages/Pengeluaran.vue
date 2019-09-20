@@ -274,7 +274,7 @@ export default {
     },
     data: function() {
         return {
-            number: '00000',
+            number: '0001',
             stock: [],
             showCategoryList: false,
             categoryKeyword: '',

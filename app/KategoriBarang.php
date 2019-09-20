@@ -11,5 +11,9 @@ class KategoriBarang extends Model
         'status', 'created_by', 'updated_by', 'approved_by'
     ];
 
+    protected $casts = [
+        'toleransi_penjualan' => 'integer'
+    ];
+
     protected $hidden = ['created_at', 'updated_at'];
 }
