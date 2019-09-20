@@ -40,6 +40,11 @@
 <script>
 export default {
     props: ['data'],
+    watch: {
+        'data.id'(v, o) {
+            this.getStockList();
+        }
+    },
     data() {
         return {
             statuses: [
@@ -49,28 +54,31 @@ export default {
             ]
         }
     },
-    created() {
-        axios.get('/stockBb/getStockList').then(r => {
-            this.data.items.forEach(i => {
-                let stock = r.data.find(d => d.kategori_barang_id == i.kategori_barang_id && d.location_id == this.data.lokasi_asal_id)
-                if (stock) {
-                    i.stock_jumlah = stock.qty
-                    i.stock_berat = stock.stock
-                    i.kategori = stock.kategori
-                } else {
-                    i.stock_jumlah = 0
-                    i.stock_berat = 0
-                    i.kategori = this.$store.state.kategoriBarangList.find(k => k.id == i.kategori_barang_id)
-                }
+    methods: {
+        getStockList() {
+            axios.get('/stockBb/getStockList').then(r => {
+                this.data.items.forEach(i => {
+                    let stock = r.data.find(d => d.kategori_barang_id == i.kategori_barang_id && d.location_id == this.data.lokasi_asal_id)
+                    if (stock) {
+                        i.stock_berat = stock.stock
+                        i.kategori = stock.kategori
+                    } else {
+                        i.stock_berat = 0
+                        i.kategori = this.$store.state.kategoriBarangList.find(k => k.id == i.kategori_barang_id)
+                    }
+                })
+                this.$forceUpdate()
+            }).catch(e => {
+                this.$message({
+                    message: 'Failed to get stock data.' + e,
+                    type: 'error',
+                    showClose: true
+                });
             })
-            this.$forceUpdate()
-        }).catch(e => {
-            this.$message({
-                message: 'Failed to get stock data.' + e,
-                type: 'error',
-                showClose: true
-            });
-        })
+        }
+    },
+    mounted() {
+        this.getStockList()
     }
 }
 </script>

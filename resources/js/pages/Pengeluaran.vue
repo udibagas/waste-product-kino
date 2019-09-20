@@ -496,11 +496,9 @@ export default {
                 this.formModel.items.forEach(i => {
                     let stock = r.data.find(d => d.kategori_barang_id == i.kategori_barang_id && d.location_id == this.formModel.lokasi_asal_id)
                     if (stock) {
-                        i.stock_jumlah = stock.qty
                         i.stock_berat = stock.stock
                         i.kategori = stock.kategori
                     } else {
-                        i.stock_jumlah = 0
                         i.stock_berat = 0
                         i.kategori = this.$store.state.kategoriBarangList.find(k => k.id == i.kategori_barang_id)
                     }
