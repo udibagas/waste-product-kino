@@ -249,17 +249,17 @@
                                 <el-option
                                 v-for="item in $store.state.pembeliList"
                                 :key="item.id"
-                                :label="item.nama"
+                                :label="item.nama + ' - ' + item.kontak"
                                 :value="item.id">
                                 </el-option>
                             </el-select>
                             <div class="el-form-item__error" v-if="formErrors.pembeli_id">{{formErrors.pembeli_id[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Kontak Pembeli" :class="formErrors.kontak_pembeli ? 'is-error' : ''">
+                        <!-- <el-form-item label="Kontak Pembeli" :class="formErrors.kontak_pembeli ? 'is-error' : ''">
                             <el-input disabled placeholder="Kontak Pembeli" v-model="formModel.kontak_pembeli"></el-input>
                             <div class="el-form-item__error" v-if="formErrors.kontak_pembeli">{{formErrors.kontak_pembeli[0]}}</div>
-                        </el-form-item>
+                        </el-form-item> -->
 
                         <el-form-item label="TOP Date" :class="formErrors.top_date ? 'is-error' : ''">
                             <el-date-picker placeholder="TOP Date" v-model="formModel.top_date" format="dd-MMM-yyyy" value-format="yyyy-MM-dd" style="width:100%;"></el-date-picker>
@@ -272,7 +272,7 @@
                         </el-form-item>
 
                         <el-form-item label="Value Penjualan (Rp)" :class="formErrors.value ? 'is-error' : ''">
-                            <el-input type="number" placeholder="Value Penjualan (Rp)" v-model="formModel.value"></el-input>
+                            <el-input disabled type="number" placeholder="Value Penjualan (Rp)" v-model="value"></el-input>
                             <div class="el-form-item__error" v-if="formErrors.value">{{formErrors.value[0]}}</div>
                         </el-form-item>
 
@@ -338,6 +338,11 @@ import FormPembayaran from '../components/FormPembayaran'
 
 export default {
     components: { PenjualanItemBb, Pembayaran, FormPembayaran },
+    computed: {
+        value() {
+            return this.formModel.items_bb.reduce((t, c) => t + c.price_per_kg * c.jembatan_timbang, 0)
+        }
+    },
     watch: {
         'formModel.pembeli_id'(v, o) {
             let pembeli = this.$store.state.pembeliList.find(p => p.id == v)
@@ -432,7 +437,7 @@ export default {
         save() {
             // cek item aktual maximum 10%
             let invalid = this.formModel.items_bb.find(i => {
-                return i.jembatan_timbang > (i.timbangan_manual * i.kategori.toleransi_penjualan/100) + i.timbangan_manual;
+                return parseFloat(i.jembatan_timbang) > parseFloat(i.timbangan_manual) * (parseFloat(i.kategori.toleransi_penjualan) + 100) /100;
             });
 
             if (invalid) {
@@ -443,6 +448,8 @@ export default {
                 });
                 return
             }
+
+            this.formModel.value = this.value
 
             if (!!this.formModel.id) {
                 this.update()

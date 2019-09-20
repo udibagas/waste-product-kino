@@ -27,7 +27,8 @@ class PenjualanRequest extends FormRequest
             'tanggal' => 'required|date',
             'no_sj' => 'required',
             'top_date' => 'required|date',
-            'pembeli_id' => 'required'
+            'pembeli_id' => 'required',
+            'jembatan_timbang' => 'required'
 
         ];
     }
