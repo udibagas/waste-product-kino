@@ -8,7 +8,7 @@ class PenjualanItemWp extends Model
 {
     protected $fillable = [
         'penjualan_id', 'material_id', 'material_description',
-        'price_per_unit', 'value', 'berat', 'kategori'
+        'price_per_unit', 'value', 'berat', 'kategori', 'berat_dijual', 'terjual'
     ];
 
     protected $casts = [
@@ -16,5 +16,7 @@ class PenjualanItemWp extends Model
         'price_per_unit' => 'integer',
         'value' => 'integer',
         'berat' => 'float',
+        'terjual' => 'float',
+        'berat_dijual' => 'float',
     ];
 }

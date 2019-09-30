@@ -123,8 +123,8 @@
                             <i class="el-icon-more"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item v-if="scope.row.status === 0" @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
                             <el-dropdown-item @click.native.prevent="() => { penjualan = scope.row; showDetailDialog = true;}"><i class="el-icon-zoom-in"></i> Show Detail</el-dropdown-item>
+                            <el-dropdown-item v-if="scope.row.status === 0" @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
                             <el-dropdown-item v-if="scope.row.status === 0" @click.native.prevent="deleteData(scope.row.id)"><i class="el-icon-delete"></i> Hapus</el-dropdown-item>
                             <el-dropdown-item v-if="scope.row.status === 1" @click.native.prevent="printSlipJual(scope.row.id)"><i class="el-icon-printer"></i> Print Slip Jual</el-dropdown-item>
                             <el-dropdown-item v-if="scope.row.status === 1 && scope.row.status_pembayaran !== 2" @click.native.prevent="inputPembayaran(scope.row)"><i class="el-icon-check"></i> Input Pembayaran</el-dropdown-item>
@@ -167,7 +167,7 @@
         </el-dialog>
 
         <!-- FORM INPUT/EDIT PENJUALAN -->
-        <el-dialog top="60px" center :visible.sync="showForm" :title="formTitle" width="950px" v-loading="loading" :close-on-click-modal="false">
+        <el-dialog top="60px" center :visible.sync="showForm" :title="formTitle" width="90%" v-loading="loading" :close-on-click-modal="false">
             <el-alert type="error" title="ERROR"
                 :description="error.message + '\n' + error.file + ':' + error.line"
                 v-show="error.message"
@@ -240,9 +240,8 @@
                             <div class="el-form-item__error" v-if="formErrors.jembatan_timbang">{{formErrors.jembatan_timbang[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Value Penjualan (Rp)" :class="formErrors.value ? 'is-error' : ''">
-                            <el-input type="number" placeholder="Value Penjualan (Rp)" v-model="formModel.value"></el-input>
-                            <div class="el-form-item__error" v-if="formErrors.value">{{formErrors.value[0]}}</div>
+                        <el-form-item label="Value Penjualan (Rp)">
+                            <el-input disabled placeholder="Value Penjualan (Rp)" v-model="value"></el-input>
                         </el-form-item>
 
                     </el-col>
@@ -256,20 +255,24 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Kategori</th>
-                                        <th class="text-right">Berat</th>
-                                        <!-- <th class="text-right">Berat Dijual (KG)</th> -->
+                                        <th class="text-right">Berat Pengajuan</th>
+                                        <th class="text-right">Berat Terjual</th>
+                                        <th class="text-right">Sisa</th>
+                                        <th class="text-right">Berat Dijual (KG)</th>
                                         <th class="text-right">Price/Kg (Rp)</th>
                                         <th class="text-right">Value</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(m, i) in formModel.summaryItems" :key="i">
+                                    <tr v-for="(m, i) in formModel.summaryItems" :key="i" :class="m.berat_dijual > m.berat - m.terjual ? 'table-danger' : ''">
                                         <td>{{i + 1}}.</td>
                                         <td>{{m.kategori}}</td>
                                         <td class="text-right">{{m.berat}} KG</td>
-                                        <!-- <td class="text-right"><input class="my-input" type="number" step="any" v-model="m.berat_dijual"></td> -->
+                                        <td class="text-right">{{Number(m.terjual)}} KG</td>
+                                        <td class="text-right">{{m.berat - m.terjual}} KG</td>
+                                        <td class="text-right"><input class="my-input" type="number" step="any" @change="updateDijual(m.kategori, $event)" v-model="m.berat_dijual"></td>
                                         <td class="text-right"><input class="my-input" @keypress="updatePrice(m.kategori, $event)" type="number" v-model="m.price_per_unit"></td>
-                                        <td class="text-right">Rp {{ (m.berat * m.price_per_unit).toFixed(0) | formatNumber }}</td>
+                                        <td class="text-right">Rp {{ (m.berat_dijual * m.price_per_unit).toFixed(0) | formatNumber }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -284,7 +287,10 @@
                                         <th>Kategori</th>
                                         <th>Material ID</th>
                                         <th>Material Name</th>
-                                        <th class="text-right">Berat</th>
+                                        <th class="text-right">Berat Pengajuan</th>
+                                        <th class="text-right">Berat Terjual</th>
+                                        <th class="text-right">Sisa</th>
+                                        <th class="text-right">Berat Dijual</th>
                                         <th class="text-right">Price/Kg</th>
                                         <th class="text-right">Value</th>
                                     </tr>
@@ -295,9 +301,12 @@
                                         <td>{{m.kategori}}</td>
                                         <td>{{m.material_id}}</td>
                                         <td>{{m.material_description}}</td>
-                                        <td class="text-right">{{m.berat}} kg</td>
+                                        <td class="text-right">{{m.berat}} KG</td>
+                                        <td class="text-right">{{Number(m.terjual)}} KG</td>
+                                        <td class="text-right">{{m.berat - m.terjual}} KG</td>
+                                        <td class="text-right">{{m.berat_dijual}} KG</td>
                                         <td class="text-right">Rp {{m.price_per_unit | formatNumber}}</td>
-                                        <td class="text-right">Rp {{m.value | formatNumber}}</td>
+                                        <td class="text-right">Rp {{(m.berat_dijual * m.price_per_unit).toFixed(0) | formatNumber}}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -323,6 +332,11 @@ import lodash from 'lodash'
 
 export default {
     components: { PenjualanDetailWp, FormPembayaran },
+    computed: {
+        value() {
+            return this.formModel.summaryItems.reduce((prev, curr) =>  prev + Number(curr.price_per_unit) * Number(curr.berat_dijual) , 0)
+        }
+    },
     watch: {
         'formModel.pembeli_id'(v, o) {
             let pembeli = this.$store.state.pembeliList.find(p => p.id == v)
@@ -345,6 +359,7 @@ export default {
             if (!!pengajuan) {
                 this.formModel.items_wp = pengajuan.items_wp
                 this.formModel.summaryItems = pengajuan.summaryItems
+                this.formModel.summaryItems.berat_dijual = 0
             }
 
         }
@@ -382,11 +397,44 @@ export default {
         }
     },
     methods: {
+        updateDijual(kategori, $event) {
+            let row = this.formModel.summaryItems.find(s => s.kategori == kategori)
+            let totalDijual = $event.target.valueAsNumber;
+            console.log(totalDijual)
+
+            // blm implement toleransi
+            if ($event.target.valueAsNumber + Number(row.terjual) > row.berat) {
+                this.$message({ message: 'Penjualan melebihi pengajuan', showClose: true, type: 'error' });
+                return
+            }
+
+            for (let i = 0; i < this.formModel.items_wp.length; i++) {
+                if (this.formModel.items_wp[i].kategori != kategori) {
+                    continue
+                }
+
+                if (totalDijual == 0) {
+                    break
+                }
+
+                if (totalDijual >= (this.formModel.items_wp[i].berat - this.formModel.items_wp[i].terjual)) {
+                    totalDijual -= (this.formModel.items_wp[i].berat - this.formModel.items_wp[i].terjual)
+                    this.formModel.items_wp[i].berat_dijual = this.formModel.items_wp[i].berat - this.formModel.items_wp[i].terjual
+                    continue
+                }
+
+                if (totalDijual < (this.formModel.items_wp[i].berat - this.formModel.items_wp[i].terjual)) {
+                    this.formModel.items_wp[i].berat_dijual = totalDijual
+                    totalDijual = 0
+                    break
+                }
+            }
+        },
         updatePrice(kategori, $event) {
             setTimeout(() => {
                 this.formModel.items_wp.filter(i => i.kategori == kategori).forEach(i => {
-                    i.price_per_unit = $event.target.value
-                    i.value = ($event.target.value * i.berat).toFixed(0)
+                    i.price_per_unit = $event.target.valueAsNumber
+                    i.value = ($event.target.valueAsNumber * i.berat_dijual).toFixed(0)
                 })
             }, 100)
         },
@@ -411,6 +459,8 @@ export default {
             this.requestData();
         },
         save() {
+            this.formModel.value = this.value
+
             if (!!this.formModel.id) {
                 this.update()
             } else {
@@ -434,8 +484,9 @@ export default {
                 this.loading = false;
                 this.showForm = false;
                 this.$message({
-                    message: 'Data BERHASIL disimpan.',
-                    type: 'success'
+                    message: 'Data berhasil disimpan.',
+                    type: 'success',
+                    showClose: true
                 });
                 this.requestData();
             }).catch(e => {
@@ -521,13 +572,15 @@ export default {
                 axios.delete('/penjualan/' + id).then(r => {
                     this.requestData();
                     this.$message({
-                        message: 'Data BERHASIL dihapus.',
-                        type: 'success'
+                        message: 'Data berhasil dihapus.',
+                        type: 'success',
+                        showClose: true
                     });
                 }).catch(e => {
                     this.$message({
-                        message: 'Data GAGAL dihapus. ' + e.response.data.message,
-                        type: 'error'
+                        message: 'Data gagal dihapus. ' + e.response.data.message,
+                        type: 'error',
+                        showClose: true
                     });
                 })
             }).catch(e => console.log(e));

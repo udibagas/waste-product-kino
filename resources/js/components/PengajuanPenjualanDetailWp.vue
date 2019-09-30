@@ -19,25 +19,15 @@
                         <tr><td class="td-label">Yang mengajukan</td><td class="td-value">{{data.user.name}}</td></tr>
                         <tr>
                             <td class="td-label"> Approval 1</td>
-                            <td class="td-value">
-                                <el-tag size="small" :type="approval_statuses[data.approval1_status].type">
-                                    {{approval_statuses[data.approval1_status].label}}
-                                </el-tag>
-                            </td>
+                            <td class="td-value"> {{approval_statuses[data.approval1_status].label}} </td>
                         </tr>
                         <tr>
                             <td class="td-label"> Approval 2</td>
-                            <td class="td-value">
-                                <el-tag size="small" :type="approval_statuses[data.approval2_status].type">
-                                    {{approval_statuses[data.approval2_status].label}}
-                                </el-tag>
-                            </td>
+                            <td class="td-value"> {{approval_statuses[data.approval2_status].label}} </td>
                         </tr>
                         <tr>
                             <td class="td-label">Status</td>
-                            <td class="td-value">
-                                <el-tag size="small" :type="statuses[data.status].type">{{statuses[data.status].label}}</el-tag>
-                            </td>
+                            <td class="td-value"> {{statuses[data.status].label}} </td>
                         </tr>
                     </tbody>
                 </table>
@@ -123,6 +113,7 @@ export default {
                 {type: 'success', label: 'Approved'},
                 {type: 'danger', label: 'Rejected', value: 3},
                 {type: '', label: 'Processed', value: 4},
+                {type: '', label: 'Partially Processed', value: 5},
             ],
             approval_statuses: [
                 {type: 'info', label: 'Pending', value: 0},

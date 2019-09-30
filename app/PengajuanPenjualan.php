@@ -17,6 +17,8 @@ class PengajuanPenjualan extends Model
 
     const STATUS_PROCESSED = 4;
 
+    const STATUS_PARTIALLY_PROCESSED = 5;
+
     const STATUS_APPROVAL_PENDING = 0;
 
     const STATUS_APPROVAL_APPROVED = 1;
@@ -73,6 +75,7 @@ class PengajuanPenjualan extends Model
             kategori,
             SUM(stock) / 1000 AS [stock],
             SUM(berat) AS [berat],
+            SUM(terjual) AS [terjual],
             AVG(price_per_unit) AS [price_per_unit],
             (SUM(berat) * AVG(price_per_unit)) AS [value]
         FROM pengajuan_penjualan_item_wps

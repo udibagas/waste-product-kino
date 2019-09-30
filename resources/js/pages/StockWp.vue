@@ -260,6 +260,12 @@ export default {
                 dataToImport.splice(0, 1)
                 // hapus yang ga ada di plant
                 dataToImport = dataToImport.filter(d => _this.plants.indexOf(d.plant) >= 0);
+
+                if (dataToImport.length == 0) {
+                    _this.logs.push('No valid row found.Please make sure your data is correct.')
+                    return
+                }
+
                 _this.logs.push('Found ' + (dataToImport.length) + ' valid rows <br>')
                 _this.logs.push('Importing data. This may take long moment. Don\'t close this window. Please wait ... <br>')
                 _this.save(dataToImport);
@@ -267,20 +273,20 @@ export default {
 
             reader.readAsArrayBuffer(oFile);
         },
-        filterChange: function(f) {
+        filterChange(f) {
             let column = Object.keys(f)[0];
             this.filters[column] = Object.values(f[column]);
             this.page = 1
             this.requestData();
         },
-        sortChange: function(column) {
+        sortChange(column) {
             if (this.sort !== column.prop || this.order !== column.order) {
                 this.sort = column.prop;
                 this.order = column.order;
                 this.requestData();
             }
         },
-        requestData: function() {
+        requestData() {
             let params = {
                 page: this.page,
                 keyword: this.keyword,
@@ -291,14 +297,14 @@ export default {
             this.loading = true;
 
             axios.get('/stockWp', { params: Object.assign(params, this.filters) }).then(r => {
-                this.loading = false;
                 this.paginatedData = r.data
             }).catch(e => {
-                this.loading = false;
                 this.$message({
                     message: e.response.data.message || e.response.message,
                     type: 'error'
                 });
+            }).finally(() => {
+                this.loading = false;
             })
         }
     },

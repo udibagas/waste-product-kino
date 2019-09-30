@@ -108,8 +108,8 @@
                         </span>
                         <el-dropdown-menu slot="dropdown">
                             <!-- bisa diedit kalau status draft atau rejected -->
-                            <el-dropdown-item v-if="scope.row.status == 0 || scope.row.status == 3" @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
                             <el-dropdown-item @click.native.prevent="() => { pengajuanPenjualan = scope.row; showDetailDialog = true;}"><i class="el-icon-zoom-in"></i> Show Detail</el-dropdown-item>
+                            <el-dropdown-item v-if="scope.row.status == 0 || scope.row.status == 3" @click.native.prevent="editData(scope.row)"><i class="el-icon-edit-outline"></i> Edit</el-dropdown-item>
                             <!-- bisa dihapus kalau status draft -->
                             <el-dropdown-item v-if="scope.row.status == 0" @click.native.prevent="deleteData(scope.row.id)"><i class="el-icon-delete"></i> Hapus</el-dropdown-item>
                             <!-- bisa diapprove kalau status submitted -->
@@ -155,14 +155,9 @@
                             <div class="el-form-item__error" v-if="formErrors.no_aju">{{formErrors.no_aju[0]}}</div>
                         </el-form-item>
 
-                        <el-form-item label="Period From" :class="formErrors.period_from ? 'is-error' : ''">
-                            <el-date-picker v-model="formModel.period_from" type="date" format="dd-MMM-yyyy" value-format="yyyy-MM-dd" placeholder="Period From" style="width:100%;"> </el-date-picker>
-                            <div class="el-form-item__error" v-if="formErrors.period_from">{{formErrors.period_from[0]}}</div>
-                        </el-form-item>
-
-                        <el-form-item label="Period To" :class="formErrors.period_to ? 'is-error' : ''">
-                            <el-date-picker v-model="formModel.period_to" type="date" format="dd-MMM-yyyy" value-format="yyyy-MM-dd" placeholder="Period To" style="width:100%;"> </el-date-picker>
-                            <div class="el-form-item__error" v-if="formErrors.period_to">{{formErrors.period_to[0]}}</div>
+                        <el-form-item label="Periode" :class="formErrors.period ? 'is-error' : ''">
+                            <el-date-picker start-placeholde="Start" end-placeholde="End" v-model="formModel.period" type="daterange" format="dd-MMM-yyyy" value-format="yyyy-MM-dd" placeholder="Period From" style="width:100%;"> </el-date-picker>
+                            <div class="el-form-item__error" v-if="formErrors.period">{{formErrors.period[0]}}</div>
                         </el-form-item>
                     </el-col>
 
@@ -406,6 +401,7 @@ export default {
                 {type: 'success', label: 'Approved'},
                 {type: 'danger', label: 'Rejected', value: 3},
                 {type: '', label: 'Processed', value: 4},
+                {type: '', label: 'Partially Processed', value: 5},
             ],
             approval_statuses: [
                 {type: 'info', label: 'Pending', value: 0},
@@ -424,6 +420,7 @@ export default {
     methods: {
         updateDiajukan(kategori, $event) {
             let row = this.summaryItems.find(s => s.kategori == kategori)
+            let totalDiajukan = $event.target.valueAsNumber;
 
             // this part is OK
             if ($event.target.value > row.stock/1000) {
@@ -431,20 +428,27 @@ export default {
                 return
             }
 
-            let totalDiajukan = $event.target.valueAsNumber;
-
-            // this part need check
-            this.formModel.items_wp.filter(i => i.kategori == kategori).forEach(i => {
-                if (totalDiajukan >= (i.stock/1000)) {
-                    totalDiajukan -= (i.stock/1000)
-                    i.diajukan = i.stock/1000
+            for (let i = 0; i < this.formModel.items_wp.length; i++) {
+                if (this.formModel.items_wp[i].kategori != kategori) {
+                    continue
                 }
 
-                if (totalDiajukan < (i.stock/1000)) {
-                    i.diajukan = totalDiajukan
+                if (totalDiajukan == 0) {
+                    break
+                }
+
+                if (totalDiajukan >= (this.formModel.items_wp[i].stock/1000)) {
+                    totalDiajukan -= (this.formModel.items_wp[i].stock/1000)
+                    this.formModel.items_wp[i].diajukan = this.formModel.items_wp[i].stock/1000
+                    continue
+                }
+
+                if (totalDiajukan < (this.formModel.items_wp[i].stock/1000)) {
+                    this.formModel.items_wp[i].diajukan = totalDiajukan
                     totalDiajukan = 0
+                    break
                 }
-            })
+            }
         },
         groupItem() {
             let groupedItems = lodash.groupBy(this.formModel.items_wp, 'kategori')
@@ -705,6 +709,7 @@ export default {
             this.formTitle = 'EDIT PENGAJUAN PENJUALAN WASTE PRODUCT'
             this.formModel = JSON.parse(JSON.stringify(data));
             this.formModel.mvt_type = data.mvt_type.split(',')
+            this.formModel.period = [this.formModel.period_from, this.formModel.period_to]
             this.formModel.items_wp = data.items_wp.map(i => {
                 return {
                     id: i.id,
@@ -717,6 +722,7 @@ export default {
                     bun: i.unit
                 }
             })
+            this.groupItem()
             this.error = {}
             this.formErrors = {}
             this.showForm = true

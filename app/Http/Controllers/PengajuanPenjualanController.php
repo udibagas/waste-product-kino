@@ -64,8 +64,8 @@ class PengajuanPenjualanController extends Controller
                 $id = DB::table('pengajuan_penjualans')->insertGetId([
                     'tanggal' => $request->tanggal,
                     'no_aju' => str_pad($no_aju + 1, 4, "0", STR_PAD_LEFT).date('/m/Y').'/AJU',
-                    'period_from' => $request->period_from ? $request->period_from : date('Y-m-d'),
-                    'period_to' => $request->period_to ? $request->period_to : date('Y-m-d'),
+                    'period_from' => $request->period ? $request->period[0] : date('Y-m-d'),
+                    'period_to' => $request->period ? $request->period[1] : date('Y-m-d'),
                     'jenis' => $request->jenis,
                     'mvt_type' => is_array($request->mvt_type) ? implode(',', $request->mvt_type) : '',
                     'sloc' => $request->sloc,
@@ -89,7 +89,7 @@ class PengajuanPenjualanController extends Controller
                 if ($request->jenis == 'WP') {
                     DB::table('pengajuan_penjualan_item_wps')->insert(array_map(function($item) use ($id) {
                         return [
-                            'pengajuan_penjuaan_id' => $id,
+                            'pengajuan_penjualan_id' => $id,
                             'kategori' => $item['kategori'],
                             'material_id' => $item['material'],
                             'material_description' => $item['material_description'],
@@ -99,6 +99,7 @@ class PengajuanPenjualanController extends Controller
                             'price_per_unit' => $item['price_per_unit'],
                             'value' => (int) ((float) $item['diajukan'] * (int) $item['price_per_unit']),
                             'berat' => (float) $item['diajukan'],
+                            'terjual' => 0,
                             'stock' => (float) $item['stock'],
                         ];
                     }, $request->items_wp));
@@ -123,8 +124,8 @@ class PengajuanPenjualanController extends Controller
             DB::transaction(function () use ($request, $pengajuanPenjualan) {
                 DB::table('pengajuan_penjualans')->where('id', $pengajuanPenjualan->id)->update([
                     'tanggal' => $request->tanggal,
-                    'period_from' => $request->period_from ? $request->period_from : date('Y-m-d'),
-                    'period_to' => $request->period_to ? $request->period_to : date('Y-m-d'),
+                    'period_from' => $request->period ? $request->period[0] : date('Y-m-d'),
+                    'period_to' => $request->period ? $request->period[1] : date('Y-m-d'),
                     'status' => $request->status,
                 ]);
 
@@ -153,7 +154,7 @@ class PengajuanPenjualanController extends Controller
 
                     DB::table('pengajuan_penjualan_item_wps')->insert(array_map(function($item) use ($pengajuanPenjualan) {
                         return [
-                            'pengajuan_penjuaan_id' => $pengajuanPenjualan->id,
+                            'pengajuan_penjualan_id' => $pengajuanPenjualan->id,
                             'kategori' => $item['kategori'],
                             'material_id' => $item['material'],
                             'material_description' => $item['material_description'],
@@ -163,6 +164,7 @@ class PengajuanPenjualanController extends Controller
                             'price_per_unit' => $item['price_per_unit'],
                             'value' => (int) ((float) $item['diajukan'] * (int) $item['price_per_unit']),
                             'berat' => (float) $item['diajukan'],
+                            'terjual' => 0,
                             'stock' => (float) $item['stock'],
                         ];
                     }, $request->items_wp));
@@ -192,9 +194,11 @@ class PengajuanPenjualanController extends Controller
 
     public function getList(Request $request)
     {
-        // TODO: exclude yg sudah di jual
         return PengajuanPenjualan::where('jenis', $request->jenis)
-            ->where('status', PengajuanPenjualan::STATUS_APPROVED)->get();
+            ->where(function($q) {
+                return $q->where('status', PengajuanPenjualan::STATUS_APPROVED)
+                    ->orWhere('status', PengajuanPenjualan::STATUS_PARTIALLY_PROCESSED);
+            })->get();
     }
 
     /**

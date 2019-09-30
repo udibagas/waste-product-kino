@@ -48,6 +48,9 @@
                             <th>#</th>
                             <th class="text-center">Kategori</th>
                             <th class="text-center">Berat</th>
+                            <th class="text-center">Terjual</th>
+                            <th class="text-center">Sisa</th>
+                            <th class="text-center">Dijual</th>
                             <th class="text-center">Price Per Kg</th>
                             <th class="text-center">Value</th>
                         </tr>
@@ -57,8 +60,11 @@
                             <td>{{index+1}}.</td>
                             <td>{{item.kategori}}</td>
                             <td class="text-right">{{item.berat.toFixed(4) | formatNumber}} kg</td>
+                            <td class="text-right">{{item.terjual.toFixed(4) | formatNumber}} kg</td>
+                            <td class="text-right">{{(item.berat - item.terjual).toFixed(4) | formatNumber}} kg</td>
+                            <td class="text-right">{{item.berat_dijual.toFixed(4) | formatNumber}} kg</td>
                             <td class="text-right">Rp {{item.price_per_unit | formatNumber}}</td>
-                            <td class="text-right">Rp {{item.value | formatNumber}}</td>
+                            <td class="text-right">Rp {{(item.berat_dijual * item.price_per_unit).toFixed(0) | formatNumber}}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -71,7 +77,10 @@
                             <th class="text-center">Kategori</th>
                             <th class="text-center">Material</th>
                             <th class="text-center">Material Description</th>
-                            <th class="text-center">Berat (kg)</th>
+                            <th class="text-center">Berat Diajukan (kg)</th>
+                            <th class="text-center">Berat Terjual (kg)</th>
+                            <th class="text-center">Sisa (kg)</th>
+                            <th class="text-center">Berat Dijual (kg)</th>
                             <th class="text-center">Price Per Unit (Rp)</th>
                             <th class="text-center">Value (Rp)</th>
                         </tr>
@@ -83,8 +92,11 @@
                             <td>{{item.material_id}}</td>
                             <td>{{item.material_description}}</td>
                             <td class="text-right">{{item.berat | formatNumber}} kg</td>
+                            <td class="text-right">{{item.terjual | formatNumber}} kg</td>
+                            <td class="text-right">{{item.berat - item.terjual | formatNumber}} kg</td>
+                            <td class="text-right">{{item.berat_dijual | formatNumber}} kg</td>
                             <td class="text-right">Rp {{item.price_per_unit | formatNumber}}</td>
-                            <td class="text-right">Rp {{item.value | formatNumber}}</td>
+                            <td class="text-right">Rp {{item.value.toFixed(0) | formatNumber}}</td>
                         </tr>
                     </tbody>
                 </table>

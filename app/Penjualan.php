@@ -82,6 +82,8 @@ class Penjualan extends Model
         $sql = "SELECT
             kategori,
             SUM(berat) AS [berat],
+            SUM(terjual) AS [terjual],
+            SUM(berat_dijual) AS [berat_dijual],
             AVG(price_per_unit) AS [price_per_unit],
             (SUM(berat) * AVG(price_per_unit)) AS [value]
         FROM penjualan_item_wps

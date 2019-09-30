@@ -29,8 +29,7 @@ class PengajuanPenjualanRequest extends FormRequest
             'tanggal' => 'required',
             'no_aju' => 'required',
             'location_id' => ['required', new HasApprovalLevel1, new HasApprovalLevel2],
-            'period_from' => 'required_if:jenis,WP',
-            'period_to' => 'required_if:jenis,WP',
+            'period' => 'required_if:jenis,WP|array',
             'jenis' =>'required',
         ];
     }
@@ -42,8 +41,7 @@ class PengajuanPenjualanRequest extends FormRequest
             'no_aju' => 'No. Pengajuan',
             'location_id' => 'Lokasi',
             'plant' => 'Plant',
-            'period_from' => 'Periode From',
-            'period_to' => 'Periode To',
+            'period' => 'Periode',
             'jenis' =>'Jenis '
         ];
     }

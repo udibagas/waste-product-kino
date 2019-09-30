@@ -79,9 +79,11 @@ class PenjualanController extends Controller
                             'penjualan_id' => $id,
                             'material_id' => $item['material_id'],
                             'material_description' => $item['material_description'],
-                            'price_per_unit' => $item['price_per_unit'],
-                            'value' => $item['value'],
-                            'berat' => $item['berat'],
+                            'price_per_unit' => intval($item['price_per_unit']),
+                            'value' => round($item['price_per_unit'] * $item['berat_dijual']),
+                            'berat' => floatval($item['berat']),
+                            'berat_dijual' => round($item['berat_dijual'], 4),
+                            'terjual' => round($item['terjual'], 4),
                             'kategori' => $item['kategori'],
                         ];
                     }, $request->items_wp));
@@ -135,9 +137,11 @@ class PenjualanController extends Controller
                             'penjualan_id' => $penjualan->id,
                             'material_id' => $item['material_id'],
                             'material_description' => $item['material_description'],
-                            'price_per_unit' => $item['price_per_unit'],
-                            'value' => $item['value'],
-                            'berat' => $item['berat'],
+                            'price_per_unit' => intval($item['price_per_unit']),
+                            'value' => round($item['price_per_unit'] * $item['berat_dijual']),
+                            'berat' => floatval($item['berat']),
+                            'berat_dijual' => round($item['berat_dijual'], 4),
+                            'terjual' => round($item['terjual'], 4),
                             'kategori' => $item['kategori'],
                         ];
                     }, $request->items_wp));
