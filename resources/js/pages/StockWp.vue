@@ -238,7 +238,7 @@ export default {
                         entry_date: r[15],
                         time: _this.excelTimeToStr(r[16]),
                         bun: r[17],
-                        quantity: r[18]
+                        quantity: Number(r[18])
                     }
                 })
 
