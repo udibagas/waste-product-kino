@@ -67,8 +67,8 @@ class PenerimaanController extends Controller
                         'penerimaan_id' => $id,
                         'kategori_barang_id' => $item['kategori_barang_id'],
                         'eun' => $item['eun'],
-                        'timbangan_manual_kirim' => $item['timbangan_manual_kirim'],
-                        'timbangan_manual_terima' => $item['timbangan_manual_terima'],
+                        'timbangan_manual_kirim' => floatval($item['timbangan_manual_kirim']),
+                        'timbangan_manual_terima' => floatval($item['timbangan_manual_terima']),
                         'keterangan' => isset($item['keterangan']) ? $item['keterangan'] : ''
                     ];
                 }, $request->items));
@@ -107,8 +107,8 @@ class PenerimaanController extends Controller
                         'penerimaan_id' => $penerimaan->id,
                         'kategori_barang_id' => $item['kategori_barang_id'],
                         'eun' => $item['eun'],
-                        'timbangan_manual_kirim' => $item['timbangan_manual_kirim'],
-                        'timbangan_manual_terima' => $item['timbangan_manual_terima'],
+                        'timbangan_manual_kirim' => floatval($item['timbangan_manual_kirim']),
+                        'timbangan_manual_terima' => floatval($item['timbangan_manual_terima']),
                         'keterangan' => isset($item['keterangan']) ? $item['keterangan'] : ''
                     ];
                 }, $request->items));

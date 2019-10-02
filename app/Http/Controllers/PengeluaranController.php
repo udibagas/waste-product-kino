@@ -68,7 +68,7 @@ class PengeluaranController extends Controller
                         'pengeluaran_id' => $id,
                         'kategori_barang_id' => $item['kategori_barang_id'],
                         'eun' => $item['eun'],
-                        'timbangan_manual' => $item['timbangan_manual']
+                        'timbangan_manual' => floatval($item['timbangan_manual'])
                     ];
                 }, $request->items));
 
@@ -107,7 +107,7 @@ class PengeluaranController extends Controller
                         'pengeluaran_id' => $pengeluaran->id,
                         'kategori_barang_id' => $item['kategori_barang_id'],
                         'eun' => $item['eun'],
-                        'timbangan_manual' => $item['timbangan_manual']
+                        'timbangan_manual' => floatval($item['timbangan_manual'])
                     ];
                 }, $request->items));
 

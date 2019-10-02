@@ -212,7 +212,7 @@ export default {
                 var data = e.target.result;
                 data = new Uint8Array(data);
                 var workbook = XLSX.read(data, {type: 'array'});
-                console.log(workbook);
+                // console.log(workbook);
                 var result = {};
                 // ini kalau mau baca semua sheet
                 // workbook.SheetNames.forEach(function (sheetName) {
@@ -241,6 +241,8 @@ export default {
                         quantity: Number(r[18])
                     }
                 })
+
+                console.log(dataToImport[1])
 
                 // MVT 311 dan 312 digunakan untuk reverse (menetralkan stock). Jadi Mvt 312 berfungsi membatalkan transaksi Mvt 311
                 // looping buat cari 311 (yang dibatalkan)
