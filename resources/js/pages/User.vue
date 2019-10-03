@@ -33,7 +33,7 @@
             <el-table-column prop="department" label="Departemen" sortable="custom" min-width="180"></el-table-column>
             <el-table-column prop="role" label="Role" sortable="custom" min-width="120"
             column-key="role"
-            :filters="[{value: 0, text: 'Member'},{value: 1, text: 'User'}, {value: 9, text: 'Admin'}]">
+            :filters="[{value: 0, text: 'User'}, {value: 1, text: 'Admin'}]">
                 <template slot-scope="scope">
                     {{roles[scope.row.role]}}
                 </template>

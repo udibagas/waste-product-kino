@@ -34,7 +34,10 @@ class PengeluaranController extends Controller
             })->when($request->status, function ($q) use ($request) {
                 return $q->whereIn('status', $request->status);
             })->when($request->user()->role == \App\User::ROLE_USER, function ($q) use ($request) {
-                return $q->where('lokasi_asal_id', $request->user()->location_id);
+                return $q->where(function($qq) use ($request) {
+                    return $qq->where('lokasi_asal_id', $request->user()->location_id)
+                            ->orWhere('user_id', $request->user()->id);
+                });
             })->orderBy($sort, $order)->paginate($request->pageSize);
     }
 
