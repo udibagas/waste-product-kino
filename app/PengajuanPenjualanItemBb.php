@@ -14,7 +14,8 @@ class PengajuanPenjualanItemBb extends Model
     protected $casts = [
         'pengajuan_penjualan_id' => 'integer',
         'kategori_barang_id' => 'integer',
-        'stock_berat' => 'float'
+        'stock_berat' => 'float',
+        'timbangan_manual' => 'float'
     ];
 
     protected $with = ['kategori'];
