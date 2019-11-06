@@ -141,7 +141,7 @@ class PengajuanPenjualanController extends Controller
                             'kategori_barang_id' => $item['kategori_barang_id'],
                             'eun' => $item['eun'],
                             'timbangan_manual' => $item['timbangan_manual'],
-                            'stock_berat' => $item['stock_berat'],
+                            'stock_berat' => floatval($item['stock_berat']),
                         ];
                     }, $request->items_bb));
                 }
