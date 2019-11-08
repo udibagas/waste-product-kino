@@ -67,7 +67,7 @@ class PenjualanController extends Controller
                             'jembatan_timbang' => floatval($item['jembatan_timbang']),
                             'price_per_kg' => $item['price_per_kg'],
                             'value' => $item['value'],
-                            'stock_berat' => $item['stock_berat'],
+                            'stock_berat' => floatval($item['stock_berat']),
                         ];
                     }, $request->items_bb));
                 }
@@ -124,7 +124,7 @@ class PenjualanController extends Controller
                             'jembatan_timbang' => floatval($item['jembatan_timbang']),
                             'price_per_kg' => $item['price_per_kg'],
                             'value' => $item['value'],
-                            'stock_berat' => $item['stock_berat'],
+                            'stock_berat' => floatval($item['stock_berat']),
                         ];
                     }, $request->items_bb));
                 }
