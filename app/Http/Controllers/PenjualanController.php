@@ -109,7 +109,7 @@ class PenjualanController extends Controller
                     'pembeli_id' => $request->pembeli_id,
                     'value' => $request->value,
                     'top_date' => $request->top_date,
-                    'jembatan_timbang' => $request->jembatan_timbang,
+                    'jembatan_timbang' => floatval($request->jembatan_timbang),
                     'status' => $request->status,
                 ]);
 
@@ -120,8 +120,8 @@ class PenjualanController extends Controller
                         return [
                             'penjualan_id' => $penjualan->id,
                             'kategori_barang_id' => $item['kategori_barang_id'],
-                            'timbangan_manual' => $item['timbangan_manual'],
-                            'jembatan_timbang' => $item['jembatan_timbang'],
+                            'timbangan_manual' => floatval($item['timbangan_manual']),
+                            'jembatan_timbang' => floatval($item['jembatan_timbang']),
                             'price_per_kg' => $item['price_per_kg'],
                             'value' => $item['value'],
                             'stock_berat' => $item['stock_berat'],
