@@ -57,44 +57,93 @@ class StockWpController extends Controller
             DB::beginTransaction();
             foreach ($request->rows as $i => $row)
             {
-                // cari konversi
-                $konversi = KonversiBerat::where('material_id', $row['material'])->first();
+                if ($row['mat'] == 'FG')
+                {
+                    $konversis = KonversiBerat::where('finished_good', $row['material'])->get();
+                    foreach ($konversis as $konversi)
+                    {
+                        $row1 = $row;
+                        unset($row1['stock']);
+                        unset($row1['quantity']);
+                        $row1['location_id'] = 0;
+                        $row1['tanggal'] = $tanggal;
 
-                $row1 = $row;
-                unset($row1['stock']);
-                unset($row1['quantity']);
-                $row1['location_id'] = 0;
-                $row1['tanggal'] = $tanggal;
+                        // replace dengan value dari konversi berat
+                        $row['material'] = $row1['material'] = $konversi->material_id;
+                        $row['material_description'] = $row1['material_description'] = $konversi->material_description;
 
-                if ((int) $row['quantity'] >= 0) {
-                    $row1['qty_in'] = (int) $row['quantity'];
-                    $row1['stock_in'] = $konversi ? $row1['qty_in'] * $konversi->berat : 0;
-                } else {
-                    $row1['qty_out'] = abs((int) $row['quantity']);
-                    $row1['stock_out'] = $konversi ? $row1['qty_out'] * $konversi->berat : 0;
-                }
+                        if ((int) $row['quantity'] >= 0) {
+                            $row1['qty_in'] = (int) $row['quantity'];
+                            $row1['stock_in'] = $konversi ? $row1['qty_in'] * $konversi->berat : 0;
+                        } else {
+                            $row1['qty_out'] = abs((int) $row['quantity']);
+                            $row1['stock_out'] = $konversi ? $row1['qty_out'] * $konversi->berat : 0;
+                        }
 
-                DB::table('in_out_stock_wps')->insert($row1);
+                        DB::table('in_out_stock_wps')->insert($row1);
 
-                $stock = StockWp::where('plant', $row['plant'])
-                    ->where('material', $row['material'])
-                    ->first();
+                        $stock = StockWp::where('plant', $row['plant'])
+                            ->where('material', $row['material'])
+                            ->first();
 
-                if ($stock) {
-                    if ($konversi) {
-                        $row['stock'] = $stock->stock + ($stock->quantity * $konversi->berat);
+                        if ($stock) {
+                            if ($konversi) {
+                                $row['stock'] = $stock->stock + ($stock->quantity * $konversi->berat);
+                            }
+
+                            $row['quantity'] += $stock->quantity;
+                            DB::table('stock_wps')->where('id', $stock->id)->update($row);
+                        } else {
+                            $row['quantity'] = $row['quantity'] == null ? 0 : $row['quantity'];
+
+                            if ($konversi) {
+                                $row['stock'] = $row['quantity'] * $konversi->berat;
+                            }
+
+                            DB::table('stock_wps')->insert($row);
+                        }
                     }
 
-                    $row['quantity'] += $stock->quantity;
-                    DB::table('stock_wps')->where('id', $stock->id)->update($row);
                 } else {
-                    $row['quantity'] = $row['quantity'] == null ? 0 : $row['quantity'];
+                    // cari konversi
+                    $konversi = KonversiBerat::where('material_id', $row['material'])->first();
 
-                    if ($konversi) {
-                        $row['stock'] = $row['quantity'] * $konversi->berat;
+                    $row1 = $row;
+                    unset($row1['stock']);
+                    unset($row1['quantity']);
+                    $row1['location_id'] = 0;
+                    $row1['tanggal'] = $tanggal;
+
+                    if ((int) $row['quantity'] >= 0) {
+                        $row1['qty_in'] = (int) $row['quantity'];
+                        $row1['stock_in'] = $konversi ? $row1['qty_in'] * $konversi->berat : 0;
+                    } else {
+                        $row1['qty_out'] = abs((int) $row['quantity']);
+                        $row1['stock_out'] = $konversi ? $row1['qty_out'] * $konversi->berat : 0;
                     }
 
-                    DB::table('stock_wps')->insert($row);
+                    DB::table('in_out_stock_wps')->insert($row1);
+
+                    $stock = StockWp::where('plant', $row['plant'])
+                        ->where('material', $row['material'])
+                        ->first();
+
+                    if ($stock) {
+                        if ($konversi) {
+                            $row['stock'] = $stock->stock + ($stock->quantity * $konversi->berat);
+                        }
+
+                        $row['quantity'] += $stock->quantity;
+                        DB::table('stock_wps')->where('id', $stock->id)->update($row);
+                    } else {
+                        $row['quantity'] = $row['quantity'] == null ? 0 : $row['quantity'];
+
+                        if ($konversi) {
+                            $row['stock'] = $row['quantity'] * $konversi->berat;
+                        }
+
+                        DB::table('stock_wps')->insert($row);
+                    }
                 }
             }
 
