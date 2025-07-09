@@ -6,6 +6,7 @@ use App\User;
 use App\Penerimaan;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TestEmail;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,7 +23,7 @@ Route::get('/migrate', function () {
     return Artisan::call('migrate');
 });
 
-Route::get('testEmail', function() {
+Route::get('testEmail', function () {
     Mail::to('bagas@lamsolusi.com')
         ->cc('udibagas@gmail.com')
         ->send(new TestEmail());
@@ -63,9 +64,9 @@ Route::resource('pengeluaran', 'PengeluaranController')->only(['index', 'store',
 Route::delete('pengeluaranItem/{pengeluaranItem}', 'PengeluaranItemController@destroy');
 Route::get('penjualan/{penjualan}/printSlip', 'PenjualanController@printSlip');
 Route::get('penjualan/getItemWpSummary/{penjualan}', 'PenjualanController@getItemWpSummary');
-Route::get('penjualan/getLastRecord','PenjualanController@getLastRecord');
-Route::resource('penjualan','PenjualanController')->only(['index', 'store', 'update', 'destroy']);
-Route::resource('pembayaran','PembayaranController')->only(['store']);
+Route::get('penjualan/getLastRecord', 'PenjualanController@getLastRecord');
+Route::resource('penjualan', 'PenjualanController')->only(['index', 'store', 'update', 'destroy']);
+Route::resource('pembayaran', 'PembayaranController')->only(['store']);
 
 // REPORT
 Route::get('inOutStockBb', 'InOutStockBbController@index');
@@ -86,15 +87,15 @@ Route::resource('stockWp', 'StockWpController')->only(['index', 'store', 'update
 Route::resource('user', 'UserController')->only(['index', 'show', 'store', 'update', 'destroy']);
 
 // TESTING ONLY
-Route::get('jajal', function() {
+Route::get('jajal', function () {
     return auth()->user()->rights;
 });
 
-Route::get('/emailApproval', function() {
+Route::get('/emailApproval', function () {
     return new App\Mail\ApprovalRequest(PengajuanPenjualan::first(), 1, User::find(1));
 });
 
-Route::get('/emailPenerimaan', function() {
+Route::get('/emailPenerimaan', function () {
     $penerimaan = Penerimaan::find(3015);
     return new App\Mail\ReceiptNotification($penerimaan);
 });

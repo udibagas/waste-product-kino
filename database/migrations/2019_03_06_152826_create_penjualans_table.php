@@ -16,7 +16,7 @@ class CreatePenjualansTable extends Migration
         Schema::create('penjualans', function (Blueprint $table) {
             $table->increments('id');
             $table->date('tanggal');
-            $table->integer('pembeli_id');
+            $table->integer('pembeli_id')->unsigned();
             $table->string('no_sj', 100);
             $table->integer('value', false, true);
             $table->date('top_date');
